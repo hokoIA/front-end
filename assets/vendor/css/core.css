@@ -17074,14 +17074,6 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
   padding-left: 0 !important;
 }
 
-.content-wrapper {
-  display: flex;
-  align-items: stretch;
-  flex: 1 1 auto;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
 .content-backdrop {
   position: fixed;
   top: 0;

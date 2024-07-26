@@ -756,8 +756,6 @@
 
 #orderStatisticsChart .apexcharts-xcrosshairs.apexcharts-active,
 #orderStatisticsChart .apexcharts-ycrosshairs.apexcharts-active,
-#totalRevenueChart .apexcharts-xcrosshairs.apexcharts-active,
-#totalRevenueChart .apexcharts-ycrosshairs.apexcharts-active,
 #expensesBarChart .apexcharts-xcrosshairs.apexcharts-active,
 #expensesBarChart .apexcharts-ycrosshairs.apexcharts-active {
   opacity: 0;
