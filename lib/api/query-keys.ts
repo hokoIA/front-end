@@ -69,4 +69,9 @@ export const queryKeys = {
     youtubeStatus: (idCustomer: string) =>
       ["integrations", "youtube", "status", idCustomer] as const,
   },
+  contextBase: {
+    all: ["context-base"] as const,
+    documents: (clientId: string) =>
+      ["context-base", "documents", clientId] as const,
+  },
 } as const;

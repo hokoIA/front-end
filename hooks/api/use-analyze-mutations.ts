@@ -9,7 +9,8 @@ import { useMutation } from "@tanstack/react-query";
 
 export function useAnalyzeMutation() {
   return useMutation({
-    mutationFn: (body: AnalyzeRequestBody) => postAnalyze(body),
+    mutationFn: (body: AnalyzeStrategicPayload | AnalyzeRequestBody) =>
+      postAnalyze(body),
   });
 }
 
