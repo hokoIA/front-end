@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/* ho.ko AI.nalytics — design tokens (light only) */
+:root {
+  --hk-primary-deep: #0e0e52;
+  --hk-primary-strong: #150578;
+  --hk-primary-action: #192bc2;
+  --hk-accent-cyan: #70e9fd;
+  --hk-accent-lime: #c6ff33;
+  --hk-neutral-ink: #191716;
+  --hk-neutral-mid: #a6a6b3;
+  --hk-neutral-bg: #f4faff;
+
+  --hk-surface: #ffffff;
+  --hk-surface-elevated: #ffffff;
+  --hk-border: color-mix(in srgb, var(--hk-primary-deep) 14%, #c8d4e8);
+  --hk-border-subtle: color-mix(in srgb, var(--hk-primary-deep) 8%, #e8eef6);
+  --hk-ring: color-mix(in srgb, var(--hk-primary-action) 35%, transparent);
+
+  --hk-radius-sm: 0.375rem;
+  --hk-radius-md: 0.5rem;
+  --hk-radius-lg: 0.75rem;
+  --hk-shadow-sm: 0 1px 2px rgb(14 14 82 / 0.04);
+  --hk-shadow-md: 0 4px 12px rgb(14 14 82 / 0.06);
+  --hk-sidebar-width: 16rem;
+  --hk-sidebar-collapsed: 4.25rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --color-hk-canvas: var(--hk-neutral-bg);
+  --color-hk-surface: var(--hk-surface);
+  --color-hk-ink: var(--hk-neutral-ink);
+  --color-hk-muted: var(--hk-neutral-mid);
+  --color-hk-deep: var(--hk-primary-deep);
+  --color-hk-strong: var(--hk-primary-strong);
+  --color-hk-action: var(--hk-primary-action);
+  --color-hk-cyan: var(--hk-accent-cyan);
+  --color-hk-lime: var(--hk-accent-lime);
+  --color-hk-border: var(--hk-border);
+  --color-hk-border-subtle: var(--hk-border-subtle);
+  --color-hk-ring: var(--hk-ring);
+
+  --radius-sm: var(--hk-radius-sm);
+  --radius-md: var(--hk-radius-md);
+  --radius-lg: var(--hk-radius-lg);
+
+  --shadow-hk-sm: var(--hk-shadow-sm);
+  --shadow-hk-md: var(--hk-shadow-md);
+}
+
+body {
+  background-color: var(--hk-neutral-bg);
+  color: var(--hk-neutral-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes hk-dash-load {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.hk-dash-load-inner {
+  width: 35%;
+  height: 100%;
+  background-color: var(--hk-primary-action);
+  animation: hk-dash-load 1.15s ease-in-out infinite;
+}
+
+/* Focus visible — acessível, discreto */
+:focus-visible {
+  outline: 2px solid var(--hk-primary-action);
+  outline-offset: 2px;
+}
