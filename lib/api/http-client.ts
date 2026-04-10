@@ -1,7 +1,15 @@
 /**
  * Cliente HTTP central: cookie HttpOnly `jwt`, sem token em localStorage.
- * `NEXT_PUBLIC_API_BASE_URL` — API principal (vazio = mesma origem / proxy).
- * `NEXT_PUBLIC_ANALYZE_API_BASE_URL` — serviço de IA (obrigatório para analyze/documents).
+ *
+ * Cross-origin (ex.: front em `*.onrender.com` e API em outro host):
+ * - Todas as chamadas usam `credentials: "include"` para o browser enviar/receber
+ *   cookies no fluxo CORS (o backend deve responder com `Access-Control-Allow-Credentials: true`
+ *   e `Access-Control-Allow-Origin` explícito, nunca `*`).
+ * - `NEXT_PUBLIC_API_BASE_URL` deve ser a URL **absoluta** do gateway (ex. https://api-gateway-…onrender.com).
+ *   Se ficar vazio em produção, `/api/*` vira caminho relativo ao domínio do Next e o cookie da API
+ *   nunca participa do pedido.
+ *
+ * `NEXT_PUBLIC_ANALYZE_API_BASE_URL` — serviço de IA (analyze/documents), também com credentials.
  */
 
 export type HttpBase = "api" | "analyze";
@@ -53,6 +61,8 @@ export function getAnalyzeBaseUrl(): string {
   return normalizeBase(process.env.NEXT_PUBLIC_ANALYZE_API_BASE_URL);
 }
 
+let warnedEmptyApiBase = false;
+
 function resolveUrl(path: string, base: HttpBase): string {
   if (path.startsWith("http://") || path.startsWith("https://")) {
     return path;
@@ -82,7 +92,10 @@ function notifyUnauthorized(error: HttpError) {
   });
 }
 
-export type HttpRequestOptions = Omit<RequestInit, "body"> & {
+/**
+ * `credentials` é sempre `include` no cliente; não expor para evitar `omit` acidental em auth cross-origin.
+ */
+export type HttpRequestOptions = Omit<RequestInit, "body" | "credentials"> & {
   base?: HttpBase;
   /** Não lançar HttpError em resposta não-OK (útil para auth-status). */
   skipErrorThrow?: boolean;
@@ -140,11 +153,24 @@ export async function httpFetch(
       ? "POST"
       : "GET");
 
+  if (
+    typeof window !== "undefined" &&
+    base === "api" &&
+    !getApiBaseUrl() &&
+    !warnedEmptyApiBase
+  ) {
+    warnedEmptyApiBase = true;
+    console.warn(
+      "[ho.ko] NEXT_PUBLIC_API_BASE_URL está vazio: os pedidos vão para o mesmo host do Next.js, não para o API Gateway. Em produção cross-origin, defina a URL HTTPS do gateway (Render → Environment).",
+    );
+  }
+
   let res: Response;
   try {
     res = await fetch(url, {
       ...rest,
       method,
+      mode: "cors",
       credentials: "include",
       headers: buildHeaders(headersInit, hasJsonBody),
       body:
