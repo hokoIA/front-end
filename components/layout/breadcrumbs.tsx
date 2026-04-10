@@ -16,7 +16,7 @@ const LABELS: Record<string, string> = {
   conta: "Conta",
   assinatura: "Assinatura",
   seguranca: "Segurança",
-  ajuda: "Ajuda",
+  ajuda: "Ajuda & suporte",
   legal: "Legal",
   termos: "Termos de uso",
   privacidade: "Privacidade",

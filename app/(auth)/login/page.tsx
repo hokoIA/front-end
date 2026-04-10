@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/features/auth/schemas";
-import { loginRequest } from "@/lib/api/auth";
+import { getAuthStatus, loginRequest } from "@/lib/api/auth";
 import { getBillingMeSafe } from "@/lib/api/billing";
 import { queryKeys } from "@/lib/api/query-keys";
 import { hasActiveOrTrialingSubscription } from "@/lib/types/billing";
@@ -40,6 +40,20 @@ function LoginForm() {
       await loginRequest(values);
       await queryClient.invalidateQueries({ queryKey: queryKeys.auth.all });
 
+      const auth = await queryClient.fetchQuery({
+        queryKey: queryKeys.auth.status(),
+        queryFn: getAuthStatus,
+      });
+
+      if (!auth?.authenticated) {
+        toast.error(
+          "Login não confirmado. Verifique as credenciais ou se o cookie de sessão foi definido.",
+        );
+        return;
+      }
+
+      toast.success("Sessão iniciada.");
+
       const billing = await getBillingMeSafe();
       const nextRaw = searchParams.get("next");
       const next =
@@ -47,13 +61,17 @@ function LoginForm() {
           ? nextRaw
           : null;
 
-      toast.success("Sessão iniciada.");
-
       if (hasActiveOrTrialingSubscription(billing)) {
         router.replace(next ?? "/dashboard");
-      } else {
-        router.replace("/configuracoes/assinatura");
+        return;
       }
+
+      if (billing === null) {
+        router.replace(next ?? "/dashboard");
+        return;
+      }
+
+      router.replace("/configuracoes/assinatura");
     } catch {
       toast.error(
         "Não foi possível entrar. Verifique as credenciais ou a URL da API.",

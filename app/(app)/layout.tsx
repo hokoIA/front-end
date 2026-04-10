@@ -1,5 +1,6 @@
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { AppShell } from "@/components/layout/app-shell";
+import { SelectedCustomerProvider } from "@/components/providers/selected-customer-provider";
 
 export default function AppLayout({
   children,
@@ -8,7 +9,9 @@ export default function AppLayout({
 }) {
   return (
     <AuthGuard>
-      <AppShell>{children}</AppShell>
+      <SelectedCustomerProvider>
+        <AppShell>{children}</AppShell>
+      </SelectedCustomerProvider>
     </AuthGuard>
   );
 }
