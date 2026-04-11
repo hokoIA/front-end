@@ -54,6 +54,9 @@ export const queryKeys = {
       ["dashboard", "posts", id, start, end] as const,
   },
   integrations: {
+    all: ["integrations"] as const,
+    customerSummary: (idCustomer: string) =>
+      ["integrations", "customer-summary", idCustomer] as const,
     metaPages: (idCustomer: string) =>
       ["integrations", "meta", "pages", idCustomer] as const,
     metaStatus: (idCustomer: string) =>
