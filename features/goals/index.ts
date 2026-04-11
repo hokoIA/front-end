@@ -1,1 +1,1 @@
-/** Metas / planejamento estratégico. */
+export { PlanningHubView } from "@/features/goals/views/planning-hub-view";

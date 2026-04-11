@@ -1,9 +1,14 @@
 import type { Goal, GoalInput } from "@/lib/types/goals";
-import { endpoints } from "./endpoints";
+import { endpoints, withQuery } from "./endpoints";
 import { httpJson } from "./http-client";
 
-export async function listGoals(): Promise<Goal[]> {
-  const data = await httpJson<unknown>(endpoints.goals.list(), {
+export async function listGoals(params?: {
+  id_customer?: string;
+}): Promise<Goal[]> {
+  const url = params?.id_customer
+    ? withQuery(endpoints.goals.list(), { id_customer: params.id_customer })
+    : endpoints.goals.list();
+  const data = await httpJson<unknown>(url, {
     method: "GET",
   });
   if (Array.isArray(data)) return data as Goal[];

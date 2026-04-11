@@ -20,7 +20,8 @@ export const queryKeys = {
   },
   goals: {
     all: ["goals"] as const,
-    list: () => [...queryKeys.goals.all, "list"] as const,
+    list: (scope?: string | null) =>
+      [...queryKeys.goals.all, "list", scope ?? "all"] as const,
     detail: (id: string) => [...queryKeys.goals.all, "detail", id] as const,
   },
   team: {

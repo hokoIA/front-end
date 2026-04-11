@@ -13,8 +13,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useGoalsQuery(enabled = true) {
   return useQuery({
-    queryKey: queryKeys.goals.list(),
-    queryFn: listGoals,
+    queryKey: queryKeys.goals.list("all"),
+    queryFn: () => listGoals(),
     enabled,
   });
 }
