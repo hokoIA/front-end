@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const backendTarget =
   process.env.BACKEND_PROXY_TARGET || "https://www.hokoainalytics.com.br";
 
+console.log("[next.config] BACKEND_PROXY_TARGET =", backendTarget);
+
 const nextConfig: NextConfig = {
   async rewrites() {
     return [
