@@ -3,22 +3,19 @@ import type { ReactNode } from "react";
 
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-svh">
       <aside className="relative hidden w-[42%] flex-col justify-between bg-hk-deep p-10 text-white lg:flex">
         <Logo inverted />
-        <div className="max-w-sm space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-hk-cyan/90">
-            ho.ko AI.nalytics
-          </p>
+        <div className="max-w-sm space-y-4">
           <h1 className="text-2xl font-semibold leading-snug tracking-tight">
             Inteligência operacional para agências e marketing B2B.
           </h1>
-          <p className="text-sm leading-relaxed text-white/70">
+          <p className="text-sm font-medium leading-relaxed text-white/72">
             Centralize clientes, integrações, métricas e decisões com governança
             e segurança corporativa.
           </p>
         </div>
-        <p className="text-xs text-white/45">
+        <p className="text-xs font-medium text-white/50">
           © {new Date().getFullYear()} ho.ko · Uso empresarial
         </p>
       </aside>

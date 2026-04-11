@@ -106,7 +106,7 @@ export function PlanningHubView() {
 
   if (goalsError) {
     return (
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 md:px-6">
+      <div className="hk-page flex flex-col gap-6 py-8">
         <GoalsPageHeader />
         <GoalsErrorState
           error={goalsErr instanceof Error ? goalsErr : null}
@@ -117,7 +117,7 @@ export function PlanningHubView() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8 md:px-6">
+    <div className="hk-page flex flex-col gap-8 py-8">
       <GoalsPageHeader />
 
       <section

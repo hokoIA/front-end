@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuthStatusQuery } from "@/hooks/api/use-auth-queries";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuthStatusQuery } from "@/hooks/api/use-auth-queries";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
@@ -22,9 +22,27 @@ export function AuthGuard({ children }: { children: ReactNode }) {
 
   if (isPending) {
     return (
-      <div className="flex min-h-screen flex-col gap-4 bg-hk-canvas p-8">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-64 w-full max-w-3xl" />
+      <div className="hk-app-root flex min-h-svh">
+        <div className="hidden w-[var(--hk-sidebar-width)] shrink-0 flex-col border-r border-hk-divider bg-hk-surface/80 p-4 md:flex">
+          <Skeleton className="mb-8 h-10 w-full rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-9 w-full rounded-lg" />
+            <Skeleton className="h-9 w-full rounded-lg" />
+            <Skeleton className="h-9 w-full rounded-lg" />
+            <Skeleton className="h-9 w-full rounded-lg" />
+          </div>
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Skeleton className="h-[3.25rem] w-full shrink-0 lg:h-14" />
+          <div className="hk-main flex flex-1 flex-col gap-5 p-5 lg:p-8">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-48 rounded-md" />
+              <Skeleton className="h-8 w-72 max-w-full rounded-lg" />
+            </div>
+            <Skeleton className="h-36 w-full max-w-2xl rounded-xl" />
+            <Skeleton className="min-h-[14rem] w-full flex-1 rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }

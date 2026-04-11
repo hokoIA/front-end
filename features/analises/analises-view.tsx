@@ -207,7 +207,7 @@ export function AnalisesView() {
   const kind = genError ? getErrorKind(genError) : null;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 pb-16 pt-6 md:px-6 lg:px-8">
+    <div className="hk-page hk-page--mid space-y-8 pb-16 pt-6 lg:pt-8">
       <AnalysisPageHeader />
 
       {initialBusy ? (

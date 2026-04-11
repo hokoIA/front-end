@@ -204,14 +204,14 @@ export function TeamHubView() {
   if (membersQ.isError) {
     if (forbiddenMembers) {
       return (
-        <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 md:px-6">
+        <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
           <TeamPageHeader />
           <TeamNoPermissionState />
         </div>
       );
     }
     return (
-      <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 md:px-6">
+      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
         <TeamPageHeader />
         <TeamErrorState
           error={membersErr instanceof Error ? membersErr : null}
@@ -227,7 +227,7 @@ export function TeamHubView() {
     overview.teamCount === 0;
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-8 md:px-6">
+    <div className="hk-page hk-page--narrow flex flex-col gap-8 py-8">
       <TeamPageHeader />
 
       <TeamOverviewBar

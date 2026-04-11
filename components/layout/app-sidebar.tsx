@@ -2,75 +2,60 @@
 
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils/cn";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
 import { NavLinks } from "./nav-links";
 
-const STORAGE_KEY = "hk.sidebar.collapsed";
+type AppSidebarProps = {
+  collapsed: boolean;
+  onToggle: () => void;
+  mounted: boolean;
+};
 
-export function AppSidebar() {
-  const [collapsed, setCollapsed] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem(STORAGE_KEY);
-      if (v === "1") setCollapsed(true);
-    } catch {
-      /* ignore */
-    }
-    setMounted(true);
-  }, []);
-
-  const toggle = () => {
-    setCollapsed((c) => {
-      const next = !c;
-      try {
-        localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  };
-
-  const width = collapsed ? "var(--hk-sidebar-collapsed)" : "var(--hk-sidebar-width)";
+export function AppSidebar({ collapsed, onToggle, mounted }: AppSidebarProps) {
+  const width = collapsed
+    ? "var(--hk-sidebar-collapsed)"
+    : "var(--hk-sidebar-width)";
 
   return (
     <aside
       className={cn(
-        "hidden shrink-0 border-r border-hk-border bg-hk-surface md:flex md:flex-col",
+        "fixed inset-y-0 left-0 z-40 hidden flex-col hk-sidebar-surface md:flex",
+        "border-r border-hk-divider",
+        "shadow-[inset_-1px_0_0_rgba(14,14,82,0.04)]",
         "transition-[width] duration-200 ease-out",
       )}
       style={{ width: mounted ? width : "var(--hk-sidebar-width)" }}
+      aria-label="Navegação principal"
     >
       <div
         className={cn(
-          "flex h-14 items-center border-b border-hk-border-subtle px-3",
+          "flex h-[3.25rem] shrink-0 items-center px-3 lg:h-14 lg:px-4",
           collapsed && "justify-center px-2",
         )}
       >
         <Logo collapsed={collapsed} />
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 py-4">
+      <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden px-2 py-5 [scrollbar-width:thin]">
         <NavLinks collapsed={collapsed} />
       </nav>
 
-      <Separator />
-
-      <div className={cn("p-2", collapsed && "flex justify-center")}>
+      <div
+        className={cn(
+          "shrink-0 border-t border-hk-divider p-2",
+          collapsed && "flex justify-center",
+        )}
+      >
         <Button
           type="button"
           variant="ghost"
           size={collapsed ? "icon" : "default"}
           className={cn(
-            "w-full text-hk-muted hover:text-hk-ink",
-            !collapsed && "justify-start gap-2",
+            "w-full text-hk-muted transition-colors hover:bg-hk-deep/[0.04] hover:text-hk-deep",
+            !collapsed && "justify-start gap-2 px-2",
           )}
-          onClick={toggle}
+          onClick={onToggle}
           aria-expanded={!collapsed}
           aria-label={collapsed ? "Expandir menu" : "Recolher menu"}
         >

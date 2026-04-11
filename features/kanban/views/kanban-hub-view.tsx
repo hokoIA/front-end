@@ -425,7 +425,7 @@ export function KanbanHubView() {
 
   if (boardError) {
     return (
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8 md:px-6">
+      <div className="hk-page flex flex-col gap-6 py-8">
         <KanbanPageHeader />
         <KanbanErrorState
           error={boardErr}
@@ -598,7 +598,7 @@ export function KanbanHubView() {
   );
 
   return (
-    <div className="mx-auto flex max-w-[1600px] flex-col gap-8 px-4 py-8 md:px-6">
+    <div className="hk-page flex flex-col gap-8 py-8">
       <KanbanPageHeader />
 
       <KanbanTabs

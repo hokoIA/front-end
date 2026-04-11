@@ -79,7 +79,7 @@ export function CustomersHubView() {
 
   if (isError) {
     return (
-      <div className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-8 md:px-6">
+      <div className="hk-page hk-page--mid flex flex-col gap-6 py-8">
         <CustomersPageHeader />
         <CustomersErrorState
           error={error instanceof Error ? error : null}
@@ -90,7 +90,7 @@ export function CustomersHubView() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-8 md:px-6">
+    <div className="hk-page flex flex-col gap-8 py-8">
       <CustomersPageHeader />
 
       <CustomersOverviewBar

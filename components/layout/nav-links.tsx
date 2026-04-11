@@ -14,15 +14,15 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-7">
       {MAIN_NAV_SECTIONS.map((section) => (
         <div key={section.title}>
           {!collapsed && (
-            <p className="mb-2 px-2 text-[11px] font-semibold uppercase tracking-wider text-hk-muted">
+            <p className="mb-2.5 px-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-hk-muted">
               {section.title}
             </p>
           )}
-          <ul className="flex flex-col gap-0.5">
+          <ul className="flex flex-col gap-1">
             {section.items.map((item) => {
               const active =
                 pathname === item.href ||
@@ -35,25 +35,29 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
                     title={collapsed ? item.label : undefined}
                     onClick={() => onNavigate?.()}
                     className={cn(
-                      "group flex items-center gap-3 rounded-md px-2 py-2 text-sm transition-colors",
-                      collapsed && "justify-center px-0",
-                      active
-                        ? "bg-hk-deep/10 text-hk-deep font-medium"
-                        : "text-hk-muted hover:bg-hk-canvas hover:text-hk-ink",
+                      "group relative flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-colors duration-150",
+                      collapsed ? "justify-center px-0" : "border-l-[3px] pl-2.5",
+                      collapsed && active && "bg-hk-deep/[0.07] text-hk-deep",
+                      collapsed && !active && "text-hk-muted hover:bg-hk-deep/[0.04] hover:text-hk-ink",
+                      !collapsed && active &&
+                        "border-hk-action bg-hk-deep/[0.06] text-hk-deep",
+                      !collapsed &&
+                        !active &&
+                        "border-transparent text-hk-muted hover:border-hk-border-subtle hover:bg-hk-deep/[0.035] hover:text-hk-ink",
                     )}
                   >
                     <Icon
                       className={cn(
-                        "size-[18px] shrink-0 transition-colors",
+                        "size-[18px] shrink-0 transition-colors duration-150",
                         active
                           ? "text-hk-action"
                           : "text-hk-muted group-hover:text-hk-action",
                       )}
-                      strokeWidth={1.75}
+                      strokeWidth={1.65}
                       aria-hidden
                     />
                     {!collapsed && (
-                      <span className="truncate">{item.label}</span>
+                      <span className="truncate pr-1">{item.label}</span>
                     )}
                   </Link>
                 </li>

@@ -193,16 +193,16 @@ export function DashboardView() {
 
   if (!customerReady) {
     return (
-      <div className="space-y-8">
+      <div className="hk-page space-y-8 py-6 lg:py-8">
         <DashboardPageHeader />
-        <div className="h-32 animate-pulse rounded-lg bg-hk-border-subtle" />
+        <div className="hk-skeleton h-32 rounded-xl" />
       </div>
     );
   }
 
   if (!customerId) {
     return (
-      <div className="space-y-8">
+      <div className="hk-page space-y-8 py-6 lg:py-8">
         <DashboardPageHeader />
         <DashboardNoCustomerState />
       </div>
@@ -210,7 +210,7 @@ export function DashboardView() {
   }
 
   return (
-    <div className="space-y-8 pb-16">
+    <div className="hk-page space-y-8 pb-16 pt-1 lg:pt-2">
       <DashboardGlobalLoading active={isFetching} />
       <DashboardPageHeader />
 
@@ -240,7 +240,7 @@ export function DashboardView() {
             ? Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-[72px] min-w-[140px] flex-1 animate-pulse rounded-lg bg-hk-border-subtle"
+                  className="hk-skeleton h-[72px] min-w-[140px] flex-1 rounded-xl"
                 />
               ))
             : integrationCards.map((c) => (

@@ -25,8 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useLogoutMutation } from "@/hooks/api/use-auth-queries";
 import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
+import { useLogoutMutation } from "@/hooks/api/use-auth-queries";
 import { cn } from "@/lib/utils/cn";
 import { Menu, User } from "lucide-react";
 import Link from "next/link";
@@ -45,9 +45,12 @@ export function AppTopbar({ className }: { className?: string }) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 border-b border-hk-border bg-hk-surface px-3 sm:gap-3 md:px-6",
+        "sticky top-0 z-30 flex h-[3.25rem] shrink-0 items-center gap-2 border-b border-transparent bg-hk-surface px-3 sm:gap-3 sm:px-4 lg:h-14 lg:px-6",
         className,
       )}
+      style={{
+        boxShadow: "var(--hk-shadow-topbar)",
+      }}
     >
       <Dialog open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
         <DialogTrigger asChild>
@@ -60,8 +63,8 @@ export function AppTopbar({ className }: { className?: string }) {
             <Menu className="size-5" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="left-0 top-0 flex h-full max-w-[min(100%,20rem)] translate-x-0 translate-y-0 flex-col rounded-none border-y-0 border-l-0 p-0 sm:max-w-[min(100%,20rem)]">
-          <DialogHeader className="border-b border-hk-border px-4 py-3 text-left">
+        <DialogContent className="left-0 top-0 flex h-full max-w-[min(100%,20rem)] translate-x-0 translate-y-0 flex-col rounded-none border-y-0 border-l-0 border-r-hk-divider p-0 shadow-hk-md sm:max-w-[min(100%,20rem)]">
+          <DialogHeader className="border-b border-hk-divider px-4 py-3.5 text-left">
             <DialogTitle className="sr-only">Navegação principal</DialogTitle>
             <Logo />
           </DialogHeader>
@@ -86,11 +89,11 @@ export function AppTopbar({ className }: { className?: string }) {
         <Breadcrumbs />
       </div>
 
-      <div className="min-w-0 flex-1 md:max-w-xs md:flex-none lg:max-w-sm">
+      <div className="min-w-0 flex-1 md:max-w-[14rem] md:flex-none lg:max-w-[18rem]">
         {!isReady || isLoadingCustomers ? (
-          <div className="h-9 w-full animate-pulse rounded-md bg-hk-border-subtle" />
+          <div className="hk-skeleton h-9 w-full rounded-md" />
         ) : customers.length === 0 ? (
-          <div className="flex h-9 w-full items-center rounded-md border border-dashed border-hk-border px-3 text-xs text-hk-muted">
+          <div className="flex h-9 w-full items-center rounded-md border border-dashed border-hk-border-subtle bg-hk-surface-muted/80 px-3 text-xs font-medium text-hk-muted">
             Nenhum cliente cadastrado
           </div>
         ) : (
@@ -99,7 +102,7 @@ export function AppTopbar({ className }: { className?: string }) {
             onValueChange={(id) => selectCustomer(id)}
           >
             <SelectTrigger
-              className="h-9 border-hk-border bg-hk-canvas/50 text-left text-sm"
+              className="h-9 border-hk-border-subtle bg-hk-surface text-left text-sm font-medium shadow-none transition-colors hover:border-hk-border focus:ring-hk-action/20"
               aria-label="Cliente selecionado"
             >
               <SelectValue placeholder="Selecionar cliente" />
@@ -116,7 +119,10 @@ export function AppTopbar({ className }: { className?: string }) {
       </div>
 
       <div className="hidden shrink-0 items-center lg:flex">
-        <Badge variant="secondary" className="font-normal text-xs">
+        <Badge
+          variant="secondary"
+          className="border border-hk-border-subtle bg-hk-surface-muted/90 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-hk-muted"
+        >
           Workspace
         </Badge>
       </div>
@@ -126,27 +132,31 @@ export function AppTopbar({ className }: { className?: string }) {
           <Button
             variant="ghost"
             size="icon"
-            className="shrink-0 rounded-full border border-hk-border-subtle"
+            className="shrink-0 rounded-full border border-hk-border-subtle bg-hk-surface text-hk-action shadow-none transition-colors hover:border-hk-border hover:bg-hk-surface-muted/80"
             aria-label="Menu da conta"
           >
-            <User className="size-4 text-hk-action" />
+            <User className="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col gap-0.5">
-              <span className="text-xs text-hk-muted">Sessão</span>
-              <span className="text-sm text-hk-ink">Conta corporativa</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-hk-muted">
+                Sessão
+              </span>
+              <span className="text-sm font-semibold text-hk-ink">
+                Conta corporativa
+              </span>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="bg-hk-divider" />
           <DropdownMenuItem asChild>
             <Link href="/configuracoes/conta">Perfil e conta</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/configuracoes/assinatura">Assinatura</Link>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="bg-hk-divider" />
           <DropdownMenuItem
             className="cursor-pointer text-red-600 focus:text-red-600"
             onClick={() => {

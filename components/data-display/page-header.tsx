@@ -16,16 +16,14 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border-b border-hk-border-subtle pb-6 md:flex-row md:items-start md:justify-between",
+        "flex flex-col gap-4 border-b border-hk-divider pb-5 md:flex-row md:items-start md:justify-between",
         className,
       )}
     >
-      <div className="min-w-0 space-y-1">
-        <h1 className="text-xl font-semibold tracking-tight text-hk-deep md:text-2xl">
-          {title}
-        </h1>
+      <div className="min-w-0 space-y-2">
+        <h1 className="hk-page-title">{title}</h1>
         {description && (
-          <p className="max-w-2xl text-sm text-hk-muted">{description}</p>
+          <p className="hk-page-subtitle max-w-2xl">{description}</p>
         )}
       </div>
       {actions && (

@@ -4,8 +4,8 @@ import { SettingsNavigation } from "./settings-navigation";
 
 export function SettingsShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto max-w-6xl">
-      <p className="mb-6 text-xs font-semibold uppercase tracking-wider text-hk-muted">
+    <div className="hk-page">
+      <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.14em] text-hk-muted">
         Área administrativa · Configurações
       </p>
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">

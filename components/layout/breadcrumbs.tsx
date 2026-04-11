@@ -40,22 +40,27 @@ export function Breadcrumbs({ className }: { className?: string }) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("text-xs text-hk-muted", className)}
+      className={cn(
+        "text-[11px] font-semibold uppercase tracking-[0.08em] text-hk-muted",
+        className,
+      )}
     >
-      <ol className="flex flex-wrap items-center gap-1">
+      <ol className="flex flex-wrap items-center gap-1.5">
         {crumbs.map((c, i) => (
-          <li key={c.href} className="flex items-center gap-1">
+          <li key={c.href} className="flex items-center gap-1.5">
             {i > 0 && (
-              <span className="text-hk-border" aria-hidden>
+              <span className="font-normal text-hk-divider" aria-hidden>
                 /
               </span>
             )}
             {c.isLast ? (
-              <span className="font-medium text-hk-ink">{c.label}</span>
+              <span className="font-bold tracking-normal text-hk-deep">
+                {c.label}
+              </span>
             ) : (
               <Link
                 href={c.href}
-                className="transition-colors hover:text-hk-action"
+                className="font-medium tracking-normal text-hk-muted transition-colors hover:text-hk-action"
               >
                 {c.label}
               </Link>
