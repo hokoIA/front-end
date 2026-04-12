@@ -6,7 +6,7 @@ export function DashboardGlobalLoading({ active }: { active: boolean }) {
   return (
     <div
       className={cn(
-        "pointer-events-none fixed left-0 right-0 top-0 z-[100] h-0.5 overflow-hidden bg-hk-border-subtle transition-opacity duration-300",
+        "hk-print-hide pointer-events-none fixed left-0 right-0 top-0 z-[100] h-0.5 overflow-hidden bg-hk-border-subtle transition-opacity duration-300",
         active ? "opacity-100" : "opacity-0",
       )}
       aria-hidden={!active}

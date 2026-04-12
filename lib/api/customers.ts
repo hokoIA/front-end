@@ -1,6 +1,6 @@
 import type { Customer } from "@/lib/types/customer";
 import { endpoints, withQuery } from "./endpoints";
-import { httpJson } from "./http-client";
+import { HttpError, httpJson } from "./http-client";
 
 function normalizeCustomer(raw: Record<string, unknown>): Customer {
   const id = String(raw.id_customer ?? raw.id ?? "");
@@ -38,10 +38,18 @@ function parseCustomerList(data: unknown): Customer[] {
 }
 
 export async function listCustomers(): Promise<Customer[]> {
-  const data = await httpJson<unknown>(endpoints.customer.list(), {
-    method: "GET",
-  });
-  return parseCustomerList(data);
+  try {
+    const data = await httpJson<unknown>(endpoints.customer.list(), {
+      method: "GET",
+    });
+    return parseCustomerList(data);
+  } catch (e) {
+    if (e instanceof HttpError && e.status === 404) {
+      const data = await httpJson<unknown>("/customer", { method: "GET" });
+      return parseCustomerList(data);
+    }
+    throw e;
+  }
 }
 
 export async function getCustomer(idCustomer: string): Promise<Customer> {

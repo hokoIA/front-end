@@ -45,7 +45,7 @@ export function DashboardPeriodToolbar({
   }, [cacheMutation, customerId]);
 
   return (
-    <section className="rounded-xl border border-hk-border bg-hk-surface shadow-hk-sm">
+    <section className="hk-print-hide rounded-xl border border-hk-border bg-hk-surface shadow-hk-sm">
       <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-5">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-hk-muted">

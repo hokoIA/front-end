@@ -200,3 +200,27 @@ body {
   outline: 2px solid var(--hk-primary-action);
   outline-offset: 2px;
 }
+
+/* Impressão: visão limpa do dashboard (sem chrome / portais) */
+@media print {
+  .hk-print-hide {
+    display: none !important;
+  }
+
+  [data-radix-portal] {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .hk-app-root {
+    background: #fff !important;
+    background-image: none !important;
+  }
+
+  .hk-main {
+    background: #fff !important;
+  }
+}

@@ -20,7 +20,7 @@ export function AppSidebar({ collapsed, onToggle, mounted }: AppSidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-40 hidden flex-col hk-sidebar-surface md:flex",
+        "hk-print-hide fixed inset-y-0 left-0 z-40 hidden flex-col hk-sidebar-surface md:flex",
         "border-r border-hk-divider",
         "shadow-[inset_-1px_0_0_rgba(14,14,82,0.04)]",
         "transition-[width] duration-200 ease-out",

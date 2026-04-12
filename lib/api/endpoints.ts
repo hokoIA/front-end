@@ -21,7 +21,8 @@ export const endpoints = {
     portal: () => "/api/billing/portal" as const,
   },
   customer: {
-    list: () => "/customer" as const,
+    /** Lista de clientes com `integrations` — contrato usado pelo dashboard. */
+    list: () => "/customer/list" as const,
     get: (idCustomer: string) => `/customer/get/${idCustomer}` as const,
     add: () => "/customer/add" as const,
     edit: (idCustomer: string) => `/customer/edit/${idCustomer}` as const,

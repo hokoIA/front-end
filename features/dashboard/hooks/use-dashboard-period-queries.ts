@@ -3,8 +3,12 @@
 import type { DashboardPeriodRange, DashboardPeriodSnapshot } from "@/features/dashboard/types";
 import { buildPeriodPayload } from "@/features/dashboard/utils/payloads";
 import {
-  normalizeMetricBlock,
-  normalizePostsList,
+  normalizeFollowersResponse,
+  normalizeImpressionsResponse,
+  normalizePostsResponse,
+  normalizeReachResponse,
+  normalizeSearchVolumeResponse,
+  normalizeTrafficResponse,
 } from "@/features/dashboard/utils/normalize";
 import {
   postContentsPosts,
@@ -79,16 +83,46 @@ export function useDashboardPeriodQueries(
   const isFetching = queries.some((q) => q.isFetching);
   const isError = queries.some((q) => q.isError);
   const errors = queries.map((q) => q.error).filter(Boolean);
+  const allQueriesFailed =
+    enabled && queries.length > 0 && queries.every((q) => q.isError);
+  const someQueriesFailed =
+    enabled && queries.some((q) => q.isError) && !allQueriesFailed;
 
   const snapshot: DashboardPeriodSnapshot | null = useMemo(() => {
     if (!enabled || !payload) return null;
+
+    const queryErrors = {
+      reach: qReach.isError,
+      impressions: qImp.isError,
+      followers: qFol.isError,
+      traffic: qTra.isError,
+      search: qSea.isError,
+      posts: qPosts.isError,
+    };
+
+    const postsNorm = normalizePostsResponse(
+      qPosts.isError ? undefined : qPosts.data,
+    );
+
     return {
-      reach: normalizeMetricBlock(qReach.data),
-      impressions: normalizeMetricBlock(qImp.data),
-      followers: normalizeMetricBlock(qFol.data),
-      traffic: normalizeMetricBlock(qTra.data),
-      search: normalizeMetricBlock(qSea.data),
-      posts: normalizePostsList(qPosts.data),
+      reach: qReach.isError
+        ? { total: 0, series: [], byPlatform: {}, raw: undefined }
+        : normalizeReachResponse(qReach.data),
+      impressions: qImp.isError
+        ? { total: 0, series: [], byPlatform: {}, raw: undefined }
+        : normalizeImpressionsResponse(qImp.data),
+      followers: qFol.isError
+        ? { total: 0, series: [], byPlatform: {}, raw: undefined }
+        : normalizeFollowersResponse(qFol.data),
+      traffic: qTra.isError
+        ? { total: 0, series: [], byPlatform: {}, raw: undefined }
+        : normalizeTrafficResponse(qTra.data),
+      search: qSea.isError
+        ? { total: 0, series: [], byPlatform: {}, raw: undefined }
+        : normalizeSearchVolumeResponse(qSea.data),
+      posts: postsNorm.rows,
+      postsMeta: postsNorm.meta,
+      queryErrors,
       raw: {
         reach: qReach.data,
         impressions: qImp.data,
@@ -101,11 +135,17 @@ export function useDashboardPeriodQueries(
   }, [
     enabled,
     payload,
+    qReach.isError,
     qReach.data,
+    qImp.isError,
     qImp.data,
+    qFol.isError,
     qFol.data,
+    qTra.isError,
     qTra.data,
+    qSea.isError,
     qSea.data,
+    qPosts.isError,
     qPosts.data,
   ]);
 
@@ -118,6 +158,8 @@ export function useDashboardPeriodQueries(
     isPending,
     isFetching,
     isError,
+    allQueriesFailed,
+    someQueriesFailed,
     errors,
     snapshot,
     refetchAll,

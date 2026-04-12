@@ -4,7 +4,8 @@ import {
   buildBlockInsightPayload,
   buildPeriodInsightPayload,
 } from "@/features/dashboard/api/insight-adapter";
-import { ChartCard } from "@/features/dashboard/components/chart-card";
+import { ComparisonMetricSection } from "@/features/dashboard/components/comparison-metric-section";
+import { ContentsSummaryStrip } from "@/features/dashboard/components/contents-summary-strip";
 import { DashboardGlobalLoading } from "@/features/dashboard/components/dashboard-global-loading";
 import { DashboardPageHeader } from "@/features/dashboard/components/dashboard-page-header";
 import { DashboardPeriodToolbar } from "@/features/dashboard/components/dashboard-period-toolbar";
@@ -17,10 +18,16 @@ import {
 import { InsightPanel } from "@/features/dashboard/components/insight-panel";
 import { InsightTriggerButton } from "@/features/dashboard/components/insight-trigger-button";
 import { IntegrationStatusCard } from "@/features/dashboard/components/integration-status-card";
+import { FollowersSnapshotSection } from "@/features/dashboard/components/followers-snapshot-section";
 import { MetricOverviewCard } from "@/features/dashboard/components/metric-overview-card";
-import { MetricSection } from "@/features/dashboard/components/metric-section";
 import { PostsPerformanceTable } from "@/features/dashboard/components/posts-performance-table";
+import { SearchOrganicSection } from "@/features/dashboard/components/search-organic-section";
+import { TrafficSplitSection } from "@/features/dashboard/components/traffic-split-section";
 import { TopPostsPanel } from "@/features/dashboard/components/top-posts-panel";
+import {
+  impressionsComparisonLines,
+  reachComparisonLines,
+} from "@/features/dashboard/config/line-chart-presets";
 import { useDashboardPeriodQueries } from "@/features/dashboard/hooks/use-dashboard-period-queries";
 import { useIntegrationDashboardCards } from "@/features/dashboard/hooks/use-integration-status";
 import type {
@@ -30,9 +37,12 @@ import type {
 import { extractInsightText } from "@/features/dashboard/utils/insight-text";
 import {
   blockHasNumericData,
+  computePlatformPeriodCoverage,
   pickTopPosts,
 } from "@/features/dashboard/utils/normalize";
 import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
+import { isUnauthorized } from "@/lib/api/errors";
+import { useDashboardPrint } from "@/hooks/use-dashboard-print";
 import { useAnalyzeMutation } from "@/hooks/api/use-analyze-mutations";
 import type { AnalyzeRequestBody } from "@/lib/types/analyze";
 import { useMemo, useState, useEffect, useCallback } from "react";
@@ -48,13 +58,18 @@ function defaultRange(): DashboardPeriodRange {
 
 function snapshotHasData(s: ReturnType<typeof useDashboardPeriodQueries>["snapshot"]) {
   if (!s) return false;
+  const summary = s.postsMeta.summary;
+  const contentsSignal =
+    (summary?.amountContents ?? 0) > 0 ||
+    (summary?.totalEngagement ?? 0) > 0 ||
+    s.posts.length > 0;
   return (
     blockHasNumericData(s.reach) ||
     blockHasNumericData(s.impressions) ||
     blockHasNumericData(s.followers) ||
     blockHasNumericData(s.traffic) ||
     blockHasNumericData(s.search) ||
-    s.posts.length > 0
+    contentsSignal
   );
 }
 
@@ -75,7 +90,8 @@ export function DashboardView() {
     queries,
     isPending,
     isFetching,
-    isError,
+    allQueriesFailed,
+    someQueriesFailed,
     errors,
     snapshot,
     refetchAll,
@@ -84,12 +100,29 @@ export function DashboardView() {
   } = useDashboardPeriodQueries(customerId, appliedRange);
 
   const hasData = snapshotHasData(snapshot);
+
+  const platformCoverage = useMemo(() => {
+    if (!appliedRange || !snapshot || isPending) return null;
+    return computePlatformPeriodCoverage(snapshot);
+  }, [appliedRange, snapshot, isPending]);
+
   const { cards: integrationCards, isLoading: intLoading } =
-    useIntegrationDashboardCards(customerId, appliedRange !== null, hasData);
+    useIntegrationDashboardCards(
+      customerId,
+      selected,
+      platformCoverage,
+      appliedRange !== null,
+    );
 
   const connectedCount = integrationCards.filter(
     (c) => c.operational === "connected",
   ).length;
+
+  const printPeriod = useDashboardPrint({
+    documentTitle: "Dashboard ho.ko",
+    customerName: selected?.name ?? null,
+    period: appliedRange,
+  });
 
   const analyzeMutation = useAnalyzeMutation();
   const [insightLoadingKey, setInsightLoadingKey] = useState<string | null>(
@@ -127,7 +160,8 @@ export function DashboardView() {
         followers: snapshot.followers,
         traffic: snapshot.traffic,
         search: snapshot.search,
-        postsCount: snapshot.posts.length,
+        postsCount:
+          snapshot.postsMeta.summary?.amountContents ?? snapshot.posts.length,
       }),
     );
   }, [customerId, appliedRange, snapshot, runInsight]);
@@ -148,7 +182,9 @@ export function DashboardView() {
   );
 
   const firstError = errors[0];
+  const authError = errors.find(isUnauthorized) ?? null;
 
+  /** Com range null as queries estão disabled; no TanStack v5 isPending fica true sem fetch — não usar isPending no toolbar sem este guard. */
   const overviewLoading = appliedRange !== null && isPending;
 
   const qImp = queries[1];
@@ -156,45 +192,17 @@ export function DashboardView() {
   const qTra = queries[3];
   const qSea = queries[4];
 
-  const trafficBlock = snapshot?.traffic ?? {
-    total: 0,
-    series: [],
-    byPlatform: {},
-  };
-  const searchBlock = snapshot?.search ?? {
-    total: 0,
-    series: [],
-    byPlatform: {},
-  };
-
-  const followersExtra = useMemo(() => {
-    if (!snapshot) return null;
-    const s = snapshot.followers.series;
-    if (s.length === 0 && !blockHasNumericData(snapshot.followers)) return null;
-    return (
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {s.map((row) => (
-          <div
-            key={row.name}
-            className="rounded-lg border border-hk-border-subtle bg-hk-canvas/40 px-3 py-2.5"
-          >
-            <p className="text-[11px] font-semibold uppercase text-hk-muted">
-              {row.name}
-            </p>
-            <p className="mt-1 text-lg font-semibold tabular-nums text-hk-deep">
-              {new Intl.NumberFormat("pt-BR").format(row.value)}
-            </p>
-            <p className="text-[11px] text-hk-muted">Valor no período / snapshot</p>
-          </div>
-        ))}
-      </div>
-    );
-  }, [snapshot]);
+  const impressionLineDefs = useMemo(() => {
+    const rows = snapshot?.impressions.comparison?.rows ?? [];
+    const hasGoogle = rows.some((r) => Number(r.google) > 0);
+    const hasLinkedin = rows.some((r) => Number(r.linkedin) > 0);
+    return impressionsComparisonLines(hasGoogle, hasLinkedin);
+  }, [snapshot?.impressions.comparison?.rows]);
 
   if (!customerReady) {
     return (
       <div className="hk-page space-y-8 py-6 lg:py-8">
-        <DashboardPageHeader />
+        <DashboardPageHeader printEnabled={false} />
         <div className="hk-skeleton h-32 rounded-xl" />
       </div>
     );
@@ -203,7 +211,7 @@ export function DashboardView() {
   if (!customerId) {
     return (
       <div className="hk-page space-y-8 py-6 lg:py-8">
-        <DashboardPageHeader />
+        <DashboardPageHeader printEnabled={false} />
         <DashboardNoCustomerState />
       </div>
     );
@@ -212,7 +220,25 @@ export function DashboardView() {
   return (
     <div className="hk-page space-y-8 pb-16 pt-1 lg:pt-2">
       <DashboardGlobalLoading active={isFetching} />
-      <DashboardPageHeader />
+      <DashboardPageHeader
+        printEnabled={!!appliedRange}
+        onPrintPeriod={printPeriod}
+      />
+
+      {appliedRange && selected ? (
+        <div className="hidden border-b border-hk-border pb-3 print:block">
+          <p className="text-base font-semibold text-hk-deep">
+            Resumo para impressão
+          </p>
+          <p className="mt-1 text-sm text-hk-muted">
+            <span className="font-medium text-hk-ink">{selected.name}</span>
+            {" · "}
+            <span className="tabular-nums">
+              {appliedRange.start} — {appliedRange.end}
+            </span>
+          </p>
+        </div>
+      ) : null}
 
       <DashboardPeriodToolbar
         customerId={customerId}
@@ -227,7 +253,7 @@ export function DashboardView() {
           }
           setAppliedRange({ ...draft });
         }}
-        isLoading={isPending}
+        isLoading={overviewLoading}
         disabled={!customerId}
       />
 
@@ -253,15 +279,46 @@ export function DashboardView() {
         <DashboardNoIntegrationsState />
       )}
 
-      {appliedRange && isError && firstError && (
+      {appliedRange && authError && (
+        <DashboardErrorState error={authError} onRetry={() => refetchAll()} />
+      )}
+
+      {appliedRange && !authError && allQueriesFailed && firstError && (
         <DashboardErrorState error={firstError} onRetry={() => refetchAll()} />
       )}
 
-      {appliedRange && !isPending && !isError && snapshot && !hasData && (
-        <DashboardNoDataState />
+      {appliedRange && someQueriesFailed && !authError && !allQueriesFailed && (
+        <div className="rounded-xl border border-amber-200/80 bg-amber-50/60 px-4 py-3 text-sm text-amber-950">
+          <span className="font-medium">Carregamento parcial.</span>{" "}
+          Alguns indicadores falharam; cada bloco abaixo mostra o erro
+          específico. 403 não significa integração desconectada — verifique
+          permissão com o administrador.
+        </div>
       )}
 
-      {appliedRange && snapshot && (
+      {appliedRange &&
+        !isPending &&
+        !authError &&
+        !allQueriesFailed &&
+        snapshot &&
+        !hasData &&
+        !someQueriesFailed && <DashboardNoDataState />}
+
+      {appliedRange &&
+        !isPending &&
+        !authError &&
+        !allQueriesFailed &&
+        snapshot &&
+        !hasData &&
+        someQueriesFailed && (
+          <div className="rounded-xl border border-hk-border bg-hk-surface px-4 py-3 text-sm text-hk-muted shadow-hk-sm">
+            Não foi possível carregar todos os blocos; com os erros pendentes,
+            não é possível afirmar com segurança que o período está vazio.
+            Corrija os blocos com falha ou tente novamente.
+          </div>
+        )}
+
+      {appliedRange && snapshot && !authError && !allQueriesFailed && (
         <>
           <section className="space-y-3">
             <h2 className="text-sm font-semibold text-hk-deep">
@@ -296,7 +353,10 @@ export function DashboardView() {
               />
               <MetricOverviewCard
                 label="Conteúdos publicados"
-                value={snapshot.posts.length}
+                value={
+                  snapshot.postsMeta.summary?.amountContents ??
+                  snapshot.posts.length
+                }
                 loading={overviewLoading}
               />
             </div>
@@ -312,13 +372,15 @@ export function DashboardView() {
                 de IA existente).
               </p>
             </div>
-            <InsightTriggerButton
-              label="Analisar período com IA"
-              variant="default"
-              loading={insightLoadingKey === "period"}
-              disabled={overviewLoading}
-              onClick={onPeriodAnalyze}
-            />
+            <div className="hk-print-hide">
+              <InsightTriggerButton
+                label="Analisar período com IA"
+                variant="default"
+                loading={insightLoadingKey === "period"}
+                disabled={overviewLoading}
+                onClick={onPeriodAnalyze}
+              />
+            </div>
           </div>
           <InsightPanel
             title="Insight geral"
@@ -326,11 +388,14 @@ export function DashboardView() {
             loading={insightLoadingKey === "period"}
           />
 
-          <MetricSection
+          <ComparisonMetricSection
             id="reach"
             title="Alcance"
-            description="Distribuição do alcance por origem. Compare canais onde a métrica é homogênea."
-            block={snapshot.reach}
+            description="Comparação temporal entre redes: cada linha é uma plataforma no mesmo eixo de datas."
+            comparison={snapshot.reach.comparison}
+            lines={reachComparisonLines()}
+            byPlatform={snapshot.reach.byPlatform}
+            total={snapshot.reach.total}
             queryLoading={queryReach.isPending}
             queryError={queryReach.error}
             onRetry={() => queryReach.refetch()}
@@ -341,11 +406,14 @@ export function DashboardView() {
             }
           />
 
-          <MetricSection
+          <ComparisonMetricSection
             id="impressions"
             title="Impressões e visualizações"
-            description="Exposição agregada. Útil para entender volume de contato com a audiência."
-            block={snapshot.impressions}
+            description="Volume de exposição ao longo do tempo, por plataforma disponível na resposta."
+            comparison={snapshot.impressions.comparison}
+            lines={impressionLineDefs}
+            byPlatform={snapshot.impressions.byPlatform}
+            total={snapshot.impressions.total}
             queryLoading={qImp.isPending}
             queryError={qImp.error}
             onRetry={() => qImp.refetch()}
@@ -360,10 +428,10 @@ export function DashboardView() {
             }
           />
 
-          <MetricSection
+          <FollowersSnapshotSection
             id="followers"
             title="Seguidores e audiência"
-            description="Base e variação por canal, conforme retorno da API de followers."
+            description="Snapshot por plataforma no período — leitura principal nos cartões abaixo."
             block={snapshot.followers}
             queryLoading={qFol.isPending}
             queryError={qFol.error}
@@ -377,78 +445,58 @@ export function DashboardView() {
                 snapshot.followers,
               )
             }
-            footer={followersExtra}
+          />
+
+          <TrafficSplitSection
+            id="traffic"
+            title="Tráfego do site"
+            description="Sessões ao longo do tempo e distribuição por canal de aquisição."
+            block={snapshot.traffic}
+            queryLoading={qTra.isPending}
+            queryError={qTra.error}
+            onRetry={() => qTra.refetch()}
+            insightText={blockInsights.traffic ?? null}
+            insightLoading={insightLoadingKey === "traffic"}
+            onInsight={() =>
+              makeBlockHandler("traffic", "Tráfego do site", snapshot.traffic)
+            }
+          />
+
+          <SearchOrganicSection
+            id="search"
+            title="Busca e orgânico"
+            description="Sessões orgânicas na série principal; totais e leads complementam a leitura."
+            block={snapshot.search}
+            queryLoading={qSea.isPending}
+            queryError={qSea.error}
+            onRetry={() => qSea.refetch()}
+            insightText={blockInsights.search ?? null}
+            insightLoading={insightLoadingKey === "search"}
+            onInsight={() =>
+              makeBlockHandler(
+                "search",
+                "Volume de busca / orgânico",
+                snapshot.search,
+              )
+            }
           />
 
           <section
-            id="traffic"
+            id="contents"
             className="space-y-4 rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm md:p-5"
           >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h2 className="text-base font-semibold text-hk-deep">
-                  Tráfego do site
-                </h2>
-                <p className="text-sm text-hk-muted">
-                  Sessões e origens conforme Google Analytics conectado.
-                </p>
-              </div>
-              <InsightTriggerButton
-                label="Insight de tráfego"
-                loading={insightLoadingKey === "traffic"}
-                disabled={qTra.isPending}
-                onClick={() =>
-                  makeBlockHandler("traffic", "Tráfego do site", snapshot.traffic)
-                }
-              />
+            <div>
+              <h2 className="text-base font-semibold text-hk-deep">
+                Conteúdos do período
+              </h2>
+              <p className="mt-1 text-sm text-hk-muted">
+                Totais reportados pela API e lista unificada de publicações em
+                Facebook e Instagram.
+              </p>
             </div>
-            <ChartCard
-              title="Distribuição reportada"
-              data={trafficBlock.series}
-              loading={qTra.isPending}
-            />
-            <InsightPanel
-              title="Leitura — tráfego"
-              text={blockInsights.traffic ?? null}
-              loading={insightLoadingKey === "traffic"}
-            />
-          </section>
-
-          <section
-            id="search"
-            className="space-y-4 rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm md:p-5"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h2 className="text-base font-semibold text-hk-deep">
-                  Busca e orgânico
-                </h2>
-                <p className="text-sm text-hk-muted">
-                  Volume de busca e sinais orgânicos consolidados no período.
-                </p>
-              </div>
-              <InsightTriggerButton
-                label="Insight de busca"
-                loading={insightLoadingKey === "search"}
-                disabled={qSea.isPending}
-                onClick={() =>
-                  makeBlockHandler(
-                    "search",
-                    "Volume de busca / orgânico",
-                    snapshot.search,
-                  )
-                }
-              />
-            </div>
-            <ChartCard
-              title="Volume por fonte"
-              data={searchBlock.series}
-              loading={qSea.isPending}
-            />
-            <InsightPanel
-              title="Leitura — busca"
-              text={blockInsights.search ?? null}
-              loading={insightLoadingKey === "search"}
+            <ContentsSummaryStrip
+              summary={snapshot.postsMeta.summary}
+              loading={queryPosts.isPending}
             />
           </section>
 

@@ -45,7 +45,7 @@ export function AppTopbar({ className }: { className?: string }) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 flex h-[3.25rem] shrink-0 items-center gap-2 border-b border-transparent bg-hk-surface px-3 sm:gap-3 sm:px-4 lg:h-14 lg:px-6",
+        "hk-print-hide sticky top-0 z-30 flex h-[3.25rem] shrink-0 items-center gap-2 border-b border-transparent bg-hk-surface px-3 sm:gap-3 sm:px-4 lg:h-14 lg:px-6",
         className,
       )}
       style={{

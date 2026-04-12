@@ -4,11 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 
 type DashboardPageHeaderProps = {
-  onExportPlaceholder?: () => void;
+  /** Período já aplicado — habilita impressão da visão atual. */
+  printEnabled?: boolean;
+  onPrintPeriod?: () => void;
 };
 
 export function DashboardPageHeader({
-  onExportPlaceholder,
+  printEnabled = false,
+  onPrintPeriod,
 }: DashboardPageHeaderProps) {
   return (
     <header className="flex flex-col gap-4 border-b border-hk-border-subtle pb-6 sm:flex-row sm:items-end sm:justify-between">
@@ -26,10 +29,14 @@ export function DashboardPageHeader({
         type="button"
         variant="secondary"
         size="sm"
-        className="shrink-0 gap-2"
-        disabled
-        title="Exportação será habilitada quando o endpoint estiver disponível."
-        onClick={onExportPlaceholder}
+        className="shrink-0 gap-2 print:hidden"
+        disabled={!printEnabled}
+        title={
+          printEnabled
+            ? "Imprimir ou salvar como PDF a visão atual do período (navegador)."
+            : "Aplique um período no dashboard para exportar a visão atual."
+        }
+        onClick={onPrintPeriod}
       >
         <Download className="size-4 opacity-60" />
         Exportar período

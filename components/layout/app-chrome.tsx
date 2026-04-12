@@ -49,10 +49,10 @@ export function AppChrome({ children }: { children: ReactNode }) {
         onToggle={toggleSidebar}
         mounted={mounted}
       />
-      <div className="flex min-h-svh flex-col transition-[padding] duration-200 ease-out md:pl-[var(--hk-sidebar-current)]">
+      <div className="flex min-h-svh flex-col transition-[padding] duration-200 ease-out md:pl-[var(--hk-sidebar-current)] print:!pl-0">
         <AppTopbar />
         <main className="hk-main min-w-0 flex-1">{children}</main>
-        <footer className="border-t border-hk-divider hk-footer-surface px-4 py-3 sm:px-5 lg:px-8">
+        <footer className="hk-print-hide border-t border-hk-divider hk-footer-surface px-4 py-3 sm:px-5 lg:px-8">
           <nav
             aria-label="Institucional"
             className="mx-auto flex max-w-[var(--hk-content-max)] flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-medium tracking-wide text-hk-muted"

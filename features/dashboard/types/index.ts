@@ -4,10 +4,41 @@ export type DashboardPeriodRange = {
   end: string;
 };
 
-/** Séries para gráficos (comparação por plataforma / tempo) */
+/** Séries para gráficos (legado / insights) */
 export type MetricSeriesPoint = {
   name: string;
   value: number;
+};
+
+/** Linhas comparativas (alcance / impressões) — uma linha por plataforma. */
+export type ComparisonChartData = {
+  labels: string[];
+  rows: Record<string, string | number>[];
+};
+
+/** Snapshot por plataforma (seguidores — sem série temporal real). */
+export type AudienceSnapshotRow = {
+  platformKey: string;
+  label: string;
+  value: number;
+};
+
+/** Tráfego: sessões + fontes. */
+export type TrafficVisualization = {
+  labels: string[];
+  sessionValues: number[];
+  sources: { key: string; labelPt: string; value: number }[];
+};
+
+/** Busca / orgânico: série + cartões + leads. */
+export type SearchVisualization = {
+  labels: string[];
+  organicValues: number[];
+  totalOrganicSearch: number;
+  totalOtherSources: number;
+  totalNewLeads: number;
+  days: number;
+  newLeadsPerDay: number[];
 };
 
 export type MetricBlockModel = {
@@ -15,6 +46,12 @@ export type MetricBlockModel = {
   series: MetricSeriesPoint[];
   byPlatform: Record<string, number>;
   raw?: unknown;
+  /** Alcance / impressões — linhas multi-série. */
+  comparison?: ComparisonChartData;
+  /** Seguidores — leitura principal por plataforma. */
+  audienceSnapshot?: AudienceSnapshotRow[];
+  trafficViz?: TrafficVisualization;
+  searchViz?: SearchVisualization;
 };
 
 export type ContentPostRow = {
@@ -27,7 +64,17 @@ export type ContentPostRow = {
   comments: number;
   shares: number;
   reach: number;
+  permalink?: string | null;
+  coverImage?: string | null;
+  engagement?: number;
   raw?: Record<string, unknown>;
+};
+
+export type ContentSummaryTotals = {
+  amountContents: number;
+  totalEngagement: number;
+  totalLikes: number;
+  totalComments: number;
 };
 
 export type IntegrationSurface =
@@ -52,6 +99,22 @@ export type IntegrationCardModel = {
   periodCoverage: IntegrationPeriodCoverage;
 };
 
+export type DashboardPostsMeta = {
+  presentation: "rows" | "empty";
+  note: string | null;
+  summary: ContentSummaryTotals | null;
+};
+
+/** `true` = a query desse indicador falhou (HttpError, etc.). */
+export type DashboardMetricQueryFlags = {
+  reach: boolean;
+  impressions: boolean;
+  followers: boolean;
+  traffic: boolean;
+  search: boolean;
+  posts: boolean;
+};
+
 export type DashboardPeriodSnapshot = {
   reach: MetricBlockModel;
   impressions: MetricBlockModel;
@@ -59,6 +122,8 @@ export type DashboardPeriodSnapshot = {
   traffic: MetricBlockModel;
   search: MetricBlockModel;
   posts: ContentPostRow[];
+  postsMeta: DashboardPostsMeta;
+  queryErrors: DashboardMetricQueryFlags;
   raw: {
     reach: unknown;
     impressions: unknown;

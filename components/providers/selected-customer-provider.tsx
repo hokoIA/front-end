@@ -32,6 +32,7 @@ function SelectedCustomerInner({ children }: { children: React.ReactNode }) {
   const { data: auth } = useAuthStatusQuery();
   const authed = auth?.authenticated === true;
 
+  /* Clientes: lista deve trazer `integrations` por item quando o gateway expõe GET /customer/list. */
   const {
     data: customers = [],
     isSuccess,

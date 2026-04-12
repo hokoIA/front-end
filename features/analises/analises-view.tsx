@@ -71,7 +71,7 @@ export function AnalisesView() {
 
   const customerId = selected?.id_customer ?? null;
   const { cards: integrationCards, isLoading: integrationsLoading } =
-    useIntegrationDashboardCards(customerId, false, false);
+    useIntegrationDashboardCards(customerId, selected, null, false);
 
   const anyIntegrationConnected = useMemo(
     () => integrationCards.some((c) => c.operational === "connected"),

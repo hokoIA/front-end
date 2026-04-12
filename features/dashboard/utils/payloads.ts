@@ -1,20 +1,17 @@
 import type { DashboardPeriodRange } from "@/features/dashboard/types";
+import type { MetricsPayload } from "@/lib/types/dashboard";
 
 /**
- * Corpo enviado aos POST de métricas / conteúdos.
- * Campos alinhados ao padrão mais comum em APIs Express do produto;
- * ajuste se o contrato real usar outros nomes.
+ * Corpo enviado aos POST de métricas e conteúdos do dashboard.
+ * Contrato do backend: id_customer, startDate, endDate (sem date_start / end_date como principal).
  */
 export function buildPeriodPayload(
   idCustomer: string,
   range: DashboardPeriodRange,
-): Record<string, unknown> {
+): MetricsPayload {
   return {
     id_customer: idCustomer,
-    idCustomer,
-    date_start: range.start,
-    date_end: range.end,
-    start_date: range.start,
-    end_date: range.end,
+    startDate: range.start,
+    endDate: range.end,
   };
 }

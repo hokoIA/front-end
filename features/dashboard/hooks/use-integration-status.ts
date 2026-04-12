@@ -7,24 +7,29 @@ import type {
   IntegrationSurface,
 } from "@/features/dashboard/types";
 import {
-  parseGenericOperational,
-  parseLinkedinOperational,
-  parseMetaOperational,
+  resolveGoogleAnalyticsState,
+  resolveLinkedinStateFromCustomer,
+  resolveMetaSurfaceState,
+  resolveYoutubeState,
 } from "@/features/integrations/utils/parse-integration-apis";
 import {
   getGoogleAnalyticsStatus,
-  getLinkedinOrganizations,
   getMetaStatus,
   getYoutubeStatus,
 } from "@/lib/api/customers";
+import type { Customer } from "@/lib/types/customer";
 import { queryKeys } from "@/lib/api/query-keys";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 export function useIntegrationDashboardCards(
   customerId: string | null,
+  selectedCustomer: Customer | null,
+  platformCoverageBySurface: Record<
+    IntegrationSurface,
+    IntegrationPeriodCoverage
+  > | null,
   periodLoaded: boolean,
-  hasAnyMetricData: boolean,
 ): {
   cards: IntegrationCardModel[];
   isLoading: boolean;
@@ -52,23 +57,17 @@ export function useIntegrationDashboardCards(
     staleTime: 60_000,
   });
 
-  const li = useQuery({
-    queryKey: queryKeys.integrations.linkedinOrgs(customerId ?? ""),
-    queryFn: () => getLinkedinOrganizations(customerId!),
-    enabled,
-    staleTime: 60_000,
-  });
-
   const isLoading =
-    enabled &&
-    (meta.isPending || ga.isPending || yt.isPending || li.isPending);
+    enabled && (meta.isPending || ga.isPending || yt.isPending);
 
   const cards = useMemo((): IntegrationCardModel[] => {
-    const periodCoverage: IntegrationPeriodCoverage = !periodLoaded
-      ? "unknown"
-      : hasAnyMetricData
-        ? "has_data"
-        : "no_data";
+    const periodCoverage = (
+      surface: IntegrationSurface,
+    ): IntegrationPeriodCoverage => {
+      if (!periodLoaded) return "unknown";
+      if (!platformCoverageBySurface) return "unknown";
+      return platformCoverageBySurface[surface];
+    };
 
     const surfaces: {
       surface: IntegrationSurface;
@@ -78,42 +77,49 @@ export function useIntegrationDashboardCards(
       {
         surface: "facebook",
         label: "Facebook",
-        operational: parseMetaOperational(meta.data, "facebook"),
+        operational: resolveMetaSurfaceState(
+          selectedCustomer,
+          meta.data,
+          "facebook",
+        ),
       },
       {
         surface: "instagram",
         label: "Instagram",
-        operational: parseMetaOperational(meta.data, "instagram"),
+        operational: resolveMetaSurfaceState(
+          selectedCustomer,
+          meta.data,
+          "instagram",
+        ),
       },
       {
         surface: "google_analytics",
         label: "Google Analytics",
-        operational: parseGenericOperational(ga.data),
+        operational: resolveGoogleAnalyticsState(selectedCustomer, ga.data),
       },
       {
         surface: "youtube",
         label: "YouTube",
-        operational: parseGenericOperational(yt.data),
+        operational: resolveYoutubeState(selectedCustomer, yt.data),
       },
       {
         surface: "linkedin",
         label: "LinkedIn",
-        operational: parseLinkedinOperational(li.data, li.isSuccess),
+        operational: resolveLinkedinStateFromCustomer(selectedCustomer),
       },
     ];
 
     return surfaces.map((s) => ({
       ...s,
-      periodCoverage,
+      periodCoverage: periodCoverage(s.surface),
     }));
   }, [
+    selectedCustomer,
     meta.data,
     ga.data,
     yt.data,
-    li.data,
-    li.isSuccess,
     periodLoaded,
-    hasAnyMetricData,
+    platformCoverageBySurface,
   ]);
 
   return { cards, isLoading: Boolean(isLoading) };
