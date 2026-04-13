@@ -36,6 +36,7 @@ export function AnalysisResultActions({
       <AnalysisExportPdfButton
         getExportRoot={getExportRoot}
         fileName={exportFileName}
+        fallbackMarkdown={markdown}
         disabled={!markdown.trim()}
       />
       <Button

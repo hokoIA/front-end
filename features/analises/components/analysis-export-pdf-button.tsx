@@ -9,12 +9,15 @@ import { toast } from "sonner";
 type Props = {
   getExportRoot: () => HTMLElement | null;
   fileName: string;
+  /** Se a captura HTML falhar (CSS/CORS), gera PDF em texto a partir do markdown. */
+  fallbackMarkdown?: string;
   disabled?: boolean;
 };
 
 export function AnalysisExportPdfButton({
   getExportRoot,
   fileName,
+  fallbackMarkdown,
   disabled,
 }: Props) {
   const [busy, setBusy] = useState(false);
@@ -27,9 +30,12 @@ export function AnalysisExportPdfButton({
     }
     setBusy(true);
     try {
-      await exportAnalysisElementToPdf(el, fileName);
+      await exportAnalysisElementToPdf(el, fileName, {
+        fallbackPlainText: fallbackMarkdown,
+      });
       toast.success("PDF gerado.");
-    } catch {
+    } catch (e) {
+      console.error("[analises] PDF:", e);
       toast.error("Falha ao gerar PDF. Tente novamente.");
     } finally {
       setBusy(false);
