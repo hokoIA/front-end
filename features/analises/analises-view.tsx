@@ -90,7 +90,7 @@ export function AnalisesView() {
 
   const analyzeMutation = useStrategicAnalyzeMutation();
 
-  const agencyId = resolveAgencyId(profile ?? null);
+  const agencyId = resolveAgencyId(auth?.user ?? null, profile ?? null);
 
   const scrollToConfig = useCallback(() => {
     configAnchorRef.current?.scrollIntoView({
@@ -114,7 +114,7 @@ export function AnalisesView() {
     }
     if (!agencyId) {
       toast.error(
-        "Não foi possível identificar a agência. Verifique o perfil ou NEXT_PUBLIC_DEFAULT_AGENCY_ID.",
+        "Não foi possível identificar o usuário autenticado para gerar a análise.",
       );
       return;
     }

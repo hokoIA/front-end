@@ -1,6 +1,6 @@
 import { endpoints } from "./endpoints";
 import { httpFetch, httpJson } from "./http-client";
-import type { AuthStatus, UserProfile } from "@/lib/types/user";
+import type { AuthStatus, RawUserLike, UserProfile } from "@/lib/types/user";
 
 export type LoginBody = { email: string; password: string };
 
@@ -28,8 +28,46 @@ export async function logoutRequest(): Promise<void> {
   await httpFetch(endpoints.auth.logout(), { method: "POST" });
 }
 
+function asString(v: unknown): string {
+  return typeof v === "string" ? v : v == null ? "" : String(v);
+}
+
+function normalizeUser(raw: RawUserLike | null | undefined): UserProfile | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const id = asString(raw.id ?? raw.id_user ?? "");
+  const email = asString(raw.email ?? "");
+
+  if (!id && !email) return undefined;
+
+  const name = raw.name ? asString(raw.name) : undefined;
+  const avatarRaw = raw.avatarUrl ?? raw.foto_perfil ?? null;
+  const avatarUrl = avatarRaw == null ? null : asString(avatarRaw);
+  const agency_id = raw.agency_id ? asString(raw.agency_id) : undefined;
+  const id_account = raw.id_account ? asString(raw.id_account) : undefined;
+  const role = raw.role ? asString(raw.role) : undefined;
+
+  return {
+    id,
+    email,
+    name,
+    avatarUrl,
+    agency_id,
+    id_account,
+    role,
+  };
+}
+
 export async function getProfile(): Promise<UserProfile> {
-  return httpJson<UserProfile>(endpoints.auth.profile());
+  const res = await httpJson<{
+    success?: unknown;
+    message?: unknown;
+    user?: RawUserLike;
+  }>(endpoints.auth.profile());
+  const normalized = normalizeUser(res?.user);
+  if (!normalized) {
+    throw new Error("Profile wrapper inválido: user ausente ou inválido.");
+  }
+  return normalized;
 }
 
 export async function getAuthStatus(): Promise<AuthStatus> {
@@ -41,7 +79,13 @@ export async function getAuthStatus(): Promise<AuthStatus> {
     if (!res.ok) {
       return { authenticated: false };
     }
-    return (await res.json()) as AuthStatus;
+    const body = (await res.json()) as {
+      authenticated?: unknown;
+      user?: RawUserLike;
+    };
+    const authenticated = body?.authenticated === true;
+    const user = normalizeUser(body?.user);
+    return user ? { authenticated, user } : { authenticated };
   } catch {
     return { authenticated: false };
   }

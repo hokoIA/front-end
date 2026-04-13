@@ -110,14 +110,14 @@ export function buildDocumentStorePayloadV1(
   };
 }
 
-export function resolveAgencyIdForContext(profile: {
-  agency_id?: string;
-  id: string;
-} | null): string {
-  if (!profile) return "";
-  return (
-    profile.agency_id ??
-    process.env.NEXT_PUBLIC_DEFAULT_AGENCY_ID ??
-    profile.id
-  );
+type UserLike = {
+  id?: string;
+};
+export function resolveAgencyIdForContext(
+  authUser: UserLike | null,
+  profileUser: UserLike | null,
+): string {
+  if (authUser?.id) return authUser.id;
+  if (profileUser?.id) return profileUser.id;
+  return process.env.NEXT_PUBLIC_DEFAULT_AGENCY_ID?.trim() ?? "";
 }

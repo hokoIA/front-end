@@ -6,6 +6,9 @@ const backendTarget =
 console.log("[next.config] BACKEND_PROXY_TARGET =", backendTarget);
 
 const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_BACKEND_PROXY_TARGET: backendTarget,
+  },
   async rewrites() {
     return [
       {

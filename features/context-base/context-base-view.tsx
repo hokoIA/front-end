@@ -94,7 +94,7 @@ export function ContextBaseView() {
   const removeDoc = useRemoveMockDocument(customerId);
   const storeMutation = useDocumentStoreMutation();
 
-  const agencyId = resolveAgencyIdForContext(profile ?? null);
+  const agencyId = resolveAgencyIdForContext(auth?.user ?? null, profile ?? null);
 
   const filteredDocs = useMemo(
     () => filterContextDocuments(documents, filters),
@@ -147,7 +147,7 @@ export function ContextBaseView() {
     }
     if (!agencyId) {
       toast.error(
-        "Agência não identificada. Verifique o perfil ou NEXT_PUBLIC_DEFAULT_AGENCY_ID.",
+        "Usuário autenticado não identificado para envio ao serviço de contexto.",
       );
       return false;
     }

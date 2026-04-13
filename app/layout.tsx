@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${montserrat.variable} h-full antialiased`}>
-      <body className="min-h-full font-sans">
+      <body suppressHydrationWarning className="min-h-full font-sans">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

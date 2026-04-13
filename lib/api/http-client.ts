@@ -61,6 +61,10 @@ export function getAnalyzeBaseUrl(): string {
   return normalizeBase(process.env.NEXT_PUBLIC_ANALYZE_API_BASE_URL);
 }
 
+function getProxyTarget(): string {
+  return normalizeBase(process.env.NEXT_PUBLIC_BACKEND_PROXY_TARGET);
+}
+
 let warnedEmptyApiBase = false;
 
 function resolveUrl(path: string, base: HttpBase): string {
@@ -157,11 +161,12 @@ export async function httpFetch(
     typeof window !== "undefined" &&
     base === "api" &&
     !getApiBaseUrl() &&
+    !getProxyTarget() &&
     !warnedEmptyApiBase
   ) {
     warnedEmptyApiBase = true;
     console.warn(
-      "[ho.ko] NEXT_PUBLIC_API_BASE_URL está vazio: os pedidos vão para o mesmo host do Next.js, não para o API Gateway. Em produção cross-origin, defina a URL HTTPS do gateway (Render → Environment).",
+      "[ho.ko] NEXT_PUBLIC_API_BASE_URL está vazio e nenhum BACKEND_PROXY_TARGET público foi detectado. Configure rewrite/proxy ou URL direta da API.",
     );
   }
 
