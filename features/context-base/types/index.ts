@@ -1,28 +1,16 @@
-/** Escopo enviado como `documentScope` (valores estáveis para API). */
-export type DocumentScopeValue = "client" | "agency" | "global";
+/** Escopo fixo do contrato legado nesta tela. */
+export type DocumentScopeValue = "client";
 
 export type ContentTypeValue =
-  | "brand_identity"
-  | "positioning"
-  | "briefing"
-  | "strategic_plan"
-  | "communication_plan"
-  | "editorial_calendar"
-  | "campaign"
-  | "performance_report"
-  | "financial"
-  | "product_service"
-  | "persona_audience"
-  | "competition_market"
-  | "institutional"
-  | "commercial_sales"
-  | "operations_process"
-  | "customer_support"
-  | "compliance_legal"
-  | "manual_policy"
-  | "research_diagnostic"
-  | "case_portfolio"
-  | "other";
+  | "identidade"
+  | "estrategia"
+  | "comunicacao"
+  | "performance"
+  | "produtos"
+  | "vendas"
+  | "operacao"
+  | "suporte"
+  | "cases";
 
 export type GovernanceStatusValue =
   | "active"
@@ -34,7 +22,10 @@ export type GovernanceStatusValue =
 
 export type ContextRoleValue = "primary" | "complementary" | "historical";
 
-/** Estado completo do formulário na UI (campos extras arquitetados para API futura). */
+/**
+ * Estado completo do formulário na UI.
+ * Campos extras permanecem para futura evolução, mas não entram no payload atual.
+ */
 export type ContextDocumentFormState = {
   scope: DocumentScopeValue;
   contentType: ContentTypeValue;

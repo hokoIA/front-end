@@ -2,49 +2,24 @@
 
 import { fetchClientDocuments } from "../api/fetch-client-documents";
 import { queryKeys } from "@/lib/api/query-keys";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ContextDocumentListItem, GovernanceStatusValue } from "../types";
+import { useQuery } from "@tanstack/react-query";
 
 export function useClientDocumentsQuery(
   clientId: string | null,
   customerName: string | null,
+  agencyId: string | null,
 ) {
   return useQuery({
     queryKey: queryKeys.contextBase.documents(clientId ?? ""),
     queryFn: () =>
-      fetchClientDocuments(clientId!, customerName ?? "Cliente"),
-    enabled: Boolean(clientId),
+      fetchClientDocuments({
+        agency_id: agencyId!,
+        scope: "client",
+        limit: 100,
+        client_id: clientId!,
+        customerName: customerName ?? "Cliente",
+      }),
+    enabled: Boolean(clientId && agencyId),
     staleTime: 30_000,
   });
-}
-
-export function useUpdateMockDocumentStatus(clientId: string | null) {
-  const qc = useQueryClient();
-  return (docId: string, status: GovernanceStatusValue) => {
-    if (!clientId) return;
-    qc.setQueryData<ContextDocumentListItem[]>(
-      queryKeys.contextBase.documents(clientId),
-      (prev) =>
-        (prev ?? []).map((d) =>
-          d.id === docId
-            ? {
-                ...d,
-                status,
-                updatedAt: new Date().toISOString(),
-              }
-            : d,
-        ),
-    );
-  };
-}
-
-export function useRemoveMockDocument(clientId: string | null) {
-  const qc = useQueryClient();
-  return (docId: string) => {
-    if (!clientId) return;
-    qc.setQueryData<ContextDocumentListItem[]>(
-      queryKeys.contextBase.documents(clientId),
-      (prev) => (prev ?? []).filter((d) => d.id !== docId),
-    );
-  };
 }

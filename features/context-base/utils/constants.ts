@@ -2,50 +2,19 @@ import type { ContentTypeValue, GovernanceStatusValue } from "../types";
 
 export const CONTENT_TYPE_OPTIONS: { value: ContentTypeValue; label: string }[] =
   [
-    { value: "brand_identity", label: "Identidade de marca" },
-    { value: "positioning", label: "Posicionamento" },
-    { value: "briefing", label: "Briefing" },
-    { value: "strategic_plan", label: "Planejamento estratégico" },
-    { value: "communication_plan", label: "Plano de comunicação" },
-    { value: "editorial_calendar", label: "Calendário editorial" },
-    { value: "campaign", label: "Campanha" },
-    { value: "performance_report", label: "Relatório de desempenho" },
-    { value: "financial", label: "DRE / financeiro" },
-    { value: "product_service", label: "Produto ou serviço" },
-    { value: "persona_audience", label: "Persona / público-alvo" },
-    { value: "competition_market", label: "Concorrência / mercado" },
-    { value: "institutional", label: "Institucional" },
-    { value: "commercial_sales", label: "Comercial / vendas" },
-    { value: "operations_process", label: "Operação / processo" },
-    { value: "customer_support", label: "Atendimento / suporte" },
-    { value: "compliance_legal", label: "Compliance / jurídico" },
-    { value: "manual_policy", label: "Manual / diretriz" },
-    { value: "research_diagnostic", label: "Pesquisa / diagnóstico" },
-    { value: "case_portfolio", label: "Case / portfólio" },
-    { value: "other", label: "Outro" },
+    { value: "identidade", label: "Identidade" },
+    { value: "estrategia", label: "Estratégia" },
+    { value: "comunicacao", label: "Comunicação" },
+    { value: "performance", label: "Performance" },
+    { value: "produtos", label: "Produtos" },
+    { value: "vendas", label: "Vendas" },
+    { value: "operacao", label: "Operação" },
+    { value: "suporte", label: "Suporte" },
+    { value: "cases", label: "Cases" },
   ];
 
-export const SCOPE_OPTIONS: {
-  value: "client" | "agency" | "global";
-  label: string;
-  hint: string;
-}[] = [
-  {
-    value: "client",
-    label: "Cliente",
-    hint: "Contexto específico do cliente selecionado",
-  },
-  {
-    value: "agency",
-    label: "Agência",
-    hint: "Conhecimento reutilizável da agência",
-  },
-  {
-    value: "global",
-    label: "Global",
-    hint: "Referências amplas da plataforma (uso restrito)",
-  },
-];
+// Futuro: recuperar escopos variáveis quando backend legado deixar de ser fixo em "client".
+// export const SCOPE_OPTIONS = [...]
 
 export const STATUS_OPTIONS: { value: GovernanceStatusValue; label: string }[] =
   [

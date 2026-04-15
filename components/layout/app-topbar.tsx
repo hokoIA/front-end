@@ -118,15 +118,6 @@ export function AppTopbar({ className }: { className?: string }) {
         )}
       </div>
 
-      <div className="hidden shrink-0 items-center lg:flex">
-        <Badge
-          variant="secondary"
-          className="border border-hk-border-subtle bg-hk-surface-muted/90 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-hk-muted"
-        >
-          Workspace
-        </Badge>
-      </div>
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

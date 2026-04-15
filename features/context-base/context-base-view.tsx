@@ -13,8 +13,6 @@ import {
 } from "./components/context-states";
 import {
   useClientDocumentsQuery,
-  useRemoveMockDocument,
-  useUpdateMockDocumentStatus,
 } from "./hooks/use-client-documents-query";
 import type {
   ContextDocumentFormState,
@@ -33,7 +31,11 @@ import { formStateFromListItem } from "./utils/form-from-list-item";
 import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDocumentStoreMutation } from "@/hooks/api/use-analyze-mutations";
+import {
+  useDocumentDeleteMutation,
+  useDocumentDetailsMutation,
+  useDocumentStoreMutation,
+} from "@/hooks/api/use-analyze-mutations";
 import { useAuthStatusQuery, useProfileQuery } from "@/hooks/api/use-auth-queries";
 import { getErrorKind } from "@/lib/api/errors";
 import { getAnalyzeBaseUrl } from "@/lib/api/http-client";
@@ -81,6 +83,7 @@ export function ContextBaseView() {
 
   const customerId = selected?.id_customer ?? null;
   const customerName = selected?.name ?? "";
+  const agencyId = resolveAgencyIdForContext(auth?.user ?? null, profile ?? null);
 
   const {
     data: documents = [],
@@ -88,13 +91,10 @@ export function ContextBaseView() {
     isError: listError,
     error: listErr,
     refetch: refetchList,
-  } = useClientDocumentsQuery(customerId, customerName);
-
-  const updateStatus = useUpdateMockDocumentStatus(customerId);
-  const removeDoc = useRemoveMockDocument(customerId);
+  } = useClientDocumentsQuery(customerId, customerName, agencyId || null);
   const storeMutation = useDocumentStoreMutation();
-
-  const agencyId = resolveAgencyIdForContext(auth?.user ?? null, profile ?? null);
+  const detailsMutation = useDocumentDetailsMutation();
+  const deleteMutation = useDocumentDeleteMutation();
 
   const filteredDocs = useMemo(
     () => filterContextDocuments(documents, filters),
@@ -181,7 +181,7 @@ export function ContextBaseView() {
     setSubmitError(null);
     try {
       if (form.uploadMode === "text") {
-        documentText = buildDocumentTextBody(form, form.textContent);
+        documentText = buildDocumentTextBody(form.textContent);
       } else if (file) {
         documentText = await fileToBase64Data(file);
       }
@@ -244,6 +244,64 @@ export function ContextBaseView() {
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }, []);
+
+  const handleOpenDetails = useCallback(
+    async (doc: ContextDocumentListItem) => {
+      if (!selected || !agencyId) {
+        setDetailDoc(doc);
+        return;
+      }
+      try {
+        const response = await detailsMutation.mutateAsync({
+          vector_id: doc.id,
+          agency_id: agencyId,
+          scope: "client",
+          client_id: selected.id_customer,
+        });
+        const detailRaw =
+          typeof response === "object" && response && "data" in response
+            ? (response as { data?: unknown }).data
+            : response;
+        if (detailRaw && typeof detailRaw === "object") {
+          const fullText = String(
+            (detailRaw as { documentText?: unknown; document_text?: unknown })
+              .documentText ??
+              (detailRaw as { documentText?: unknown; document_text?: unknown })
+                .document_text ??
+              doc.contentPreview,
+          );
+          setDetailDoc({ ...doc, contentPreview: fullText.slice(0, 1200) });
+          return;
+        }
+      } catch {
+        toast.error("Falha ao carregar detalhes completos do documento.");
+      }
+      setDetailDoc(doc);
+    },
+    [agencyId, detailsMutation, selected],
+  );
+
+  const handleDelete = useCallback(
+    async (docId: string) => {
+      if (!selected || !agencyId) return;
+      try {
+        await deleteMutation.mutateAsync({
+          vector_id: docId,
+          agency_id: agencyId,
+          scope: "client",
+          client_id: selected.id_customer,
+        });
+        toast.success("Documento removido da Base de Contexto.");
+        setDetailDoc(null);
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.contextBase.documents(selected.id_customer),
+        });
+      } catch {
+        toast.error("Falha ao excluir documento no serviço de contexto.");
+      }
+    },
+    [agencyId, deleteMutation, queryClient, selected],
+  );
 
   return (
     <div className="hk-page hk-page--mid space-y-8 pb-16 pt-6 lg:pt-8">
@@ -313,7 +371,7 @@ export function ContextBaseView() {
               <ContextDocumentsList
                 documents={filteredDocs}
                 loading={listLoading}
-                onSelect={setDetailDoc}
+                onSelect={(doc) => void handleOpenDetails(doc)}
               />
             )}
           </div>
@@ -324,9 +382,9 @@ export function ContextBaseView() {
             onOpenChange={(o) => {
               if (!o) setDetailDoc(null);
             }}
-            onUpdateStatus={updateStatus}
             onDuplicate={openDuplicate}
-            onDelete={removeDoc}
+            onDelete={(id) => void handleDelete(id)}
+            deleteLoading={deleteMutation.isPending}
           />
         </>
       )}

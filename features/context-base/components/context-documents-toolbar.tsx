@@ -32,8 +32,9 @@ export function ContextDocumentsToolbar({ filters, onChange }: Props) {
           Acervo e governança
         </h3>
         <p className="text-xs text-hk-muted">
-          Listagem preparada para integração futura com o endpoint real. Os dados
-          abaixo são ilustrativos por cliente.
+          Listagem do legado via{" "}
+          <span className="font-mono">POST /documents/list</span> no serviço de
+          contexto.
         </p>
       </div>
 

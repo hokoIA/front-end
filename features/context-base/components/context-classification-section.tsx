@@ -9,10 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils/cn";
-import type { ContextDocumentFormState, DocumentScopeValue } from "../types";
-import { CONTENT_TYPE_OPTIONS, MAIN_CATEGORY_PRESETS, SCOPE_OPTIONS } from "../utils/constants";
+import type { ContextDocumentFormState } from "../types";
+import { CONTENT_TYPE_OPTIONS, MAIN_CATEGORY_PRESETS } from "../utils/constants";
 
 type Props = {
   form: ContextDocumentFormState;
@@ -40,32 +38,13 @@ export function ContextClassificationSection({
 
       <div className="space-y-2">
         <Label className="text-hk-ink">Escopo</Label>
-        <div className="grid gap-2 sm:grid-cols-3">
-          {SCOPE_OPTIONS.map((opt) => (
-            <Button
-              key={opt.value}
-              type="button"
-              variant={form.scope === opt.value ? "default" : "outline"}
-              className={cn(
-                "h-auto flex-col items-start gap-1 py-3 text-left",
-                form.scope === opt.value && "ring-2 ring-hk-action/30",
-              )}
-              disabled={disabled}
-              onClick={() =>
-                setForm((f) => ({ ...f, scope: opt.value as DocumentScopeValue }))
-              }
-            >
-              <span className="text-sm font-medium">{opt.label}</span>
-              <span className="text-xs font-normal text-hk-muted">{opt.hint}</span>
-            </Button>
-          ))}
-        </div>
-        {form.scope === "client" && (
-          <p className="text-xs text-hk-muted">
+        <div className="rounded-lg border border-hk-border-subtle bg-hk-canvas/40 p-3">
+          <p className="text-sm text-hk-ink">Cliente (fixo nesta fase)</p>
+          <p className="mt-1 text-xs text-hk-muted">
             Cliente vinculado:{" "}
             <span className="font-medium text-hk-ink">{customerName}</span>
           </p>
-        )}
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

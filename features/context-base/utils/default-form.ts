@@ -4,7 +4,7 @@ export function createDefaultContextDocumentForm(): ContextDocumentFormState {
   const today = new Date().toISOString().slice(0, 10);
   return {
     scope: "client",
-    contentType: "briefing",
+    contentType: "estrategia",
     mainCategory: "",
     subcategory: "",
     sector: "",
@@ -38,6 +38,8 @@ export function createDefaultContextDocumentForm(): ContextDocumentFormState {
     isOfficial: false,
     isHistorical: false,
     strategicRelevance: "",
+    // Campos abaixo seguem apenas para preparação futura de governança.
+    // O payload legado atual envia somente os 13 campos oficiais.
     uploadMode: "text",
     textContent: "",
   };

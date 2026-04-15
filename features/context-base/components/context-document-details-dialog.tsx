@@ -10,15 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import type { ContextDocumentListItem, GovernanceStatusValue } from "../types";
+import type { ContextDocumentListItem } from "../types";
 import { contentTypeLabel } from "../utils/labels";
 import { ContextDocumentStatusBadge } from "./context-document-status-badge";
 import {
   Archive,
-  Clock,
   Copy,
   Download,
-  RefreshCw,
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -38,18 +36,18 @@ type Props = {
   doc: ContextDocumentListItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onUpdateStatus: (id: string, status: GovernanceStatusValue) => void;
   onDuplicate: (doc: ContextDocumentListItem) => void;
   onDelete?: (id: string) => void;
+  deleteLoading?: boolean;
 };
 
 export function ContextDocumentDetailsDialog({
   doc,
   open,
   onOpenChange,
-  onUpdateStatus,
   onDuplicate,
   onDelete,
+  deleteLoading,
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -169,52 +167,11 @@ export function ContextDocumentDetailsDialog({
 
         <DialogFooter className="flex-col gap-2 sm:flex-col sm:items-stretch">
           <p className="text-left text-xs text-hk-muted">
-            Governança: ações abaixo atualizam apenas a visualização local (mock)
-            até o endpoint de listagem e mutação existir.
+            Governança atual conectada ao legado: detalhes via{" "}
+            <span className="font-mono">/documents/details</span> e exclusão via{" "}
+            <span className="font-mono">/documents/delete</span>.
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              className="gap-1"
-              onClick={() => {
-                onUpdateStatus(doc.id, "archived");
-                toast.success("Marcado como arquivado (mock).");
-                onOpenChange(false);
-              }}
-            >
-              <Archive className="size-3.5" />
-              Arquivar
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              className="gap-1"
-              onClick={() => {
-                onUpdateStatus(doc.id, "expired");
-                toast.success("Marcado como vencido (mock).");
-                onOpenChange(false);
-              }}
-            >
-              <Clock className="size-3.5" />
-              Vencido
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              className="gap-1"
-              onClick={() => {
-                onUpdateStatus(doc.id, "superseded");
-                toast.success("Marcado como substituído (mock).");
-                onOpenChange(false);
-              }}
-            >
-              <RefreshCw className="size-3.5" />
-              Substituído
-            </Button>
             <Button
               type="button"
               variant="outline"
@@ -237,7 +194,7 @@ export function ContextDocumentDetailsDialog({
               onClick={() => {
                 if (doc.uploadType === "file" && doc.fileName) {
                   toast.message(
-                    "Download será habilitado quando o arquivo estiver disponível via API.",
+                    "Download do binário ainda depende de endpoint dedicado no legado.",
                   );
                 } else {
                   void navigator.clipboard.writeText(doc.contentPreview);
@@ -256,14 +213,18 @@ export function ContextDocumentDetailsDialog({
                 className="gap-1 text-red-700"
                 onClick={() => {
                   onDelete(doc.id);
-                  toast.success("Removido da lista local (mock).");
                   onOpenChange(false);
                 }}
+                disabled={deleteLoading}
               >
                 <Trash2 className="size-3.5" />
-                Excluir da lista
+                {deleteLoading ? "Excluindo..." : "Excluir documento"}
               </Button>
             )}
+            <Button type="button" variant="secondary" size="sm" className="gap-1" disabled>
+              <Archive className="size-3.5" />
+              Status (futuro)
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>

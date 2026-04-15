@@ -1,86 +1,13 @@
 import type { ContextDocumentFormState } from "../types";
 import type { DocumentStorePayloadV1 } from "@/lib/types/documents";
-
-function splitList(raw: string): string[] {
-  return raw
-    .split(/[,;\n]+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-function slugTag(s: string, max = 48): string {
-  return s
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "")
-    .replace(/[^a-z0-9]+/g, "_")
-    .slice(0, max);
-}
-
-/** Monta `documentTags` enriquecido para retrieval, sem alterar o contrato V1 do backend. */
+/** Contrato legado: tags são valor cru informado no campo principal. */
 export function buildDocumentTags(form: ContextDocumentFormState): string {
-  const parts: string[] = [];
-  for (const t of splitList(form.tagsRequired)) parts.push(t);
-  for (const t of splitList(form.additionalKeywords)) parts.push(t);
-  for (const t of splitList(form.citedEntities)) {
-    const e = t.slice(0, 48);
-    if (e) parts.push(`entidade:${e}`);
-  }
-  for (const t of splitList(form.relatedPlatforms))
-    parts.push(`plataforma:${slugTag(t, 24)}`);
-
-  if (form.internalOwner.trim())
-    parts.push(`responsavel:${slugTag(form.internalOwner, 40)}`);
-  if (form.sourceOrigin.trim())
-    parts.push(`origem:${slugTag(form.sourceOrigin, 40)}`);
-  parts.push(`idioma:${form.language}`);
-  parts.push(`confiabilidade:${form.reliabilityLevel}`);
-  parts.push(`visibilidade:${form.visibility}`);
-  parts.push(`prioridade:${form.priorityUse}`);
-  parts.push(`papel_contexto:${form.contextRole}`);
-  if (form.allowAnalysis) parts.push("uso_ia:analises");
-  if (form.allowChat) parts.push("uso_ia:chat");
-  if (form.isOfficial) parts.push("oficial:sim");
-  if (form.isHistorical) parts.push("historico:sim");
-  if (form.strategicRelevance.trim())
-    parts.push(`relevancia:${slugTag(form.strategicRelevance, 40)}`);
-  if (form.iaObjective.trim())
-    parts.push(`objetivo_ia:${slugTag(form.iaObjective, 48)}`);
-  if (form.isEvergreen) parts.push("perene:sim");
-  if (form.status) parts.push(`status_envio:${form.status}`);
-  if (form.replacesAnother && form.replacesDocumentId.trim())
-    parts.push(`substitui:${slugTag(form.replacesDocumentId, 32)}`);
-  if (form.version.trim()) parts.push(`versao:${form.version.trim()}`);
-
-  return parts.join(", ");
+  return form.tagsRequired.trim();
 }
 
-export function buildDocumentTextBody(
-  form: ContextDocumentFormState,
-  rawContent: string,
-): string {
-  const parts: string[] = [];
-  if (form.title.trim()) {
-    parts.push(`# ${form.title.trim()}`);
-  }
-  if (form.executiveSummary.trim()) {
-    parts.push(
-      `## Resumo executivo\n\n${form.executiveSummary.trim()}`,
-    );
-  }
-  const metaLines = [
-    form.documentCreatedAt && `Data de criação (declarada): ${form.documentCreatedAt}`,
-    form.competenceStart &&
-      form.competenceEnd &&
-      `Competência: ${form.competenceStart} a ${form.competenceEnd}`,
-    form.validUntil && !form.isEvergreen && `Válido até: ${form.validUntil}`,
-    form.isEvergreen && "Documento declarado como perene",
-  ].filter(Boolean);
-  if (metaLines.length) {
-    parts.push(`## Metadados declarados\n\n${metaLines.join("\n")}`);
-  }
-  parts.push(`## Conteúdo\n\n${rawContent.trim()}`);
-  return parts.join("\n\n---\n\n");
+/** Contrato legado: enviar o conteúdo efetivo sem composição artificial. */
+export function buildDocumentTextBody(rawContent: string): string {
+  return rawContent.trim();
 }
 
 export function buildDocumentStorePayloadV1(
@@ -94,7 +21,8 @@ export function buildDocumentStorePayloadV1(
   },
 ): DocumentStorePayloadV1 {
   return {
-    documentScope: form.scope,
+    // Regra atual: esta tela opera sempre em escopo cliente.
+    documentScope: "client",
     docType: form.contentType,
     confidentiality: form.confidentiality,
     documentAuthor: form.author.trim(),
@@ -107,17 +35,28 @@ export function buildDocumentStorePayloadV1(
     customerName: params.customerName,
     mainCategory: form.mainCategory.trim() || "geral",
     subcategory: form.subcategory.trim() || "nao_classificado",
+    // Futuro (não enviar agora no contrato real):
+    // internalOwner, sourceOrigin, language, reliabilityLevel, visibility,
+    // executiveSummary, competenceStart, competenceEnd, validUntil, isEvergreen,
+    // version, replacesAnother, replacesDocumentId, contextRole, allowAnalysis,
+    // allowChat, isOfficial, isHistorical, strategicRelevance, iaObjective, priorityUse.
   };
 }
 
 type UserLike = {
   id?: string;
+  agency_id?: string;
+  id_account?: string;
 };
 export function resolveAgencyIdForContext(
   authUser: UserLike | null,
   profileUser: UserLike | null,
 ): string {
+  if (authUser?.agency_id) return authUser.agency_id;
+  if (authUser?.id_account) return authUser.id_account;
   if (authUser?.id) return authUser.id;
+  if (profileUser?.agency_id) return profileUser.agency_id;
+  if (profileUser?.id_account) return profileUser.id_account;
   if (profileUser?.id) return profileUser.id;
   return process.env.NEXT_PUBLIC_DEFAULT_AGENCY_ID?.trim() ?? "";
 }

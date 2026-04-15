@@ -7,7 +7,7 @@ const ROWS: Omit<
 >[] = [
   {
     title: "Diretrizes de voz e tom 2025",
-    docType: "brand_identity",
+    docType: "identidade",
     mainCategory: "Marca & criativo",
     subcategory: "Identidade verbal",
     author: "Estratégia Hoko",
@@ -30,7 +30,7 @@ const ROWS: Omit<
   },
   {
     title: "Briefing Q4 — campanha de consideração",
-    docType: "briefing",
+    docType: "estrategia",
     mainCategory: "Estratégia",
     subcategory: "Campanha",
     author: "Account Lead",
@@ -54,7 +54,7 @@ const ROWS: Omit<
   },
   {
     title: "Relatório de performance — modelo legado",
-    docType: "performance_report",
+    docType: "performance",
     mainCategory: "Dados & relatórios",
     subcategory: "Performance",
     author: "Mídia",

@@ -31,8 +31,8 @@ export function ContextRetrievalPolicySection({
           Instruções para recuperação na IA
         </h3>
         <p className="mt-1 text-xs text-hk-muted">
-          Estas preferências são codificadas nas tags enviadas ao backend atual,
-          até haver campos dedicados na API.
+          Campos de governança futura ficam salvos apenas na UI por enquanto e
+          não fazem parte do payload legado enviado agora.
         </p>
       </div>
 

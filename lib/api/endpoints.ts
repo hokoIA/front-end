@@ -63,6 +63,10 @@ export const endpoints = {
   },
   documents: {
     store: () => "/documents/store" as const,
+    list: () => "/documents/list" as const,
+    details: () => "/documents/details" as const,
+    delete: () => "/documents/delete" as const,
+    deleteBatch: () => "/documents/delete/batch" as const,
   },
   goals: {
     list: () => "/api/goals" as const,
