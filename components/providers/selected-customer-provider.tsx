@@ -12,7 +12,19 @@ import {
   useState,
 } from "react";
 
-const STORAGE_KEY = "hk.selectedCustomerId";
+const LEGACY_COMPAT_STORAGE_KEYS = ["selectedCustomerId", "hk.selectedCustomerId"] as const;
+
+function readStoredSelectedCustomerId(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return (
+      LEGACY_COMPAT_STORAGE_KEYS.map((key) => window.localStorage.getItem(key)).find(Boolean) ??
+      null
+    );
+  } catch {
+    return null;
+  }
+}
 
 type SelectedCustomerContextValue = {
   customers: Customer[];
@@ -41,33 +53,17 @@ function SelectedCustomerInner({ children }: { children: React.ReactNode }) {
     refetch,
   } = useCustomersQuery(authed);
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [storageReady, setStorageReady] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setSelectedId(raw);
-    } catch {
-      /* ignore */
-    }
-    setStorageReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!authed) {
-      setSelectedId(null);
-    }
-  }, [authed]);
+  const [selectedId, setSelectedId] = useState<string | null>(readStoredSelectedCustomerId);
 
   useEffect(() => {
     if (!authed || !isSuccess || !customers.length) return;
     if (!selectedId) return;
     const exists = customers.some((c) => c.id_customer === selectedId);
     if (!exists) {
-      setSelectedId(null);
       try {
-        localStorage.removeItem(STORAGE_KEY);
+        for (const key of LEGACY_COMPAT_STORAGE_KEYS) {
+          localStorage.removeItem(key);
+        }
       } catch {
         /* ignore */
       }
@@ -77,20 +73,28 @@ function SelectedCustomerInner({ children }: { children: React.ReactNode }) {
   const selectCustomer = useCallback((id: string | null) => {
     setSelectedId(id);
     try {
-      if (id) localStorage.setItem(STORAGE_KEY, id);
-      else localStorage.removeItem(STORAGE_KEY);
+      if (id) {
+        for (const key of LEGACY_COMPAT_STORAGE_KEYS) {
+          localStorage.setItem(key, id);
+        }
+      } else {
+        for (const key of LEGACY_COMPAT_STORAGE_KEYS) {
+          localStorage.removeItem(key);
+        }
+      }
     } catch {
       /* ignore */
     }
   }, []);
 
+  const effectiveSelectedId = authed ? selectedId : null;
+
   const selected = useMemo(
-    () => customers.find((c) => c.id_customer === selectedId) ?? null,
-    [customers, selectedId],
+    () => customers.find((c) => c.id_customer === effectiveSelectedId) ?? null,
+    [customers, effectiveSelectedId],
   );
 
-  const isReady =
-    storageReady && (!authed || isSuccess || (!isPending && customers.length === 0));
+  const isReady = !authed || isSuccess || (!isPending && customers.length === 0);
 
   const value = useMemo(
     () => ({

@@ -35,21 +35,3 @@ export function buildStrategicAnalyzePayload(
     narrative_style: DEFAULT_NARRATIVE_STYLE,
   };
 }
-
-type UserLike = {
-  id?: string;
-  agency_id?: string;
-  id_account?: string;
-};
-/**
- * Contrato atual do analyze em produção usa `agency_id` atrelado ao usuário autenticado.
- * Se migrar para `id_account`, ajuste aqui no adapter (não na view).
- */
-export function resolveAgencyId(
-  authUser: UserLike | null,
-  profileUser: UserLike | null,
-): string {
-  if (authUser?.id) return authUser.id;
-  if (profileUser?.id) return profileUser.id;
-  return process.env.NEXT_PUBLIC_DEFAULT_AGENCY_ID?.trim() ?? "";
-}

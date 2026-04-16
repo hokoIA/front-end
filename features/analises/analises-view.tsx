@@ -20,13 +20,12 @@ import type {
   AnalysisPlatformValue,
   AnalysisResultMeta,
 } from "@/features/analises/types";
-import { buildStrategicAnalyzePayload, resolveAgencyId } from "@/features/analises/utils/build-analyze-payload";
+import { buildStrategicAnalyzePayload } from "@/features/analises/utils/build-analyze-payload";
 import { createDefaultAnalysisForm } from "@/features/analises/utils/default-form";
 import { PLATFORM_LABELS } from "@/features/analises/utils/labels";
 import { parseAnalyzeResult } from "@/features/analises/utils/parse-analyze-result";
 import { useIntegrationDashboardCards } from "@/features/dashboard/hooks/use-integration-status";
-import { useAuthStatusQuery, useProfileQuery } from "@/hooks/api/use-auth-queries";
-import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
+import { useCurrentCustomerContext } from "@/hooks/use-current-customer-context";
 import { getAnalyzeBaseUrl } from "@/lib/api/http-client";
 import { getErrorKind } from "@/lib/api/errors";
 import { Card } from "@/components/ui/card";
@@ -56,10 +55,15 @@ function datesValid(start: string, end: string): boolean {
 }
 
 export function AnalisesView() {
-  const { data: auth } = useAuthStatusQuery();
-  const authed = auth?.authenticated === true;
-  const { data: profile, isPending: profileLoading } = useProfileQuery(authed);
-  const { selected, isReady, isLoadingCustomers } = useSelectedCustomer();
+  const {
+    authed,
+    selected,
+    customerId,
+    agencyId,
+    isReady,
+    isLoadingCustomers,
+    profileLoading,
+  } = useCurrentCustomerContext();
 
   const [form, setForm] = useState<AnalysisFormState>(createDefaultAnalysisForm);
   const [resultMarkdown, setResultMarkdown] = useState("");
@@ -69,7 +73,6 @@ export function AnalisesView() {
   const exportRootRef = useRef<HTMLDivElement>(null);
   const configAnchorRef = useRef<HTMLDivElement>(null);
 
-  const customerId = selected?.id_customer ?? null;
   const { cards: integrationCards, isLoading: integrationsLoading } =
     useIntegrationDashboardCards(customerId, selected, null, false);
 
@@ -89,8 +92,6 @@ export function AnalisesView() {
   }, [form.platforms, integrationCards]);
 
   const analyzeMutation = useStrategicAnalyzeMutation();
-
-  const agencyId = resolveAgencyId(auth?.user ?? null, profile ?? null);
 
   const scrollToConfig = useCallback(() => {
     configAnchorRef.current?.scrollIntoView({

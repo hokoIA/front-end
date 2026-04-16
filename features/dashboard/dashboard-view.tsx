@@ -40,10 +40,10 @@ import {
   computePlatformPeriodCoverage,
   pickTopPosts,
 } from "@/features/dashboard/utils/normalize";
-import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
 import { isUnauthorized } from "@/lib/api/errors";
 import { useDashboardPrint } from "@/hooks/use-dashboard-print";
 import { useAnalyzeMutation } from "@/hooks/api/use-analyze-mutations";
+import { useCurrentCustomerContext } from "@/hooks/use-current-customer-context";
 import type { AnalyzeRequestBody } from "@/lib/types/analyze";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
@@ -74,8 +74,8 @@ function snapshotHasData(s: ReturnType<typeof useDashboardPeriodQueries>["snapsh
 }
 
 export function DashboardView() {
-  const { selected, isReady: customerReady } = useSelectedCustomer();
-  const customerId = selected?.id_customer ?? null;
+  const { selected, customerId, isReady: customerReady } =
+    useCurrentCustomerContext();
 
   const [draft, setDraft] = useState(defaultRange);
   const [appliedRange, setAppliedRange] = useState<DashboardPeriodRange | null>(

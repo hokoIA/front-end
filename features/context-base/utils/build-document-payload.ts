@@ -42,21 +42,3 @@ export function buildDocumentStorePayloadV1(
     // allowChat, isOfficial, isHistorical, strategicRelevance, iaObjective, priorityUse.
   };
 }
-
-type UserLike = {
-  id?: string;
-  agency_id?: string;
-  id_account?: string;
-};
-export function resolveAgencyIdForContext(
-  authUser: UserLike | null,
-  profileUser: UserLike | null,
-): string {
-  if (authUser?.agency_id) return authUser.agency_id;
-  if (authUser?.id_account) return authUser.id_account;
-  if (authUser?.id) return authUser.id;
-  if (profileUser?.agency_id) return profileUser.agency_id;
-  if (profileUser?.id_account) return profileUser.id_account;
-  if (profileUser?.id) return profileUser.id;
-  return process.env.NEXT_PUBLIC_DEFAULT_AGENCY_ID?.trim() ?? "";
-}

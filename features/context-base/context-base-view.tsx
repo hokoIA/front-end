@@ -19,13 +19,11 @@ import type {
 import {
   buildDocumentStorePayloadV1,
   buildDocumentTextBody,
-  resolveAgencyIdForContext,
 } from "./utils/build-document-payload";
 import { createDefaultContextDocumentForm } from "./utils/default-form";
 import { filterContextDocuments } from "./utils/filter-documents";
 import { fileToBase64Data, isPdfFile } from "./utils/file-to-base64";
 import { formStateFromListItem } from "./utils/form-from-list-item";
-import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -33,8 +31,8 @@ import {
   useDocumentDetailsMutation,
   useDocumentStoreMutation,
 } from "@/hooks/api/use-analyze-mutations";
-import { useAuthStatusQuery, useProfileQuery } from "@/hooks/api/use-auth-queries";
 import { useDocumentListQuery } from "@/hooks/api/use-context-base-queries";
+import { useCurrentCustomerContext } from "@/hooks/use-current-customer-context";
 import { getErrorKind } from "@/lib/api/errors";
 import { getAnalyzeBaseUrl } from "@/lib/api/http-client";
 import { queryKeys } from "@/lib/api/query-keys";
@@ -61,10 +59,16 @@ function delay(ms: number) {
 }
 
 export function ContextBaseView() {
-  const { data: auth } = useAuthStatusQuery();
-  const authed = auth?.authenticated === true;
-  const { data: profile, isPending: profileLoading } = useProfileQuery(authed);
-  const { selected, isReady, isLoadingCustomers } = useSelectedCustomer();
+  const {
+    authed,
+    selected,
+    customerId,
+    customerName,
+    agencyId,
+    isReady,
+    isLoadingCustomers,
+    profileLoading,
+  } = useCurrentCustomerContext();
   const queryClient = useQueryClient();
 
   const [form, setForm] = useState<ContextDocumentFormState>(
@@ -78,10 +82,6 @@ export function ContextBaseView() {
   );
   const [submitError, setSubmitError] = useState<unknown>(null);
   const [submitBusy, setSubmitBusy] = useState(false);
-
-  const customerId = selected?.id_customer ?? null;
-  const customerName = selected?.name ?? "";
-  const agencyId = resolveAgencyIdForContext(auth?.user ?? null, profile ?? null);
 
   const {
     data: documents = [],
