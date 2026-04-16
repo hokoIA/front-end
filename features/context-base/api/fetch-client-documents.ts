@@ -29,7 +29,7 @@ function toListItem(
   const id =
     String(raw.vector_id ?? raw.id ?? `${fallback.clientId}-${fallback.index + 1}`);
   const docType = String(raw.docType ?? raw.doc_type ?? "estrategia");
-  const text = String(raw.documentText ?? raw.document_text ?? "");
+  const text = String(raw.text ?? raw.documentText ?? raw.document_text ?? "");
   const preview = text.slice(0, 500);
   const created = String(raw.createdAt ?? raw.created_at ?? new Date().toISOString());
   const updated = String(raw.updatedAt ?? raw.updated_at ?? created);
@@ -64,7 +64,6 @@ export async function fetchClientDocuments(
   params: DocumentListPayload & { customerName: string },
 ): Promise<ContextDocumentListItem[]> {
   const response = await postDocumentsList(params);
-  console.log("🚀 fetchClientDocuments ~ response:", response)
   return pickList(response).map((item, index) =>
     toListItem(item, {
       clientId: params.client_id,

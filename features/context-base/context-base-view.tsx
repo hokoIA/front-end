@@ -19,10 +19,15 @@ import type {
 import {
   buildDocumentStorePayloadV1,
   buildDocumentTextBody,
+  resolveLegacyUploadType,
 } from "./utils/build-document-payload";
 import { createDefaultContextDocumentForm } from "./utils/default-form";
 import { filterContextDocuments } from "./utils/filter-documents";
-import { fileToBase64Data, isPdfFile } from "./utils/file-to-base64";
+import {
+  extractDocumentText,
+  isPdfFile,
+  isSupportedDocumentFile,
+} from "./utils/file-to-base64";
 import { formStateFromListItem } from "./utils/form-from-list-item";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -122,6 +127,10 @@ export function ContextBaseView() {
       toast.error("Informe o autor.");
       return false;
     }
+    if (!form.sector.trim()) {
+      toast.error("Informe o setor do documento.");
+      return false;
+    }
     const tags = form.tagsRequired
       .split(/[,;\n]+/)
       .map((t) => t.trim())
@@ -140,6 +149,10 @@ export function ContextBaseView() {
     } else {
       if (!file) {
         toast.error("Selecione um arquivo para envio.");
+        return false;
+      }
+      if (!isSupportedDocumentFile(file)) {
+        toast.error("Formato inválido. Use PDF, TXT ou CSV.");
         return false;
       }
       if (file.size > MAX_FILE_BYTES) {
@@ -177,7 +190,7 @@ export function ContextBaseView() {
     if (!validateBeforeSubmit() || !selected) return;
 
     let documentText = "";
-    const uploadType: "text" | "file" = form.uploadMode;
+    const uploadType = resolveLegacyUploadType(file);
 
     setSubmitBusy(true);
     setSubmitError(null);
@@ -185,7 +198,7 @@ export function ContextBaseView() {
       if (form.uploadMode === "text") {
         documentText = buildDocumentTextBody(form.textContent);
       } else if (file) {
-        documentText = await fileToBase64Data(file);
+        documentText = await extractDocumentText(file);
       }
 
       const payload: DocumentStorePayloadV1 = buildDocumentStorePayloadV1(

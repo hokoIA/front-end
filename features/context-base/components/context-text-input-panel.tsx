@@ -22,8 +22,8 @@ export function ContextTextInputPanel({ value, onChange, disabled }: Props) {
         className="min-h-[220px] font-mono text-[13px] leading-relaxed"
       />
       <p className="text-xs text-hk-muted">
-        O resumo executivo e os metadados acima serão combinados ao texto no envio,
-        preservando rastreabilidade para a base.
+        O envio usa o texto exatamente como informado, com apenas limpeza leve de
+        espaços e quebras de linha para melhorar a leitura pela IA.
       </p>
     </div>
   );

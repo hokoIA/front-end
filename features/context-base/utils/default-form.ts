@@ -15,7 +15,7 @@ export function createDefaultContextDocumentForm(): ContextDocumentFormState {
     sourceOrigin: "",
     language: "pt-BR",
     reliabilityLevel: "medium",
-    confidentiality: "internal",
+    confidentiality: "media",
     visibility: "agency_only",
     tagsRequired: "",
     additionalKeywords: "",

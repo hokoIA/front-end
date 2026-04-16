@@ -27,11 +27,29 @@ export const STATUS_OPTIONS: { value: GovernanceStatusValue; label: string }[] =
   ];
 
 export const CONFIDENTIALITY_OPTIONS = [
-  { value: "public", label: "Público interno" },
-  { value: "internal", label: "Interno agência" },
-  { value: "restricted", label: "Restrito" },
-  { value: "confidential", label: "Confidencial" },
+  { value: "baixa", label: "Baixa" },
+  { value: "media", label: "Média" },
+  { value: "alta", label: "Alta" },
 ] as const;
+
+export const LEGACY_MAIN_CATEGORY_BY_DOC_TYPE = {
+  identidade:
+    "Informações sobre missão, valores, história e como a marca se posiciona no mercado.",
+  estrategia:
+    "Metas da empresa, público-alvo, KPIs e análises estratégicas como SWOT e benchmarking.",
+  comunicacao:
+    "Diretrizes de tom de voz, mensagens, canais, campanhas e estratégia de conteúdo.",
+  performance:
+    "Métricas, funil de vendas, comportamento do cliente e comparativos de mercado.",
+  produtos:
+    "Portfólio, precificação e estratégias de desenvolvimento de produtos e serviços.",
+  vendas: "Processos de vendas, metas comerciais e planos de crescimento.",
+  operacao:
+    "Processos internos, ferramentas, automações e estrutura operacional.",
+  suporte:
+    "Manuais, fluxos, procedimentos e materiais técnicos da empresa.",
+  cases: "Exemplos práticos, resultados anteriores e estudos de mercado.",
+} as const;
 
 export const RELIABILITY_OPTIONS = [
   { value: "high", label: "Alta — fonte oficial" },

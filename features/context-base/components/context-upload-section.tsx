@@ -30,8 +30,8 @@ export function ContextUploadSection({
         </h3>
         <p className="mt-1 text-xs text-hk-muted">
           Escolha entre texto estruturado ou arquivo. O backend recebe o conteúdo
-          em <span className="font-medium">documentText</span> (texto cru digitado
-          ou arquivo em base64).
+          em <span className="font-medium">documentText</span> como texto final
+          legível para IA, inclusive quando vier de PDF, TXT ou CSV.
         </p>
       </div>
 

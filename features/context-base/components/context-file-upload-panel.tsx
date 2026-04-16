@@ -69,7 +69,7 @@ export function ContextFileUploadPanel({
           ref={inputRef}
           type="file"
           className="hidden"
-          accept=".pdf,.txt,.md,application/pdf"
+          accept=".pdf,.txt,.csv,application/pdf,text/plain,text/csv"
           disabled={disabled}
           onChange={(e) => onPick(e.target.files)}
         />
@@ -80,7 +80,8 @@ export function ContextFileUploadPanel({
           Arraste um arquivo ou clique para selecionar
         </p>
         <p className="mt-1 max-w-md text-center text-xs text-hk-muted">
-          Recomendado: PDF. Também aceitos TXT e Markdown para prototipagem.
+          Recomendado: PDF. Também aceitos TXT e CSV, sempre convertidos em texto
+          antes do envio para a base.
         </p>
         {file && (
           <div className="mt-4 flex items-center gap-2 rounded-lg border border-hk-border bg-hk-surface px-3 py-2 text-sm text-hk-ink">

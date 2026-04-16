@@ -9,7 +9,7 @@ export type DocumentStorePayloadV1 = {
   documentAuthor: string;
   documentSetor: string;
   documentTags: string;
-  uploadType: "text" | "file";
+  uploadType: "text" | "pdf" | "txt" | "csv";
   agency_id: string;
   documentText: string;
   client_id: string;

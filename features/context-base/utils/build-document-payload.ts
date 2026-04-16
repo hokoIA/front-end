@@ -1,4 +1,5 @@
 import type { ContextDocumentFormState } from "../types";
+import { LEGACY_MAIN_CATEGORY_BY_DOC_TYPE } from "./constants";
 import type { DocumentStorePayloadV1 } from "@/lib/types/documents";
 /** Contrato legado: tags são valor cru informado no campo principal. */
 export function buildDocumentTags(form: ContextDocumentFormState): string {
@@ -10,6 +11,16 @@ export function buildDocumentTextBody(rawContent: string): string {
   return rawContent.trim();
 }
 
+export function resolveLegacyUploadType(file: File | null): DocumentStorePayloadV1["uploadType"] {
+  if (!file) return "text";
+  const name = file.name.toLowerCase();
+  if (name.endsWith(".pdf")) return "pdf";
+  if (name.endsWith(".txt")) return "txt";
+  if (name.endsWith(".csv")) return "csv";
+  // Fallback legado: backend só aceita text/pdf/txt/csv.
+  return "text";
+}
+
 export function buildDocumentStorePayloadV1(
   form: ContextDocumentFormState,
   params: {
@@ -17,7 +28,7 @@ export function buildDocumentStorePayloadV1(
     clientId: string;
     customerName: string;
     documentText: string;
-    uploadType: "text" | "file";
+    uploadType: DocumentStorePayloadV1["uploadType"];
   },
 ): DocumentStorePayloadV1 {
   return {
@@ -33,8 +44,9 @@ export function buildDocumentStorePayloadV1(
     documentText: params.documentText,
     client_id: params.clientId,
     customerName: params.customerName,
-    mainCategory: form.mainCategory.trim() || "geral",
-    subcategory: form.subcategory.trim() || "nao_classificado",
+    mainCategory:
+      form.mainCategory.trim() || LEGACY_MAIN_CATEGORY_BY_DOC_TYPE[form.contentType] || "",
+    subcategory: form.subcategory.trim() || "",
     // Futuro (não enviar agora no contrato real):
     // internalOwner, sourceOrigin, language, reliabilityLevel, visibility,
     // executiveSummary, competenceStart, competenceEnd, validUntil, isEvergreen,
