@@ -1,6 +1,7 @@
 export * from "./use-analyze-mutations";
 export * from "./use-auth-queries";
 export * from "./use-billing-queries";
+export * from "./use-context-base-queries";
 export * from "./use-customers-queries";
 export * from "./use-dashboard-mutations";
 export * from "./use-goals-queries";

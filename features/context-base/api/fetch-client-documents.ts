@@ -64,6 +64,7 @@ export async function fetchClientDocuments(
   params: DocumentListPayload & { customerName: string },
 ): Promise<ContextDocumentListItem[]> {
   const response = await postDocumentsList(params);
+  console.log("🚀 fetchClientDocuments ~ response:", response)
   return pickList(response).map((item, index) =>
     toListItem(item, {
       clientId: params.client_id,

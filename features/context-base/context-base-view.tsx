@@ -11,9 +11,6 @@ import {
   ContextErrorState,
   ContextNoCustomerState,
 } from "./components/context-states";
-import {
-  useClientDocumentsQuery,
-} from "./hooks/use-client-documents-query";
 import type {
   ContextDocumentFormState,
   ContextDocumentListItem,
@@ -37,6 +34,7 @@ import {
   useDocumentStoreMutation,
 } from "@/hooks/api/use-analyze-mutations";
 import { useAuthStatusQuery, useProfileQuery } from "@/hooks/api/use-auth-queries";
+import { useDocumentListQuery } from "@/hooks/api/use-context-base-queries";
 import { getErrorKind } from "@/lib/api/errors";
 import { getAnalyzeBaseUrl } from "@/lib/api/http-client";
 import { queryKeys } from "@/lib/api/query-keys";
@@ -91,7 +89,11 @@ export function ContextBaseView() {
     isError: listError,
     error: listErr,
     refetch: refetchList,
-  } = useClientDocumentsQuery(customerId, customerName, agencyId || null);
+  } = useDocumentListQuery({
+    agencyId: agencyId || null,
+    clientId: customerId,
+    customerName,
+  });
   const storeMutation = useDocumentStoreMutation();
   const detailsMutation = useDocumentDetailsMutation();
   const deleteMutation = useDocumentDeleteMutation();
