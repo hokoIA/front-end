@@ -1,17 +1,15 @@
 import type { GoalLifecycleStatus } from "./ui";
-import type { GoalPriority } from "./ui";
 
-export type PlanningHubSortKey = "title" | "endDate" | "priority" | "status";
+export type PlanningHubSortKey = "title" | "endDate" | "status";
 
 export type PlanningFiltersState = {
   search: string;
   platform: string;
   status: GoalLifecycleStatus | "all";
-  priority: GoalPriority | "all";
   periodStart: string;
   periodEnd: string;
-  onlyPartialAnalysis: boolean;
-  onlyFinalAnalysis: boolean;
+  /** Meta com `analysis_text` preenchido (análise gerada). */
+  onlyWithAnalysis: boolean;
   onlyInProgress: boolean;
   onlyClosed: boolean;
   sort: PlanningHubSortKey;
@@ -22,11 +20,9 @@ export const defaultPlanningFilters: PlanningFiltersState = {
   search: "",
   platform: "all",
   status: "all",
-  priority: "all",
   periodStart: "",
   periodEnd: "",
-  onlyPartialAnalysis: false,
-  onlyFinalAnalysis: false,
+  onlyWithAnalysis: false,
   onlyInProgress: false,
   onlyClosed: false,
   sort: "endDate",

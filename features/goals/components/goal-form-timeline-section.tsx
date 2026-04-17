@@ -12,26 +12,26 @@ import {
 } from "@/components/ui/select";
 
 const STATUSES: GoalLifecycleStatus[] = [
-  "draft",
   "active",
-  "monitoring",
-  "attention",
   "completed",
   "closed",
   "archived",
+  "unknown",
 ];
 
 const labels: Record<GoalLifecycleStatus, string> = {
-  draft: "Rascunho",
   active: "Ativa",
-  monitoring: "Em acompanhamento",
-  attention: "Em atenção",
   completed: "Concluída",
-  closed: "Encerrada",
-  archived: "Arquivada",
+  closed: "Expirada",
+  archived: "Cancelada",
   unknown: "Indefinido",
 };
 
+/**
+ * FUTURA IMPLEMENTAÇÃO: edição completa de metas com campos adicionais do backend.
+ * Hoje o fluxo principal de criação não usa este componente (datas são coletadas
+ * diretamente no fluxo alinhado ao contrato atual).
+ */
 export function GoalFormTimelineSection({
   startDate,
   endDate,
@@ -100,7 +100,7 @@ export function GoalFormTimelineSection({
         </div>
       </div>
       <div className="grid gap-2">
-        <span className="text-sm font-medium text-hk-ink">Status inicial</span>
+        <span className="text-sm font-medium text-hk-ink">Status</span>
         <Select
           value={status}
           onValueChange={(v) =>

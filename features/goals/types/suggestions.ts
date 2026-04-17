@@ -1,19 +1,18 @@
-import type { GoalPriority } from "./ui";
+/** KPI sugerido pela API (`kpis: [{ kpi, label }]`). */
+export type GoalSuggestionKpiRow = {
+  kpi: string;
+  label: string;
+};
 
-/** Sugestão retornada por POST /api/goals/actions/suggestions (formato flexível). */
+/** Sugestão retornada por POST /api/goals/actions/suggestions. */
 export type GoalSuggestion = {
   id: string;
   title: string;
-  strategicObjective: string;
+  tipoMeta?: string;
+  descricao?: string;
+  rationale?: string;
+  /** `platform_name` da requisição / resposta. */
   platform: string;
-  rationaleTiming: string;
-  suggestedKpis: string[];
-  horizonLabel: string;
-  priority: GoalPriority;
-  description?: string;
-  smart?: string;
-  goalType?: string;
-  startDate?: string;
-  endDate?: string;
+  kpis: GoalSuggestionKpiRow[];
   raw?: unknown;
 };

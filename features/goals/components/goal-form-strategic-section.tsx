@@ -3,6 +3,10 @@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+/**
+ * FUTURA IMPLEMENTAÇÃO: campos estratégicos extras se o backend passar a persisti-los.
+ * O fluxo atual de metas usa apenas `descricao` no contrato real.
+ */
 export function GoalFormStrategicSection({
   description,
   smart,

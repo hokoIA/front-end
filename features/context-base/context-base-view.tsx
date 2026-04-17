@@ -319,7 +319,7 @@ export function ContextBaseView() {
   );
 
   return (
-    <div className="hk-page hk-page--mid space-y-8 pb-16 pt-6 lg:pt-8">
+    <div className="hk-page space-y-8 pb-16 pt-1 lg:pt-2">
       <ContextBasePageHeader />
       <ContextBaseIntroPanel />
 

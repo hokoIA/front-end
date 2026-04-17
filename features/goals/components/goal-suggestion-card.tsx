@@ -2,7 +2,6 @@
 
 import type { GoalSuggestion } from "@/features/goals/types/suggestions";
 import { platformLabel } from "@/features/goals/utils/platform-labels";
-import { GoalPriorityBadge } from "@/features/goals/components/goal-badges";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 
@@ -30,29 +29,31 @@ export function GoalSuggestionCard({
         <h3 className="text-base font-semibold text-hk-deep">
           {suggestion.title}
         </h3>
-        <GoalPriorityBadge priority={suggestion.priority} />
       </div>
       <p className="mt-1 text-xs font-medium text-hk-action">
         {platformLabel(suggestion.platform)}
       </p>
+      {suggestion.tipoMeta ? (
+        <p className="mt-2 text-xs text-hk-muted">
+          <span className="font-medium text-hk-ink">Tipo de meta:</span>{" "}
+          {suggestion.tipoMeta}
+        </p>
+      ) : null}
       <p className="mt-3 text-sm text-hk-muted">
-        <span className="font-medium text-hk-ink">Objetivo:</span>{" "}
-        {suggestion.strategicObjective}
+        <span className="font-medium text-hk-ink">Descrição:</span>{" "}
+        {suggestion.descricao?.trim() ? suggestion.descricao : "—"}
       </p>
       <p className="mt-2 text-sm text-hk-muted">
-        <span className="font-medium text-hk-ink">Por que agora:</span>{" "}
-        {suggestion.rationaleTiming}
+        <span className="font-medium text-hk-ink">Racional:</span>{" "}
+        {suggestion.rationale?.trim() ? suggestion.rationale : "—"}
       </p>
-      <p className="mt-2 text-xs text-hk-muted">
-        Horizonte sugerido:{" "}
-        <span className="font-medium text-hk-ink">
-          {suggestion.horizonLabel}
-        </span>
-      </p>
-      {suggestion.suggestedKpis.length > 0 ? (
+      {suggestion.kpis.length > 0 ? (
         <ul className="mt-3 list-inside list-disc text-xs text-hk-muted">
-          {suggestion.suggestedKpis.map((k) => (
-            <li key={k}>{k}</li>
+          {suggestion.kpis.map((k) => (
+            <li key={`${k.kpi}-${k.label}`}>
+              <span className="font-medium text-hk-ink">{k.label}</span>
+              <span className="text-hk-muted"> ({k.kpi})</span>
+            </li>
           ))}
         </ul>
       ) : null}

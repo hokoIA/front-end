@@ -14,8 +14,8 @@ export function GoalAnalysisHistory({
   if (analyses.length === 0) {
     return (
       <p className="text-sm text-hk-muted">
-        Nenhuma análise registrada ainda. Gere uma análise parcial durante o
-        período ou a análise final ao encerrar o ciclo.
+        Nenhuma análise disponível. Quando o período terminar, use “Gerar análise
+        do período”; o backend persiste o texto no campo analysis_text da meta.
       </p>
     );
   }
@@ -33,12 +33,10 @@ export function GoalAnalysisHistory({
         >
           <div>
             <p className="text-sm font-medium text-hk-deep">
-              {a.title ??
-                (a.type === "final" ? "Análise final" : "Análise parcial")}
+              {a.title ?? "Análise do período"}
             </p>
             <p className="text-xs text-hk-muted">
-              {a.type === "final" ? "Final" : "Parcial"} ·{" "}
-              {a.generatedAt ?? "data —"} · Período: {a.periodLabel ?? "—"}
+              Gerada em: {a.generatedAt ?? "—"}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -58,14 +56,13 @@ export function GoalAnalysisHistory({
               variant="ghost"
               className="gap-1 text-hk-muted"
               onClick={() => {
-                const blob = new Blob(
-                  [a.content ?? ""],
-                  { type: "text/plain;charset=utf-8" },
-                );
+                const blob = new Blob([a.content ?? ""], {
+                  type: "text/plain;charset=utf-8",
+                });
                 const url = URL.createObjectURL(blob);
                 const el = document.createElement("a");
                 el.href = url;
-                el.download = `analise-${a.id}.txt`;
+                el.download = `analise-meta-${a.id}.txt`;
                 el.click();
                 URL.revokeObjectURL(url);
               }}

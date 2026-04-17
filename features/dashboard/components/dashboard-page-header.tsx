@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import Link from "next/link";
 
 type DashboardPageHeaderProps = {
   /** Período já aplicado — habilita impressão da visão atual. */
@@ -14,7 +15,26 @@ export function DashboardPageHeader({
   onPrintPeriod,
 }: DashboardPageHeaderProps) {
   return (
-    <header className="flex flex-col gap-4 border-b border-hk-border-subtle pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <header className="border-b border-hk-border-subtle pb-6">
+      <nav
+        aria-label="Breadcrumb"
+        className="mb-3 text-xs text-hk-muted"
+      >
+        <ol className="flex flex-wrap items-center gap-1">
+          <li>
+            <Link
+              href="/dashboard"
+              className="transition-colors hover:text-hk-action"
+            >
+              Início
+            </Link>
+          </li>
+          <li className="text-hk-border" aria-hidden>
+            /
+          </li>
+          <li className="font-medium text-hk-ink">Dashboard</li>
+        </ol>
+      </nav>
       <div className="min-w-0 space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight text-hk-deep">
           Dashboard

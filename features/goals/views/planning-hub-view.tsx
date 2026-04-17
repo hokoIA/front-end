@@ -48,15 +48,19 @@ export function PlanningHubView() {
   const authed = auth?.authenticated === true;
 
   const { data: customers = [] } = useCustomersQuery(authed);
+
+  const [contextCustomer, setContextCustomer] = useState<"all" | string>("all");
+
+  const listParams =
+    contextCustomer === "all" ? null : { id_customer: contextCustomer };
+
   const {
     data: goalsRaw = [],
     isPending: goalsLoading,
     isError: goalsError,
     error: goalsErr,
     refetch,
-  } = useGoalsQuery(authed);
-
-  const [contextCustomer, setContextCustomer] = useState<"all" | string>("all");
+  } = useGoalsQuery(authed, listParams);
 
   useEffect(() => {
     setContextCustomer(readScope());
@@ -81,9 +85,23 @@ export function PlanningHubView() {
     null,
   );
 
+  const customersById = useMemo(
+    () => new Map(customers.map((c) => [String(c.id_customer), c.name])),
+    [customers],
+  );
+
   const normalized = useMemo(
-    () => goalsRaw.map((g, i) => normalizeGoal(g, i)),
-    [goalsRaw],
+    () =>
+      goalsRaw.map((g, i) => {
+        const n = normalizeGoal(g, i);
+        const cid = n.customerId;
+        if (cid && !n.customerName) {
+          const nm = customersById.get(String(cid));
+          if (nm) return { ...n, customerName: nm };
+        }
+        return n;
+      }),
+    [goalsRaw, customersById],
   );
 
   const filtered = useMemo(
@@ -131,7 +149,8 @@ export function PlanningHubView() {
             </h2>
             <p className="mt-1 text-sm text-hk-muted">
               Use <strong>Todos</strong> para visão agregada ou filtre por
-              cliente para focar metas, KPIs e análises da carteira.
+              cliente. Com um cliente selecionado, a listagem consulta a API já
+              filtrando por cliente.
             </p>
           </div>
           <div className="grid w-full gap-2 md:w-80">
@@ -166,10 +185,11 @@ export function PlanningHubView() {
       <GoalsOverviewBar
         active={overview.active}
         completed={overview.completed}
-        attention={overview.attention}
+        expired={overview.expired}
+        cancelled={overview.cancelled}
         platformsWithActive={overview.platformsWithActive}
         customersWithActivePlanning={overview.customersWithActivePlanning}
-        withPartialAnalysis={overview.withPartialAnalysis}
+        withAnalysis={overview.withAnalysis}
         readyForFinalHint={overview.readyForFinalHint}
         loading={goalsLoading}
       />
@@ -183,8 +203,8 @@ export function PlanningHubView() {
             <Target className="h-8 w-8 text-hk-action" aria-hidden />
             <h3 className="mt-3 font-semibold text-hk-deep">Nova meta</h3>
             <p className="mt-1 flex-1 text-sm text-hk-muted">
-              Fluxo em etapas: contexto, definição estratégica, temporalidade,
-              KPIs e revisão antes de salvar na API.
+              Fluxo alinhado ao POST /api/goals: cliente, plataforma, tipo,
+              título, descrição, período, KPIs e status ativo.
             </p>
             <Button
               type="button"
@@ -203,8 +223,8 @@ export function PlanningHubView() {
               Pedir sugestões da IA
             </h3>
             <p className="mt-1 flex-1 text-sm text-hk-muted">
-              Envia cliente, plataforma e momento ao endpoint de sugestões.
-              Compare propostas e transforme em meta com revisão completa.
+              Chama o endpoint real de sugestões com cliente, plataforma e
+              contexto opcional.
             </p>
             <Button
               type="button"
@@ -225,8 +245,8 @@ export function PlanningHubView() {
           Carteira de metas
         </h2>
         <p className="mt-1 text-sm text-hk-muted">
-          Acompanhamento vivo: status, KPI principal, progresso e presença de
-          análises parciais ou finais.
+          Status e KPIs refletem o contrato atual da API. Não há progresso
+          calculado vindo do backend.
         </p>
       </div>
 

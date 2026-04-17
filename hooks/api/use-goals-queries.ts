@@ -7,14 +7,22 @@ import {
   postGoalGenerateAnalysis,
   updateGoal,
 } from "@/lib/api/goals";
+import type { ListGoalsParams } from "@/lib/api/goals";
 import { queryKeys } from "@/lib/api/query-keys";
-import type { GoalInput } from "@/lib/types/goals";
+import type { GoalCreatePayload, GoalUpdatePayload } from "@/lib/types/goals";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useGoalsQuery(enabled = true) {
+export function useGoalsQuery(
+  enabled = true,
+  listParams?: ListGoalsParams | null,
+) {
+  const scopeKey =
+    listParams?.id_customer != null
+      ? String(listParams.id_customer)
+      : "all";
   return useQuery({
-    queryKey: queryKeys.goals.list("all"),
-    queryFn: () => listGoals(),
+    queryKey: queryKeys.goals.list(scopeKey),
+    queryFn: () => listGoals(listParams ?? undefined),
     enabled,
   });
 }
@@ -30,7 +38,7 @@ export function useGoalQuery(idGoal: string | null, enabled = true) {
 export function useCreateGoalMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: GoalInput) => createGoal(body),
+    mutationFn: (body: GoalCreatePayload) => createGoal(body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.goals.all });
     },
@@ -40,7 +48,7 @@ export function useCreateGoalMutation() {
 export function useUpdateGoalMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, body }: { id: string; body: GoalInput }) =>
+    mutationFn: ({ id, body }: { id: string; body: GoalUpdatePayload }) =>
       updateGoal(id, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.goals.all });
@@ -67,15 +75,13 @@ export function useGoalSuggestionsMutation() {
 export function useGoalGenerateAnalysisMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      idGoal,
-      body,
-    }: {
-      idGoal: string;
-      body?: Record<string, unknown>;
-    }) => postGoalGenerateAnalysis(idGoal, body),
-    onSuccess: () => {
+    mutationFn: ({ idGoal }: { idGoal: string }) =>
+      postGoalGenerateAnalysis(idGoal),
+    onSuccess: (_data, variables) => {
       qc.invalidateQueries({ queryKey: queryKeys.goals.all });
+      qc.invalidateQueries({
+        queryKey: queryKeys.goals.detail(variables.idGoal),
+      });
     },
   });
 }

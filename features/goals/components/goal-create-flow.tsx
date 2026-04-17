@@ -1,19 +1,12 @@
 "use client";
 
-import { GoalFormStrategicSection } from "@/features/goals/components/goal-form-strategic-section";
-import { GoalFormTimelineSection } from "@/features/goals/components/goal-form-timeline-section";
 import { GoalKpiBuilder } from "@/features/goals/components/goal-kpi-builder";
 import type { GoalSuggestion } from "@/features/goals/types/suggestions";
-import type {
-  GoalLifecycleStatus,
-  GoalOrigin,
-  GoalPriority,
-  GoalKpiUi,
-} from "@/features/goals/types/ui";
+import type { GoalKpiUi } from "@/features/goals/types/ui";
 import { PLANNING_PLATFORM_OPTIONS } from "@/features/goals/utils/platform-labels";
 import { useCreateGoalMutation } from "@/hooks/api/use-goals-queries";
 import type { Customer } from "@/lib/types/customer";
-import type { GoalInput } from "@/lib/types/goals";
+import type { GoalCreatePayload } from "@/lib/types/goals";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,88 +25,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { ChevronLeft, ChevronRight, Loader2, Target } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const STEPS = [
-  "Contexto",
-  "Estratégia",
-  "Temporalidade",
-  "KPIs",
-  "Revisão",
-] as const;
+const STEPS = ["Contexto", "Descrição", "Período", "KPIs", "Revisão"] as const;
 
-const origins: { value: GoalOrigin; label: string }[] = [
-  { value: "manual", label: "Manual" },
-  { value: "ai", label: "Sugerida por IA" },
-  { value: "meeting", label: "Derivada de reunião" },
-  { value: "prior_analysis", label: "Derivada de análise anterior" },
-  { value: "unknown", label: "Outro / indefinido" },
-];
-
-const priorities: { value: GoalPriority; label: string }[] = [
-  { value: "critical", label: "Crítica" },
-  { value: "high", label: "Alta" },
-  { value: "medium", label: "Média" },
-  { value: "low", label: "Baixa" },
-  { value: "unknown", label: "—" },
-];
+function parseOptionalNumber(raw: string): number | null {
+  const t = raw.trim();
+  if (!t) return null;
+  const n = Number(t.replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+}
 
 function buildPayload(d: {
   id_customer: string;
-  platform: string;
-  goal_type: string;
+  platform_name: string;
+  tipo_meta: string;
   title: string;
-  priority: GoalPriority;
-  responsible: string;
-  origin: GoalOrigin;
-  campaign_link: string;
-  description: string;
-  smart: string;
-  rationale: string;
-  hypothesis: string;
-  expectedImpact: string;
-  internalNotes: string;
-  startDate: string;
-  endDate: string;
-  durationWeeks: string;
-  checkpointCadence: string;
-  status: GoalLifecycleStatus;
+  descricao: string;
+  data_inicio: string;
+  data_fim: string;
   kpis: GoalKpiUi[];
-}): GoalInput {
-  const weeks = d.durationWeeks ? Number(d.durationWeeks) : undefined;
+}): GoalCreatePayload {
+  const rows = d.kpis
+    .filter((k) => k.kpi.trim() && k.name.trim())
+    .map((k) => ({
+      kpi: k.kpi.trim(),
+      label: k.name.trim(),
+      baseline: parseOptionalNumber(k.baseline ?? ""),
+      target: parseOptionalNumber(k.target ?? ""),
+      unit: k.unit?.trim() ? k.unit.trim() : null,
+    }));
   return {
-    id_customer: d.id_customer,
-    platform: d.platform,
-    goal_type: d.goal_type || undefined,
-    title: d.title,
-    priority: d.priority === "unknown" ? undefined : d.priority,
-    responsible: d.responsible || undefined,
-    origin: d.origin === "unknown" ? undefined : d.origin,
-    campaign_link: d.campaign_link || undefined,
-    description: d.description || undefined,
-    smart: d.smart || undefined,
-    rationale: d.rationale || undefined,
-    hypothesis: d.hypothesis || undefined,
-    expected_impact: d.expectedImpact || undefined,
-    internal_notes: d.internalNotes || undefined,
-    start_date: d.startDate || undefined,
-    end_date: d.endDate || undefined,
-    duration_weeks: Number.isFinite(weeks) ? weeks : undefined,
-    checkpoint_cadence: d.checkpointCadence || undefined,
-    status: d.status,
-    kpis: d.kpis
-      .filter((k) => k.name.trim())
-      .map((k) => ({
-        id: k.id,
-        name: k.name,
-        baseline: k.baseline,
-        target: k.target,
-        unit: k.unit,
-        direction: k.direction,
-        note: k.note,
-      })),
+    id_customer: Number(d.id_customer),
+    platform_name: d.platform_name.trim(),
+    tipo_meta: d.tipo_meta.trim(),
+    title: d.title.trim(),
+    descricao: d.descricao.trim(),
+    data_inicio: d.data_inicio,
+    data_fim: d.data_fim,
+    kpis: rows,
+    status: "ativo",
   };
 }
 
@@ -127,54 +81,29 @@ export function GoalCreateFlow({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customers: Customer[];
-  /** Cliente obrigatório escolhido no contexto global (id). */
   requireCustomerId: string | null;
   initialFromSuggestion?: GoalSuggestion | null;
 }) {
   const create = useCreateGoalMutation();
   const [step, setStep] = useState(0);
   const [id_customer, setIdCustomer] = useState("");
-  const [platform, setPlatform] = useState("facebook");
-  const [goal_type, setGoalType] = useState("");
+  const [platform_name, setPlatformName] = useState("facebook");
+  const [tipo_meta, setTipoMeta] = useState("");
   const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<GoalPriority>("high");
-  const [responsible, setResponsible] = useState("");
-  const [origin, setOrigin] = useState<GoalOrigin>("manual");
-  const [campaign_link, setCampaignLink] = useState("");
-  const [description, setDescription] = useState("");
-  const [smart, setSmart] = useState("");
-  const [rationale, setRationale] = useState("");
-  const [hypothesis, setHypothesis] = useState("");
-  const [expectedImpact, setExpectedImpact] = useState("");
-  const [internalNotes, setInternalNotes] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [durationWeeks, setDurationWeeks] = useState("");
-  const [checkpointCadence, setCheckpointCadence] = useState("Mensal");
-  const [status, setStatus] = useState<GoalLifecycleStatus>("draft");
+  const [descricao, setDescricao] = useState("");
+  const [data_inicio, setDataInicio] = useState("");
+  const [data_fim, setDataFim] = useState("");
   const [kpis, setKpis] = useState<GoalKpiUi[]>([]);
 
   const reset = useCallback(() => {
     setStep(0);
     setIdCustomer(requireCustomerId ?? "");
-    setPlatform("facebook");
-    setGoalType("");
+    setPlatformName("facebook");
+    setTipoMeta("");
     setTitle("");
-    setPriority("high");
-    setResponsible("");
-    setOrigin("manual");
-    setCampaignLink("");
-    setDescription("");
-    setSmart("");
-    setRationale("");
-    setHypothesis("");
-    setExpectedImpact("");
-    setInternalNotes("");
-    setStartDate("");
-    setEndDate("");
-    setDurationWeeks("");
-    setCheckpointCadence("Mensal");
-    setStatus("draft");
+    setDescricao("");
+    setDataInicio("");
+    setDataFim("");
     setKpis([]);
   }, [requireCustomerId]);
 
@@ -190,45 +119,21 @@ export function GoalCreateFlow({
     if (!open || !initialFromSuggestion) return;
     const s = initialFromSuggestion;
     setTitle(s.title);
-    setPlatform(s.platform);
-    setGoalType(s.goalType ?? "");
-    setDescription(s.description ?? s.strategicObjective);
-    setSmart(s.smart ?? "");
-    setRationale(s.rationaleTiming);
-    setPriority(s.priority === "unknown" ? "high" : s.priority);
-    setOrigin("ai");
-    setStartDate(s.startDate ?? "");
-    setEndDate(s.endDate ?? "");
+    setPlatformName(s.platform?.trim() ? s.platform : "facebook");
+    setTipoMeta(s.tipoMeta ?? "");
+    setDescricao(s.descricao ?? "");
     setKpis(
-      s.suggestedKpis.map((name, i) => ({
+      s.kpis.map((row, i) => ({
         id: `kpi-sg-${i}`,
-        name,
-        direction: "increase" as const,
+        kpi: row.kpi,
+        name: row.label,
+        baseline: "",
+        target: "",
+        unit: "",
       })),
     );
     setStep(0);
   }, [open, initialFromSuggestion]);
-
-  const patchStrategic = (patch: Record<string, string>) => {
-    if (patch.description !== undefined) setDescription(patch.description);
-    if (patch.smart !== undefined) setSmart(patch.smart);
-    if (patch.rationale !== undefined) setRationale(patch.rationale);
-    if (patch.hypothesis !== undefined) setHypothesis(patch.hypothesis);
-    if (patch.expectedImpact !== undefined)
-      setExpectedImpact(patch.expectedImpact);
-    if (patch.internalNotes !== undefined)
-      setInternalNotes(patch.internalNotes);
-  };
-
-  const patchTimeline = (patch: Record<string, string | GoalLifecycleStatus>) => {
-    if (patch.startDate !== undefined) setStartDate(String(patch.startDate));
-    if (patch.endDate !== undefined) setEndDate(String(patch.endDate));
-    if (patch.durationWeeks !== undefined)
-      setDurationWeeks(String(patch.durationWeeks));
-    if (patch.checkpointCadence !== undefined)
-      setCheckpointCadence(String(patch.checkpointCadence));
-    if (patch.status !== undefined) setStatus(patch.status as GoalLifecycleStatus);
-  };
 
   const close = (v: boolean) => {
     if (!v) reset();
@@ -247,35 +152,42 @@ export function GoalCreateFlow({
       toast.error("Informe o título da meta.");
       return;
     }
+    if (!tipo_meta.trim()) {
+      toast.error("Informe o tipo de meta.");
+      return;
+    }
+    if (!descricao.trim()) {
+      toast.error("Informe a descrição da meta.");
+      return;
+    }
+    if (!data_inicio || !data_fim) {
+      toast.error("Informe data de início e data de fim.");
+      return;
+    }
+    const validKpis = kpis.filter((k) => k.kpi.trim() && k.name.trim());
+    if (validKpis.length === 0) {
+      toast.error("Inclua pelo menos um KPI com identificador e nome.");
+      return;
+    }
     try {
       await create.mutateAsync(
         buildPayload({
           id_customer,
-          platform,
-          goal_type,
+          platform_name,
+          tipo_meta,
           title,
-          priority,
-          responsible,
-          origin,
-          campaign_link,
-          description,
-          smart,
-          rationale,
-          hypothesis,
-          expectedImpact,
-          internalNotes,
-          startDate,
-          endDate,
-          durationWeeks,
-          checkpointCadence,
-          status,
+          descricao,
+          data_inicio,
+          data_fim,
           kpis,
         }),
       );
-      toast.success("Meta criada. Acompanhe execução e gere análises no detalhe.");
+      toast.success("Meta criada com sucesso.");
       close(false);
-    } catch {
-      toast.error("Não foi possível salvar a meta.");
+    } catch (e) {
+      const msg =
+        e instanceof Error ? e.message : "Não foi possível salvar a meta.";
+      toast.error(msg);
     }
   };
 
@@ -288,11 +200,11 @@ export function GoalCreateFlow({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl text-white">
               <Target className="h-6 w-6" aria-hidden />
-              Nova meta estratégica
+              Nova meta
             </DialogTitle>
             <DialogDescription className="text-white/85">
-              Etapa {step + 1} de {STEPS.length}: {STEPS[step]}. Revise tudo antes
-              de publicar — especialmente se a origem for IA.
+              Etapa {step + 1} de {STEPS.length}: {STEPS[step]}. Campos alinhados
+              ao contrato real do backend.
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4 flex gap-1">
@@ -308,7 +220,7 @@ export function GoalCreateFlow({
         <div className="space-y-6 px-6 py-5">
           {step === 0 && (
             <div className="space-y-4">
-              <p className="text-sm font-medium text-hk-deep">Contexto da meta</p>
+              <p className="text-sm font-medium text-hk-deep">Contexto</p>
               <div className="grid gap-2">
                 <Label>Cliente</Label>
                 <Select value={id_customer} onValueChange={setIdCustomer}>
@@ -325,8 +237,8 @@ export function GoalCreateFlow({
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label>Plataforma</Label>
-                <Select value={platform} onValueChange={setPlatform}>
+                <Label>Plataforma (platform_name)</Label>
+                <Select value={platform_name} onValueChange={setPlatformName}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -340,99 +252,66 @@ export function GoalCreateFlow({
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label>Tipo de meta</Label>
+                <Label>Tipo de meta (tipo_meta)</Label>
                 <Input
-                  value={goal_type}
-                  onChange={(e) => setGoalType(e.target.value)}
-                  placeholder="Ex.: Tráfego, branding, conversão"
+                  value={tipo_meta}
+                  onChange={(e) => setTipoMeta(e.target.value)}
+                  placeholder="Ex.: conversão, branding, tráfego"
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Título / OKR</Label>
+                <Label>Título</Label>
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Nome claro da meta"
                 />
               </div>
-              <div className="grid gap-2 sm:grid-cols-2">
-                <div className="grid gap-2">
-                  <Label>Prioridade</Label>
-                  <Select
-                    value={priority}
-                    onValueChange={(v) => setPriority(v as GoalPriority)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {priorities.map((p) => (
-                        <SelectItem key={p.value} value={p.value}>
-                          {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Origem</Label>
-                  <Select
-                    value={origin}
-                    onValueChange={(v) => setOrigin(v as GoalOrigin)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {origins.map((o) => (
-                        <SelectItem key={o.value} value={o.value}>
-                          {o.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>Responsável</Label>
-                <Input
-                  value={responsible}
-                  onChange={(e) => setResponsible(e.target.value)}
-                  placeholder="Nome na agência ou squad"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Vínculo campanha / plano (opcional)</Label>
-                <Input
-                  value={campaign_link}
-                  onChange={(e) => setCampaignLink(e.target.value)}
-                  placeholder="ID, nome ou link interno"
-                />
-              </div>
             </div>
           )}
 
           {step === 1 && (
-            <GoalFormStrategicSection
-              description={description}
-              smart={smart}
-              rationale={rationale}
-              hypothesis={hypothesis}
-              expectedImpact={expectedImpact}
-              internalNotes={internalNotes}
-              onChange={patchStrategic}
-            />
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-hk-deep">Descrição</p>
+              <Label htmlFor="goal-desc">Descrição (descricao)</Label>
+              <Textarea
+                id="goal-desc"
+                rows={8}
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                placeholder="Contexto e definição da meta em texto livre."
+              />
+            </div>
           )}
 
           {step === 2 && (
-            <GoalFormTimelineSection
-              startDate={startDate}
-              endDate={endDate}
-              durationWeeks={durationWeeks}
-              checkpointCadence={checkpointCadence}
-              status={status}
-              onChange={patchTimeline}
-            />
+            <div className="space-y-4">
+              <p className="text-sm font-medium text-hk-deep">Período</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label htmlFor="g-ini">Início (data_inicio)</Label>
+                  <Input
+                    id="g-ini"
+                    type="date"
+                    value={data_inicio}
+                    onChange={(e) => setDataInicio(e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="g-fim">Fim (data_fim)</Label>
+                  <Input
+                    id="g-fim"
+                    type="date"
+                    value={data_fim}
+                    onChange={(e) => setDataFim(e.target.value)}
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-hk-muted">
+                Novas metas são enviadas com <strong>status: ativo</strong>, como
+                esperado pelo backend na criação.
+              </p>
+            </div>
           )}
 
           {step === 3 && <GoalKpiBuilder kpis={kpis} onChange={setKpis} />}
@@ -448,7 +327,11 @@ export function GoalCreateFlow({
                 </li>
                 <li>
                   <span className="font-medium text-hk-ink">Plataforma:</span>{" "}
-                  {platform}
+                  {platform_name}
+                </li>
+                <li>
+                  <span className="font-medium text-hk-ink">Tipo:</span>{" "}
+                  {tipo_meta || "—"}
                 </li>
                 <li>
                   <span className="font-medium text-hk-ink">Título:</span>{" "}
@@ -456,11 +339,11 @@ export function GoalCreateFlow({
                 </li>
                 <li>
                   <span className="font-medium text-hk-ink">Período:</span>{" "}
-                  {startDate || "—"} → {endDate || "—"}
+                  {data_inicio || "—"} → {data_fim || "—"}
                 </li>
                 <li>
-                  <span className="font-medium text-hk-ink">KPIs:</span>{" "}
-                  {kpis.filter((k) => k.name.trim()).length}
+                  <span className="font-medium text-hk-ink">KPIs válidos:</span>{" "}
+                  {kpis.filter((k) => k.kpi.trim() && k.name.trim()).length}
                 </li>
               </ul>
             </div>

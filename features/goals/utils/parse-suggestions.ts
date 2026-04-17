@@ -1,5 +1,8 @@
-import type { GoalSuggestion } from "@/features/goals/types/suggestions";
-import { mapPriority } from "@/features/goals/utils/normalize-goal";
+import type {
+  GoalSuggestion,
+  GoalSuggestionKpiRow,
+} from "@/features/goals/types/suggestions";
+import type { GoalSuggestionApi } from "@/lib/types/goals";
 import { record } from "./record";
 
 function str(v: unknown): string | undefined {
@@ -8,66 +11,51 @@ function str(v: unknown): string | undefined {
   return s.length ? s : undefined;
 }
 
-function stringArray(v: unknown): string[] {
-  if (!Array.isArray(v)) return [];
-  return v.map((x) => String(x)).filter(Boolean);
-}
-
-export function parseGoalSuggestionsResponse(data: unknown): GoalSuggestion[] {
-  let rows: unknown[] = [];
-  if (Array.isArray(data)) rows = data;
-  else {
-    const r = record(data);
-    const nested =
-      r?.suggestions ??
-      r?.data ??
-      r?.items ??
-      r?.proposals ??
-      r?.metas_sugeridas;
-    if (Array.isArray(nested)) rows = nested;
-  }
-
-  return rows.map((row, i) => {
+function parseKpiRows(raw: unknown): GoalSuggestionKpiRow[] {
+  if (!Array.isArray(raw)) return [];
+  const out: GoalSuggestionKpiRow[] = [];
+  for (const row of raw) {
     const r =
       typeof row === "object" && row ? (row as Record<string, unknown>) : {};
-    return {
-      id: str(r.id) ?? `sg-${i}`,
-      title:
-        str(r.title ?? r.titulo ?? r.name ?? r.meta_title) ??
-        `Sugestão ${i + 1}`,
-      strategicObjective:
-        str(
-          r.strategic_objective ??
-            r.objetivo ??
-            r.objective ??
-            r.objetivo_estrategico,
-        ) ?? "",
-      platform: str(r.platform ?? r.plataforma ?? r.channel) ?? "—",
-      rationaleTiming:
-        str(
-          r.rationale_timing ??
-            r.why_now ??
-            r.por_que_agora ??
-            r.rationale ??
-            r.contexto,
-        ) ?? "",
-      suggestedKpis: stringArray(
-        r.suggested_kpis ?? r.kpis ?? r.indicadores ?? r.kpi_suggestions,
-      ),
-      horizonLabel:
-        str(
-          r.horizon ??
-            r.horizonte ??
-            r.execution_horizon ??
-            r.prazo_sugerido,
-        ) ?? "—",
-      priority: mapPriority(r.priority ?? r.prioridade),
-      description: str(r.description ?? r.descricao),
-      smart: str(r.smart ?? r.smart_description),
-      goalType: str(r.goal_type ?? r.tipo_meta),
-      startDate: str(r.start_date ?? r.data_inicio),
-      endDate: str(r.end_date ?? r.data_fim),
-      raw: row,
-    };
+    const kpi = str(r.kpi);
+    const label = str(r.label);
+    if (kpi && label) out.push({ kpi, label });
+  }
+  return out;
+}
+
+function mapSuggestionRow(row: unknown, index: number): GoalSuggestion {
+  const r =
+    typeof row === "object" && row ? (row as GoalSuggestionApi) : {};
+  const kpis = parseKpiRows(r.kpis);
+  return {
+    id: str(r.id) ?? `sg-${index}`,
+    title: str(r.title) ?? `Sugestão ${index + 1}`,
+    tipoMeta: str(r.tipo_meta),
+    descricao: str(r.descricao),
+    rationale: str(r.rationale),
+    platform: "",
+    kpis,
+    raw: row,
+  };
+}
+
+export function parseGoalSuggestionsResponse(
+  data: unknown,
+  fallbackPlatformName?: string,
+): GoalSuggestion[] {
+  const root = record(data);
+  let rows: unknown[] = [];
+  if (Array.isArray(data)) rows = data;
+  else if (Array.isArray(root?.suggestions)) rows = root.suggestions as unknown[];
+  else if (Array.isArray(root?.items)) rows = root.items as unknown[];
+  else if (Array.isArray(root?.data)) rows = root.data as unknown[];
+
+  const platform =
+    str(root?.platform_name) ?? fallbackPlatformName ?? "";
+
+  return rows.map((row, i) => {
+    const s = mapSuggestionRow(row, i);
+    return { ...s, platform: s.platform || platform };
   });
 }

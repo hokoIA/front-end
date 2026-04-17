@@ -2,7 +2,6 @@
 
 import type { PlanningFiltersState } from "@/features/goals/types/filters";
 import type { GoalLifecycleStatus } from "@/features/goals/types/ui";
-import type { GoalPriority } from "@/features/goals/types/ui";
 import { PLANNING_PLATFORM_OPTIONS } from "@/features/goals/utils/platform-labels";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -18,23 +17,11 @@ import { Search } from "lucide-react";
 
 const STATUSES: { value: GoalLifecycleStatus | "all"; label: string }[] = [
   { value: "all", label: "Todos os status" },
-  { value: "draft", label: "Rascunho" },
-  { value: "active", label: "Ativa" },
-  { value: "monitoring", label: "Em acompanhamento" },
-  { value: "attention", label: "Em atenção" },
-  { value: "completed", label: "Concluída" },
-  { value: "closed", label: "Encerrada" },
-  { value: "archived", label: "Arquivada" },
+  { value: "active", label: "Ativa (ativo)" },
+  { value: "completed", label: "Concluída (concluido)" },
+  { value: "closed", label: "Expirada (expirado)" },
+  { value: "archived", label: "Cancelada (cancelado)" },
   { value: "unknown", label: "Indefinido" },
-];
-
-const PRIORITIES: { value: GoalPriority | "all"; label: string }[] = [
-  { value: "all", label: "Todas" },
-  { value: "critical", label: "Crítica" },
-  { value: "high", label: "Alta" },
-  { value: "medium", label: "Média" },
-  { value: "low", label: "Baixa" },
-  { value: "unknown", label: "—" },
 ];
 
 export function GoalsFiltersToolbar({
@@ -65,7 +52,7 @@ export function GoalsFiltersToolbar({
             />
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
           <div>
             <Label className="text-xs text-hk-muted">Plataforma</Label>
             <Select
@@ -108,29 +95,6 @@ export function GoalsFiltersToolbar({
             </Select>
           </div>
           <div>
-            <Label className="text-xs text-hk-muted">Prioridade</Label>
-            <Select
-              value={value.priority}
-              onValueChange={(v) =>
-                onChange({
-                  ...value,
-                  priority: v as PlanningFiltersState["priority"],
-                })
-              }
-            >
-              <SelectTrigger className="mt-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PRIORITIES.map((p) => (
-                  <SelectItem key={p.value} value={p.value}>
-                    {p.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
             <Label className="text-xs text-hk-muted">Ordenação</Label>
             <Select
               value={`${value.sort}-${value.sortDir}`}
@@ -150,7 +114,6 @@ export function GoalsFiltersToolbar({
                 <SelectItem value="endDate-desc">Fim (mais distante)</SelectItem>
                 <SelectItem value="title-asc">Título (A–Z)</SelectItem>
                 <SelectItem value="title-desc">Título (Z–A)</SelectItem>
-                <SelectItem value="priority-desc">Prioridade (maior)</SelectItem>
                 <SelectItem value="status-asc">Status</SelectItem>
               </SelectContent>
             </Select>
@@ -193,7 +156,7 @@ export function GoalsFiltersToolbar({
               onChange({ ...value, onlyInProgress: c === true })
             }
           />
-          Em andamento
+          Somente ativas
         </label>
         <label className="flex cursor-pointer items-center gap-2 text-sm">
           <Checkbox
@@ -202,25 +165,16 @@ export function GoalsFiltersToolbar({
               onChange({ ...value, onlyClosed: c === true })
             }
           />
-          Encerradas
+          Encerradas (concluída, expirada ou cancelada)
         </label>
         <label className="flex cursor-pointer items-center gap-2 text-sm">
           <Checkbox
-            checked={value.onlyPartialAnalysis}
+            checked={value.onlyWithAnalysis}
             onCheckedChange={(c) =>
-              onChange({ ...value, onlyPartialAnalysis: c === true })
+              onChange({ ...value, onlyWithAnalysis: c === true })
             }
           />
-          Com análise parcial
-        </label>
-        <label className="flex cursor-pointer items-center gap-2 text-sm">
-          <Checkbox
-            checked={value.onlyFinalAnalysis}
-            onCheckedChange={(c) =>
-              onChange({ ...value, onlyFinalAnalysis: c === true })
-            }
-          />
-          Com análise final
+          Com análise gerada
         </label>
       </div>
     </div>

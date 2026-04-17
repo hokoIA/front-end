@@ -1,7 +1,6 @@
 "use client";
 
 import { GoalSuggestionCard } from "@/features/goals/components/goal-suggestion-card";
-import { MOCK_GOAL_SUGGESTIONS } from "@/features/goals/types/mocks";
 import type { GoalSuggestion } from "@/features/goals/types/suggestions";
 import { parseGoalSuggestionsResponse } from "@/features/goals/utils/parse-suggestions";
 import { PLANNING_PLATFORM_OPTIONS } from "@/features/goals/utils/platform-labels";
@@ -47,7 +46,7 @@ export function GoalSuggestionFlow({
   const suggest = useGoalSuggestionsMutation();
   const [phase, setPhase] = useState<Phase>("form");
   const [id_customer, setIdCustomer] = useState("");
-  const [platform, setPlatform] = useState("facebook");
+  const [platform_name, setPlatformName] = useState("facebook");
   const [momentNote, setMomentNote] = useState("");
   const [results, setResults] = useState<GoalSuggestion[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -79,31 +78,20 @@ export function GoalSuggestionFlow({
     }
     try {
       const raw = await suggest.mutateAsync({
-        id_customer,
-        platform,
-        moment_note: momentNote || undefined,
-        context: momentNote || undefined,
+        id_customer: Number(id_customer),
+        platform_name,
+        context: momentNote.trim() ? momentNote.trim() : null,
       });
-      let list = parseGoalSuggestionsResponse(raw);
-      if (list.length < 5) {
-        const merged = [...list];
-        for (const m of MOCK_GOAL_SUGGESTIONS) {
-          if (merged.length >= 5) break;
-          if (!merged.some((x) => x.title === m.title)) merged.push(m);
-        }
-        list = merged;
-      }
+      const list = parseGoalSuggestionsResponse(raw, platform_name);
       setResults(list);
       setPhase("results");
       if (list.length === 0) {
-        toast.message("Nenhuma sugestão retornada — verifique o contrato da API.");
+        toast.message("Nenhuma sugestão retornada para este pedido.");
       }
-    } catch {
-      toast.error(
-        "Falha ao gerar sugestões. Exibindo propostas de exemplo para você revisar o fluxo.",
-      );
-      setResults(MOCK_GOAL_SUGGESTIONS);
-      setPhase("results");
+    } catch (e) {
+      const msg =
+        e instanceof Error ? e.message : "Falha ao gerar sugestões.";
+      toast.error(msg);
     }
   };
 
@@ -118,8 +106,8 @@ export function GoalSuggestionFlow({
             Sugestões da IA
           </DialogTitle>
           <DialogDescription>
-            A IA usa o cliente, a plataforma e o contexto dos documentos na base
-            vetorial. Revise e edite antes de salvar qualquer meta.
+            Envia id_customer (número), platform_name e context (texto ou null)
+            ao endpoint real de sugestões.
           </DialogDescription>
         </DialogHeader>
 
@@ -141,8 +129,8 @@ export function GoalSuggestionFlow({
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>Plataforma</Label>
-              <Select value={platform} onValueChange={setPlatform}>
+              <Label>Plataforma (platform_name)</Label>
+              <Select value={platform_name} onValueChange={setPlatformName}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -156,41 +144,45 @@ export function GoalSuggestionFlow({
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>Momento do cliente (opcional)</Label>
+              <Label>Contexto (opcional)</Label>
               <Textarea
                 rows={3}
                 value={momentNote}
                 onChange={(e) => setMomentNote(e.target.value)}
-                placeholder="Ex.: lançamento em 30 dias, foco em leads B2B, orçamento reduzido no trimestre…"
+                placeholder="Contexto opcional enviado ao backend (ou vazio)."
               />
             </div>
-            <p className="text-xs text-hk-muted">
-              Sem integrações conectadas, o backend pode retornar contexto
-              limitado — o fluxo de UX permanece o mesmo.
-            </p>
           </div>
         )}
 
         {phase === "results" && (
           <div className="space-y-4">
-            <p className="text-sm text-hk-muted">
-              {results.length} proposta(s). Selecione para comparar ou transforme
-              diretamente em meta (abre o formulário completo para edição).
-            </p>
-            <div className="grid max-h-[55vh] gap-4 overflow-y-auto pr-1 md:grid-cols-2">
-              {results.map((s) => (
-                <GoalSuggestionCard
-                  key={s.id}
-                  suggestion={s}
-                  selected={selectedId === s.id}
-                  onSelect={() => setSelectedId(s.id)}
-                  onUse={() => {
-                    onTransformToGoal(s);
-                    close(false);
-                  }}
-                />
-              ))}
-            </div>
+            {results.length === 0 ? (
+              <p className="text-sm text-hk-muted">
+                Nenhuma sugestão disponível. Ajuste o pedido e tente novamente.
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-hk-muted">
+                  {results.length} proposta(s). Selecione para comparar ou
+                  transforme em meta (abre o fluxo de criação).
+                </p>
+                <div className="grid max-h-[55vh] gap-4 overflow-y-auto pr-1 md:grid-cols-2">
+                  {results.map((s) => (
+                    <GoalSuggestionCard
+                      key={s.id}
+                      suggestion={s}
+                      selected={selectedId === s.id}
+                      onSelect={() => setSelectedId(s.id)}
+                      onUse={() => {
+                        onTransformToGoal(s);
+                        close(false);
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
 

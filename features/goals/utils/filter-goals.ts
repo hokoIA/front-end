@@ -42,26 +42,15 @@ export function filterPlanningGoals(
     rows = rows.filter((g) => g.status === filters.status);
   }
 
-  if (filters.priority !== "all") {
-    rows = rows.filter((g) => g.priority === filters.priority);
-  }
-
   rows = rows.filter((g) =>
     inPeriod(g, filters.periodStart, filters.periodEnd),
   );
 
-  if (filters.onlyPartialAnalysis) {
-    rows = rows.filter((g) =>
-      g.analyses.some((a) => a.type === "partial"),
-    );
-  }
-  if (filters.onlyFinalAnalysis) {
-    rows = rows.filter((g) => g.analyses.some((a) => a.type === "final"));
+  if (filters.onlyWithAnalysis) {
+    rows = rows.filter((g) => g.analyses.length > 0);
   }
   if (filters.onlyInProgress) {
-    rows = rows.filter((g) =>
-      ["active", "monitoring", "attention", "draft"].includes(g.status),
-    );
+    rows = rows.filter((g) => g.status === "active");
   }
   if (filters.onlyClosed) {
     rows = rows.filter((g) =>
@@ -76,10 +65,6 @@ export function filterPlanningGoals(
     }
     if (filters.sort === "status") {
       return dir * a.status.localeCompare(b.status);
-    }
-    if (filters.sort === "priority") {
-      const order = { critical: 4, high: 3, medium: 2, low: 1, unknown: 0 };
-      return dir * ((order[a.priority] ?? 0) - (order[b.priority] ?? 0));
     }
     const da = a.endDate ?? "";
     const db = b.endDate ?? "";

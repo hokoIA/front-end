@@ -227,7 +227,7 @@ export function TeamHubView() {
     overview.teamCount === 0;
 
   return (
-    <div className="hk-page hk-page--narrow flex flex-col gap-8 py-8">
+    <div className="hk-page flex flex-col gap-8 py-8">
       <TeamPageHeader />
 
       <TeamOverviewBar
