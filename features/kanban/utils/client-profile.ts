@@ -12,33 +12,22 @@ export function readKanbanClientRoleAssignments(
   client: KanbanClientRowUi,
 ): Record<string, string> {
   const r = record(client.raw) ?? {};
-  const nested =
-    record(r.kanban_profile) ??
-    record(r.kanban_operational_profile) ??
-    record(r.profile) ??
-    {};
-  const flat: Record<string, unknown> = { ...r, ...nested };
+  const roles = record(r.roles) ?? {};
   const out: Record<string, string> = {};
   for (const role of KANBAN_CLIENT_ROLE_KEYS) {
-    for (const key of role.apiKeys) {
-      const v = flat[key];
-      if (v !== null && v !== undefined && str(v)) {
-        out[role.key] = String(v);
-        break;
-      }
-    }
+    out[role.key] = str(roles[role.responseKey] ?? "");
   }
   return out;
 }
 
-/** Monta corpo do PUT com a primeira chave canônica por papel (compatível com vários backends). */
+/** Monta payload compatível com o backend atual (role_*_name). */
 export function buildKanbanClientProfileBody(
   selections: Record<string, string>,
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {};
   for (const role of KANBAN_CLIENT_ROLE_KEYS) {
-    const id = selections[role.key]?.trim();
-    body[role.apiKeys[0]] = id || null;
+    const name = selections[role.key]?.trim();
+    body[role.apiKey] = name || null;
   }
   return body;
 }

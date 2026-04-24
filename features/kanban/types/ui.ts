@@ -52,32 +52,32 @@ export const KANBAN_CLIENT_ROLE_KEYS = [
   {
     key: "briefing",
     label: "Responsável pelo briefing",
-    apiKeys: ["briefing_lead", "briefing", "responsavel_briefing"],
+    apiKey: "role_briefing_name",
+    responseKey: "briefing",
   },
   {
     key: "design",
     label: "Responsável pelo design",
-    apiKeys: ["design_lead", "design", "responsavel_design"],
+    apiKey: "role_design_name",
+    responseKey: "design",
   },
   {
-    key: "copy",
+    key: "text",
     label: "Responsável pelo texto",
-    apiKeys: ["copy_lead", "copy", "texto", "responsavel_texto"],
+    apiKey: "role_text_name",
+    responseKey: "text",
   },
   {
     key: "review",
     label: "Responsável pela revisão",
-    apiKeys: ["review_lead", "review", "revisao", "responsavel_revisao"],
+    apiKey: "role_review_name",
+    responseKey: "review",
   },
   {
-    key: "scheduling",
+    key: "schedule",
     label: "Responsável pelo agendamento",
-    apiKeys: [
-      "scheduling_lead",
-      "scheduling",
-      "agendamento",
-      "responsavel_agendamento",
-    ],
+    apiKey: "role_schedule_name",
+    responseKey: "schedule",
   },
 ] as const;
 

@@ -90,7 +90,7 @@ export function normalizeKanbanCard(c: KanbanCard, index: number): KanbanCardUi 
     r.column_id ?? r.columnId ?? r.id_column ?? r.column,
   );
   const copy = str(
-    r.copy ?? r.description ?? r.descricao ?? r.body ?? r.texto,
+    r.copy_text ?? r.copy ?? r.description ?? r.descricao ?? r.body ?? r.texto,
   );
   const preview =
     copy.length > 120 ? `${copy.slice(0, 117)}…` : copy || undefined;
@@ -112,11 +112,11 @@ export function normalizeKanbanCard(c: KanbanCard, index: number): KanbanCardUi 
     customerName: (() => {
       const cust = record(r.customer);
       return (
-        str(r.customer_name ?? r.cliente_nome ?? (cust ? cust.name : "")) ||
+        str(r.client_name ?? r.customer_name ?? r.cliente_nome ?? (cust ? cust.name : "")) ||
         undefined
       );
     })(),
-    assigneeIds: parseIdArray(r.assignee_ids ?? r.assignees_ids ?? r.assignees),
+    assigneeIds: parseIdArray(r.assignees ?? r.assignee_ids ?? r.assignees_ids),
     assigneeNames: (() => {
       const n = assigneeNamesFromRaw(r);
       return n.length > 0 ? n : [];

@@ -30,6 +30,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useMemo, useState } from "react";
 
 const UNASSIGNED = "unassigned";
+const WEEK_OPTIONS = ["S1", "S2", "S3", "S4"] as const;
 
 function buildCardPayload(values: {
   title: string;
@@ -40,30 +41,22 @@ function buildCardPayload(values: {
   assigneeIds: string[];
   labelIds: string[];
   description: string;
-  internalNotes: string;
 }): Record<string, unknown> {
+  const week = WEEK_OPTIONS.includes(values.week as (typeof WEEK_OPTIONS)[number])
+    ? values.week
+    : "S1";
   return {
     title: values.title.trim(),
-    id_column: values.columnId,
     column_id: values.columnId,
-    week: values.week.trim() || undefined,
-    due_date: values.dueDate || undefined,
-    dueDate: values.dueDate || undefined,
+    week,
+    due_date: values.dueDate || null,
     id_customer:
       values.customerId && values.customerId !== "none"
-        ? values.customerId
-        : undefined,
-    customer_id:
-      values.customerId && values.customerId !== "none"
-        ? values.customerId
-        : undefined,
-    assignee_ids: values.assigneeIds,
+        ? Number(values.customerId)
+        : null,
+    assignee_ids: values.assigneeIds.map(Number),
     label_ids: values.labelIds,
-    labels: values.labelIds,
-    description: values.description.trim() || undefined,
-    copy: values.description.trim() || undefined,
-    internal_notes: values.internalNotes.trim() || undefined,
-    internalNotes: values.internalNotes.trim() || undefined,
+    copy_text: values.description.trim() || null,
   };
 }
 
@@ -105,13 +98,12 @@ export function KanbanCardFormDialog({
 
   const [title, setTitle] = useState("");
   const [columnId, setColumnId] = useState(firstCol);
-  const [week, setWeek] = useState("");
+  const [week, setWeek] = useState<(typeof WEEK_OPTIONS)[number]>("S1");
   const [dueDate, setDueDate] = useState("");
   const [customerId, setCustomerId] = useState("none");
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
   const [labelIds, setLabelIds] = useState<string[]>([]);
   const [description, setDescription] = useState("");
-  const [internalNotes, setInternalNotes] = useState("");
 
   useEffect(() => {
     if (!open) return;
@@ -122,23 +114,26 @@ export function KanbanCardFormDialog({
           ? initial.columnId
           : firstCol,
       );
-      setWeek(initial.week ?? "");
+      const initialWeek = (initial.week ?? "").toUpperCase();
+      setWeek(
+        WEEK_OPTIONS.includes(initialWeek as (typeof WEEK_OPTIONS)[number])
+          ? (initialWeek as (typeof WEEK_OPTIONS)[number])
+          : "S1",
+      );
       setDueDate(initial.dueDate ? initial.dueDate.slice(0, 10) : "");
       setCustomerId(initial.customerId ?? "none");
       setAssigneeIds([...initial.assigneeIds]);
       setLabelIds([...initial.labelIds]);
       setDescription(initial.description ?? "");
-      setInternalNotes(initial.internalNotes ?? "");
     } else {
       setTitle("");
       setColumnId(defaultColumnId && realColumns.some((c) => c.id === defaultColumnId) ? defaultColumnId : firstCol);
-      setWeek("");
+      setWeek("S1");
       setDueDate("");
       setCustomerId("none");
       setAssigneeIds([]);
       setLabelIds([]);
       setDescription("");
-      setInternalNotes("");
     }
   }, [open, mode, initial, defaultColumnId, realColumns, firstCol]);
 
@@ -171,7 +166,6 @@ export function KanbanCardFormDialog({
       assigneeIds,
       labelIds,
       description,
-      internalNotes,
     });
     if (mode === "edit" && initial) {
       onUpdate(initial.id, body);
@@ -192,7 +186,7 @@ export function KanbanCardFormDialog({
             </DialogTitle>
             <DialogDescription>
               Defina contexto operacional: coluna, cliente, prazo, equipe e
-              copy. Observações internas ficam visíveis só para a agência.
+              copy.
             </DialogDescription>
           </DialogHeader>
 
@@ -236,12 +230,18 @@ export function KanbanCardFormDialog({
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="hk-card-week">Semana (referência)</Label>
-                <Input
-                  id="hk-card-week"
-                  value={week}
-                  onChange={(e) => setWeek(e.target.value)}
-                  placeholder="Ex.: 2026-W15"
-                />
+                <Select value={week} onValueChange={(v) => setWeek(v as (typeof WEEK_OPTIONS)[number])}>
+                  <SelectTrigger id="hk-card-week">
+                    <SelectValue placeholder="Semana" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {WEEK_OPTIONS.map((w) => (
+                      <SelectItem key={w} value={w}>
+                        {w}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -333,17 +333,6 @@ export function KanbanCardFormDialog({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Texto principal, briefing ou rascunho visível no card."
                 rows={4}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="hk-card-notes">Observações internas</Label>
-              <Textarea
-                id="hk-card-notes"
-                value={internalNotes}
-                onChange={(e) => setInternalNotes(e.target.value)}
-                placeholder="Notas da equipe (revisões, restrições, histórico curto)."
-                rows={3}
               />
             </div>
 

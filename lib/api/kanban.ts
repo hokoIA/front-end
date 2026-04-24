@@ -7,6 +7,21 @@ import type {
 import { endpoints } from "./endpoints";
 import { httpJson } from "./http-client";
 
+function unwrapList<T>(data: unknown, key: string): T[] {
+  if (Array.isArray(data)) return data as T[];
+  if (data && typeof data === "object" && Array.isArray((data as Record<string, unknown>)[key])) {
+    return (data as Record<string, T[]>)[key];
+  }
+  return [];
+}
+
+function unwrapItem<T>(data: unknown, key: string): T {
+  if (data && typeof data === "object" && (data as Record<string, unknown>)[key] !== undefined) {
+    return (data as Record<string, T>)[key];
+  }
+  return data as T;
+}
+
 export async function getKanbanBoardData(): Promise<KanbanBoardData> {
   return httpJson<KanbanBoardData>(endpoints.kanban.boardData(), {
     method: "GET",
@@ -51,7 +66,7 @@ export async function listKanbanLabels(): Promise<KanbanLabel[]> {
   const data = await httpJson<unknown>(endpoints.kanban.labels(), {
     method: "GET",
   });
-  return Array.isArray(data) ? (data as KanbanLabel[]) : [];
+  return unwrapList<KanbanLabel>(data, "labels");
 }
 
 export async function createKanbanLabel(
@@ -75,7 +90,7 @@ export async function listKanbanColumns(): Promise<KanbanColumn[]> {
   const data = await httpJson<unknown>(endpoints.kanban.columns(), {
     method: "GET",
   });
-  return Array.isArray(data) ? (data as KanbanColumn[]) : [];
+  return unwrapList<KanbanColumn>(data, "columns");
 }
 
 export async function createKanbanColumn(
@@ -108,7 +123,7 @@ export async function listKanbanCards(): Promise<KanbanCard[]> {
   const data = await httpJson<unknown>(endpoints.kanban.cards(), {
     method: "GET",
   });
-  return Array.isArray(data) ? (data as KanbanCard[]) : [];
+  return unwrapList<KanbanCard>(data, "cards");
 }
 
 export async function createKanbanCard(
@@ -118,7 +133,8 @@ export async function createKanbanCard(
 }
 
 export async function getKanbanCard(id: string): Promise<KanbanCard> {
-  return httpJson<KanbanCard>(endpoints.kanban.card(id), { method: "GET" });
+  const data = await httpJson<unknown>(endpoints.kanban.card(id), { method: "GET" });
+  return unwrapItem<KanbanCard>(data, "card");
 }
 
 export async function updateKanbanCard(

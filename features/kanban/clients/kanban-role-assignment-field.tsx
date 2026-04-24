@@ -24,7 +24,7 @@ export function KanbanRoleAssignmentField({
   label: string;
   value: string;
   team: KanbanTeamMemberUi[];
-  onChange: (memberId: string) => void;
+  onChange: (memberName: string) => void;
   disabled?: boolean;
 }) {
   return (
@@ -43,7 +43,7 @@ export function KanbanRoleAssignmentField({
         <SelectContent>
           <SelectItem value={NONE}>Não definido</SelectItem>
           {team.map((m) => (
-            <SelectItem key={m.id} value={m.id}>
+            <SelectItem key={m.id} value={m.name}>
               {m.email && m.email !== "—" ? `${m.name} (${m.email})` : m.name}
             </SelectItem>
           ))}

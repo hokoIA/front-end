@@ -35,15 +35,11 @@ import {
 import { HttpError } from "@/lib/api/http-client";
 import { useAuthStatusQuery } from "@/hooks/api/use-auth-queries";
 import {
+  useKanbanBoardDataQuery,
   useKanbanCardMutations,
   useKanbanClientProfileMutations,
-  useKanbanClientsQuery,
   useKanbanColumnMutations,
-  useKanbanColumnsQuery,
-  useKanbanCardsQuery,
   useKanbanLabelMutations,
-  useKanbanLabelsQuery,
-  useKanbanTeamQuery,
 } from "@/hooks/api/use-kanban-queries";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -60,29 +56,28 @@ export function KanbanHubView() {
   const { data: auth } = useAuthStatusQuery();
   const authed = auth?.authenticated === true;
 
-  const colsQ = useKanbanColumnsQuery(authed);
-  const cardsQ = useKanbanCardsQuery(authed);
-  const labelsQ = useKanbanLabelsQuery(authed);
-  const teamQ = useKanbanTeamQuery(authed);
-  const clientsQ = useKanbanClientsQuery(authed);
+  const boardQ = useKanbanBoardDataQuery(authed);
+
+  const rawColumns = Array.isArray(boardQ.data?.columns) ? boardQ.data.columns : [];
+  const rawCards = Array.isArray(boardQ.data?.cards) ? boardQ.data.cards : [];
+  const rawLabels = Array.isArray(boardQ.data?.labels) ? boardQ.data.labels : [];
+  const rawTeam = Array.isArray(boardQ.data?.team) ? boardQ.data.team : [];
+  const rawClients = Array.isArray(boardQ.data?.clients) ? boardQ.data.clients : [];
 
   const columnsUi = useMemo(
-    () => (colsQ.data ?? []).map((c, i) => normalizeKanbanColumn(c, i)),
-    [colsQ.data],
+    () => rawColumns.map((c, i) => normalizeKanbanColumn(c, i)),
+    [rawColumns],
   );
   const allCardsUi = useMemo(
-    () => (cardsQ.data ?? []).map((c, i) => normalizeKanbanCard(c, i)),
-    [cardsQ.data],
+    () => rawCards.map((c, i) => normalizeKanbanCard(c, i)),
+    [rawCards],
   );
   const labelsUi = useMemo(
-    () => (labelsQ.data ?? []).map((l, i) => normalizeKanbanLabel(l, i)),
-    [labelsQ.data],
+    () => rawLabels.map((l, i) => normalizeKanbanLabel(l, i)),
+    [rawLabels],
   );
-  const team = useMemo(() => parseKanbanTeam(teamQ.data), [teamQ.data]);
-  const clients = useMemo(
-    () => parseKanbanClients(clientsQ.data),
-    [clientsQ.data],
-  );
+  const team = useMemo(() => parseKanbanTeam(rawTeam), [rawTeam]);
+  const clients = useMemo(() => parseKanbanClients(rawClients), [rawClients]);
 
   const sortedReal = useMemo(() => {
     return [...columnsUi]
@@ -184,8 +179,6 @@ export function KanbanHubView() {
     useKanbanClientProfileMutations();
   const labelMut = useKanbanLabelMutations();
 
-  const maxColumnOrder = sortedReal.reduce((m, c) => Math.max(m, c.order), -1);
-
   const openCreateColumn = () => {
     setColumnEditorMode("create");
     setColumnEditing(null);
@@ -200,8 +193,6 @@ export function KanbanHubView() {
         {
           name: payload.name,
           color: payload.color,
-          order: maxColumnOrder + 1,
-          position: maxColumnOrder + 1,
         },
         {
           onSuccess: () => {
@@ -256,8 +247,6 @@ export function KanbanHubView() {
     reorder.mutate(
       {
         column_ids: next.map((c) => c.id),
-        order: next.map((c) => c.id),
-        ids: next.map((c) => c.id),
       },
       {
         onSuccess: () => toast.success("Ordem das colunas atualizada."),
@@ -286,12 +275,8 @@ export function KanbanHubView() {
         {
           id: cardId,
           body: {
-            id_column: targetColumnId,
             column_id: targetColumnId,
-            target_column_id: targetColumnId,
-            order_index: orderIndex,
-            position: orderIndex,
-            index: orderIndex,
+            position: orderIndex + 1,
           },
         },
         {
@@ -313,11 +298,9 @@ export function KanbanHubView() {
     setDetailOpen(true);
   };
 
-  const boardLoading = colsQ.isPending || cardsQ.isPending;
-  const boardError = colsQ.isError || cardsQ.isError;
-  const boardErr =
-    (colsQ.error instanceof Error ? colsQ.error : null) ??
-    (cardsQ.error instanceof Error ? cardsQ.error : null);
+  const boardLoading = boardQ.isPending;
+  const boardError = boardQ.isError;
+  const boardErr = boardQ.error instanceof Error ? boardQ.error : null;
 
   const submitLabelForm = (payload: { name: string; color: string }) => {
     if (labelFormMode === "create") {
@@ -409,7 +392,7 @@ export function KanbanHubView() {
         onSuccess: () => {
           toast.success("Configuração do Kanban removida para o cliente.");
           setConfirm(null);
-          void clientsQ.refetch();
+          void boardQ.refetch();
         },
         onError: (e) => {
           const msg =
@@ -430,8 +413,7 @@ export function KanbanHubView() {
         <KanbanErrorState
           error={boardErr}
           onRetry={() => {
-            void colsQ.refetch();
-            void cardsQ.refetch();
+            void boardQ.refetch();
           }}
         />
       </div>
@@ -509,12 +491,12 @@ export function KanbanHubView() {
   );
 
   const clientsTab =
-    clientsQ.isError ? (
+    boardQ.isError ? (
       <KanbanErrorState
         error={
-          clientsQ.error instanceof Error ? clientsQ.error : new Error("Erro")
+          boardQ.error instanceof Error ? boardQ.error : new Error("Erro")
         }
-        onRetry={() => void clientsQ.refetch()}
+        onRetry={() => void boardQ.refetch()}
       />
     ) : (
       <KanbanClientsPanel
@@ -530,7 +512,7 @@ export function KanbanHubView() {
             {
               onSuccess: () => {
                 toast.success("Configuração salva.");
-                void clientsQ.refetch();
+                void boardQ.refetch();
               },
               onError: (e) => {
                 const msg =
@@ -554,7 +536,7 @@ export function KanbanHubView() {
         }}
         savePending={putProfile.isPending}
         removePending={removeProfile.isPending}
-        listLoading={clientsQ.isPending}
+        listLoading={boardQ.isPending}
         configLoading={false}
         errorMessage={clientProfileError}
       />
@@ -564,15 +546,15 @@ export function KanbanHubView() {
     <>
       <KanbanLabelsPanel
         labels={labelsUi}
-        loading={labelsQ.isPending}
+        loading={boardQ.isPending}
         error={
-          labelsQ.isError
-            ? labelsQ.error instanceof Error
-              ? labelsQ.error
+          boardQ.isError
+            ? boardQ.error instanceof Error
+              ? boardQ.error
               : new Error("Erro")
             : null
         }
-        onRetry={() => void labelsQ.refetch()}
+        onRetry={() => void boardQ.refetch()}
         onOpenCreate={() => {
           setLabelFormMode("create");
           setLabelEditing(null);
