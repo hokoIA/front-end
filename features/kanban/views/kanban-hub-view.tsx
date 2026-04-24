@@ -301,6 +301,9 @@ export function KanbanHubView() {
   const boardLoading = boardQ.isPending;
   const boardError = boardQ.isError;
   const boardErr = boardQ.error instanceof Error ? boardQ.error : null;
+  const refetchBoard = () => {
+    void boardQ.refetch();
+  };
 
   const submitLabelForm = (payload: { name: string; color: string }) => {
     if (labelFormMode === "create") {
@@ -493,10 +496,8 @@ export function KanbanHubView() {
   const clientsTab =
     boardQ.isError ? (
       <KanbanErrorState
-        error={
-          boardQ.error instanceof Error ? boardQ.error : new Error("Erro")
-        }
-        onRetry={() => void boardQ.refetch()}
+        error={boardErr ?? new Error("Erro")}
+          onRetry={refetchBoard}
       />
     ) : (
       <KanbanClientsPanel
@@ -548,13 +549,9 @@ export function KanbanHubView() {
         labels={labelsUi}
         loading={boardQ.isPending}
         error={
-          boardQ.isError
-            ? boardQ.error instanceof Error
-              ? boardQ.error
-              : new Error("Erro")
-            : null
+          boardQ.isError ? boardErr ?? new Error("Erro") : null
         }
-        onRetry={() => void boardQ.refetch()}
+        onRetry={refetchBoard}
         onOpenCreate={() => {
           setLabelFormMode("create");
           setLabelEditing(null);
