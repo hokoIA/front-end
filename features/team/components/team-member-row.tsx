@@ -11,19 +11,24 @@ import {
 
 export function TeamMemberRow({
   member,
+  currentUserId,
   currentUserEmail,
-  isAdmin,
+  canManage,
   onChangeRole,
   onDisable,
 }: {
   member: TeamMemberUi;
+  currentUserId: string | undefined;
   currentUserEmail: string | undefined;
-  isAdmin: boolean;
+  canManage: boolean;
   onChangeRole: (m: TeamMemberUi) => void;
   onDisable: (m: TeamMemberUi) => void;
 }) {
-  const change = canChangeRole(isAdmin, currentUserEmail, member);
-  const disable = canDisableMember(isAdmin, currentUserEmail, member);
+  const isSelf =
+    (currentUserId && member.idUser === currentUserId) ||
+    Boolean(currentUserEmail && currentUserEmail.trim().toLowerCase() === member.email.trim().toLowerCase());
+  const change = canChangeRole(canManage, currentUserId, currentUserEmail, member);
+  const disable = canDisableMember(canManage, currentUserId, currentUserEmail, member);
 
   return (
     <div className="flex flex-col gap-3 border-b border-hk-border-subtle py-4 last:border-0 sm:flex-row sm:items-center sm:justify-between">
@@ -41,6 +46,7 @@ export function TeamMemberRow({
         <TeamMemberStatusBadge status={member.status} />
         <TeamMemberActionsMenu
           member={member}
+          isSelf={isSelf}
           currentUserEmail={currentUserEmail}
           canChangeRole={change}
           canDisable={disable}

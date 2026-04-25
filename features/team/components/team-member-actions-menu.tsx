@@ -13,6 +13,7 @@ import { MoreHorizontal } from "lucide-react";
 
 export function TeamMemberActionsMenu({
   member,
+  isSelf,
   currentUserEmail,
   canChangeRole,
   canDisable,
@@ -20,22 +21,14 @@ export function TeamMemberActionsMenu({
   onDisable,
 }: {
   member: TeamMemberUi;
+  isSelf: boolean;
   currentUserEmail: string | undefined;
   canChangeRole: boolean;
   canDisable: boolean;
   onChangeRole: () => void;
   onDisable: () => void;
 }) {
-  if (member.isPrimary) {
-    return (
-      <span className="text-xs font-medium text-hk-muted">Titular</span>
-    );
-  }
-
-  if (
-    currentUserEmail &&
-    emailsMatch(currentUserEmail, member.email)
-  ) {
+  if (isSelf || (currentUserEmail && emailsMatch(currentUserEmail, member.email))) {
     return <span className="text-xs text-hk-muted">Você</span>;
   }
 

@@ -1,7 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
+import { useAuthStatusQuery } from "@/hooks/api/use-auth-queries";
+import { useRbacMeQuery } from "@/hooks/api/use-rbac-queries";
 import { MAIN_NAV_SECTIONS } from "@/lib/navigation";
+import { rbacAllows } from "@/lib/types/rbac";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -12,6 +15,19 @@ type NavLinksProps = {
 
 export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
   const pathname = usePathname();
+  const { data: auth } = useAuthStatusQuery();
+  const { data: rbac, isPending: rbacLoading } = useRbacMeQuery();
+  const authRole = String(auth?.user?.role ?? "").toLowerCase();
+  const isAuthAdmin = authRole === "admin";
+
+  const canSeeItem = (permission?: string, managePermission?: string) => {
+    if (!permission && !managePermission) return true;
+    if (rbacLoading) return isAuthAdmin;
+    if (permission && rbacAllows(rbac, permission)) return true;
+    if (managePermission && rbacAllows(rbac, managePermission)) return true;
+    if (isAuthAdmin) return true;
+    return false;
+  };
 
   return (
     <div className="flex flex-col gap-7">
@@ -23,7 +39,11 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
             </p>
           )}
           <ul className="flex flex-col gap-1">
-            {section.items.map((item) => {
+            {section.items
+              .filter((item) =>
+                canSeeItem(item.permission, item.managePermission),
+              )
+              .map((item) => {
               const active =
                 pathname === item.href ||
                 (item.href !== "/dashboard" && pathname.startsWith(item.href));

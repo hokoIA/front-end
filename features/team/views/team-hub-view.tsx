@@ -12,7 +12,10 @@ import type { TeamInviteUi, TeamMemberUi, TeamRoleUi } from "@/features/team/typ
 import { teamOperationMessage } from "@/features/team/utils/http-message";
 import { normalizeTeamInvite, normalizeTeamMember } from "@/features/team/utils/normalize";
 import { computeTeamOverview } from "@/features/team/utils/overview";
-import { canPerformTeamAdmin } from "@/features/team/utils/permissions";
+import {
+  canAccessTeamPage,
+  canManageTeam,
+} from "@/features/team/utils/permissions";
 import {
   useAuthStatusQuery,
   useProfileQuery,
@@ -27,7 +30,6 @@ import {
   useTeamMembersQuery,
   useUpdateTeamMemberRoleMutation,
 } from "@/hooks/api/use-team-queries";
-import { HttpError } from "@/lib/api/http-client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -49,22 +51,27 @@ import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-function roleToApiPayload(role: TeamRoleUi): Record<string, unknown> {
-  const v = role === "admin" ? "admin" : "team";
-  return { role: v, access_level: v, papel: role === "admin" ? "admin" : "equipe" };
+function roleToApiRole(role: TeamRoleUi): "Admin" | "Equipe" {
+  return role === "admin" ? "Admin" : "Equipe";
 }
 
 export function TeamHubView() {
   const { data: auth } = useAuthStatusQuery();
   const authed = auth?.authenticated === true;
   const profile = useProfileQuery(authed);
-  const rbac = useRbacMeQuery();
+  const rbacQ = useRbacMeQuery();
+  const rbac = rbacQ.data;
+  const canAccess = canAccessTeamPage(rbac);
+  const canManage = canManageTeam(rbac);
+  const rbacReady = rbacQ.isSuccess;
 
-  const membersQ = useTeamMembersQuery(authed);
-  const invitesQ = useTeamInvitesQuery(authed);
+  const membersQ = useTeamMembersQuery(rbacReady && canManage);
+  const invitesQ = useTeamInvitesQuery(rbacReady && canManage);
 
   const currentEmail =
-    profile.data?.email ?? auth?.user?.email ?? undefined;
+    rbac?.email || profile.data?.email || auth?.user?.email || undefined;
+  const currentUserId =
+    rbac?.id_user || (auth?.user?.id ? String(auth.user.id) : undefined);
 
   const members = useMemo(
     () => (membersQ.data ?? []).map((m, i) => normalizeTeamMember(m, i)),
@@ -83,20 +90,12 @@ export function TeamHubView() {
     });
   }, [members]);
 
-  const isAdmin = useMemo(
-    () => canPerformTeamAdmin(rbac.data, members, currentEmail),
-    [rbac.data, members, currentEmail],
-  );
-
   const overview = useMemo(
     () => computeTeamOverview(members, invites),
     [members, invites],
   );
 
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<TeamRoleUi>("team");
-  const [inviteMessage, setInviteMessage] = useState("");
-
   const [roleTarget, setRoleTarget] = useState<TeamMemberUi | null>(null);
   const [newRole, setNewRole] = useState<TeamRoleUi>("team");
   const [disableTarget, setDisableTarget] = useState<TeamMemberUi | null>(
@@ -111,24 +110,12 @@ export function TeamHubView() {
   const resendInv = useResendTeamInviteMutation();
   const deleteInv = useDeleteTeamInviteMutation();
 
-  const membersErr = membersQ.error;
-
-  const forbiddenMembers =
-    membersErr instanceof HttpError && membersErr.kind === "forbidden";
-
   const sendInvite = () => {
     void (async () => {
       try {
-        await createInv.mutateAsync({
-          email: inviteEmail.trim(),
-          ...roleToApiPayload(inviteRole),
-          message: inviteMessage.trim() || undefined,
-          note: inviteMessage.trim() || undefined,
-        });
+        await createInv.mutateAsync({ email: inviteEmail.trim() });
         toast.success("Convite enviado.");
         setInviteEmail("");
-        setInviteMessage("");
-        setInviteRole("team");
       } catch (e) {
         toast.error(
           teamOperationMessage(e, "Não foi possível enviar o convite."),
@@ -143,7 +130,7 @@ export function TeamHubView() {
       try {
         await updateRole.mutateAsync({
           idTeamMember: roleTarget.id,
-          body: roleToApiPayload(newRole),
+          body: { role: roleToApiRole(newRole) },
         });
         toast.success("Nível de acesso atualizado.");
         setRoleTarget(null);
@@ -198,23 +185,51 @@ export function TeamHubView() {
     })();
   };
 
-  const loadingList = membersQ.isPending || invitesQ.isPending;
-  const rbacLoading = rbac.isPending;
+  const loadingList = canManage && (membersQ.isPending || invitesQ.isPending);
 
-  if (membersQ.isError) {
-    if (forbiddenMembers) {
-      return (
-        <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
-          <TeamPageHeader />
-          <TeamNoPermissionState />
-        </div>
-      );
-    }
+  if (rbacQ.isPending) {
+    return (
+      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
+        <TeamPageHeader />
+        <TeamOverviewBar
+          activeCount={0}
+          pendingInvites={0}
+          adminCount={0}
+          teamCount={0}
+          disabledCount={0}
+          loading
+        />
+      </div>
+    );
+  }
+
+  if (rbacQ.isError || !rbac) {
     return (
       <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
         <TeamPageHeader />
         <TeamErrorState
-          error={membersErr instanceof Error ? membersErr : null}
+          error={rbacQ.error instanceof Error ? rbacQ.error : null}
+          onRetry={() => void rbacQ.refetch()}
+        />
+      </div>
+    );
+  }
+
+  if (!canAccess || !canManage) {
+    return (
+      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
+        <TeamPageHeader />
+        <TeamNoPermissionState />
+      </div>
+    );
+  }
+
+  if (membersQ.isError) {
+    return (
+      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
+        <TeamPageHeader />
+        <TeamErrorState
+          error={membersQ.error instanceof Error ? membersQ.error : null}
           onRetry={() => void membersQ.refetch()}
         />
       </div>
@@ -239,32 +254,18 @@ export function TeamHubView() {
         loading={loadingList}
       />
 
-      {!isAdmin && !rbacLoading ? (
-        <TeamNoPermissionState />
-      ) : null}
-
       <InviteMemberCard
         email={inviteEmail}
-        role={inviteRole}
-        message={inviteMessage}
         onEmailChange={setInviteEmail}
-        onRoleChange={setInviteRole}
-        onMessageChange={setInviteMessage}
         onSubmit={sendInvite}
         loading={createInv.isPending}
-        readOnly={!isAdmin}
-        readOnlyHint={
-          !isAdmin
-            ? "Apenas administradores podem enviar convites. Você ainda visualiza a equipe abaixo."
-            : undefined
-        }
       />
 
       {members.length === 0 && !loadingList ? (
-        <TeamEmptyState isAdmin={isAdmin} />
+        <TeamEmptyState isAdmin={canManage} />
       ) : (
         <>
-          {soloAdminHint && isAdmin ? (
+          {soloAdminHint ? (
             <p className="rounded-lg border border-hk-border-subtle bg-hk-canvas/60 px-4 py-3 text-sm text-hk-muted">
               Você é o único membro ativo com papel de admin. Convide a equipe
               para compartilhar a conta com segurança.
@@ -273,8 +274,9 @@ export function TeamHubView() {
           <TeamMembersList
             members={sortedMembers}
             loading={loadingList}
+            currentUserId={currentUserId}
             currentUserEmail={currentEmail}
-            isAdmin={isAdmin}
+            canManage={canManage}
             onChangeRole={(m) => {
               setNewRole(m.role);
               setRoleTarget(m);
@@ -299,7 +301,7 @@ export function TeamHubView() {
         <PendingInvitesList
           invites={invites}
           loading={loadingList}
-          isAdmin={isAdmin}
+          isAdmin={canManage}
           onResend={doResend}
           onCancel={(i) => setCancelInviteTarget(i)}
         />

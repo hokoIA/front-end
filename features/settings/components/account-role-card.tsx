@@ -7,20 +7,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { RbacMeResponse } from "@/lib/types/rbac";
+import type { NormalizedRbacMe } from "@/lib/types/rbac";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type Props = {
-  rbac: RbacMeResponse | undefined;
+  rbac: NormalizedRbacMe | null | undefined;
   loading?: boolean;
 };
 
 export function AccountRoleCard({ rbac, loading }: Props) {
-  const role =
-    (typeof rbac?.role === "string" && rbac.role) ||
-    rbac?.roles?.filter(Boolean).join(", ") ||
-    null;
+  const role = typeof rbac?.role === "string" && rbac.role ? rbac.role : null;
   const perms = rbac?.permissions?.length ?? 0;
 
   return (

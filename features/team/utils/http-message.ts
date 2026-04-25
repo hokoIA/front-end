@@ -17,9 +17,6 @@ export function teamOperationMessage(error: unknown, fallback: string): string {
     ) {
       return (body as { message: string }).message;
     }
-    if (error.status === 409) {
-      return "Convite duplicado ou este e-mail já faz parte da equipe.";
-    }
     if (error.status === 400) {
       return "Verifique o e-mail e os dados enviados.";
     }

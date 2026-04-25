@@ -44,7 +44,7 @@ export function useUpdateTeamMemberRoleMutation() {
       body,
     }: {
       idTeamMember: string;
-      body: Record<string, unknown>;
+      body: { role: "Admin" | "Equipe" };
     }) => updateTeamMemberRole(idTeamMember, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.team.all });
@@ -55,7 +55,7 @@ export function useUpdateTeamMemberRoleMutation() {
 export function useCreateTeamInviteMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: createTeamInvite,
+    mutationFn: (body: { email: string }) => createTeamInvite(body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.team.all });
     },

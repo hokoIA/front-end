@@ -21,7 +21,9 @@ export function PendingInviteActionsMenu({
   onResend: (i: TeamInviteUi) => void;
   onCancel: (i: TeamInviteUi) => void;
 }) {
-  if (invite.status !== "pending") {
+  const canAct = invite.status === "pending" || invite.status === "expired";
+
+  if (!canAct) {
     return <span className="text-xs text-hk-muted">—</span>;
   }
 

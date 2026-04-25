@@ -7,15 +7,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function TeamMembersList({
   members,
   loading,
+  currentUserId,
   currentUserEmail,
-  isAdmin,
+  canManage,
   onChangeRole,
   onDisable,
 }: {
   members: TeamMemberUi[];
   loading?: boolean;
+  currentUserId: string | undefined;
   currentUserEmail: string | undefined;
-  isAdmin: boolean;
+  canManage: boolean;
   onChangeRole: (m: TeamMemberUi) => void;
   onDisable: (m: TeamMemberUi) => void;
 }) {
@@ -46,8 +48,9 @@ export function TeamMembersList({
             <TeamMemberRow
               key={m.id}
               member={m}
+              currentUserId={currentUserId}
               currentUserEmail={currentUserEmail}
-              isAdmin={isAdmin}
+              canManage={canManage}
               onChangeRole={onChangeRole}
               onDisable={onDisable}
             />

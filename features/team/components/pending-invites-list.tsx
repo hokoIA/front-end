@@ -18,7 +18,7 @@ export function PendingInvitesList({
   onResend: (i: TeamInviteUi) => void;
   onCancel: (i: TeamInviteUi) => void;
 }) {
-  const pending = invites.filter((i) => i.status === "pending");
+  const visibleInvites = invites.filter((i) => i.status !== "revoked");
 
   return (
     <section
@@ -31,10 +31,10 @@ export function PendingInvitesList({
         </div>
         <div>
           <h2 className="text-base font-semibold text-hk-deep">
-            Convites pendentes
+            Convites
           </h2>
           <p className="mt-1 text-sm text-hk-muted">
-            Convites aguardando aceite. Reenvie ou cancele quando necessário.
+            Pendentes, expirados e aceitos recentemente.
           </p>
         </div>
       </div>
@@ -46,12 +46,12 @@ export function PendingInvitesList({
               <Skeleton key={i} className="h-14 w-full rounded-lg" />
             ))}
           </div>
-        ) : pending.length === 0 ? (
+        ) : visibleInvites.length === 0 ? (
           <p className="py-6 text-center text-sm text-hk-muted">
-            Nenhum convite pendente.
+            Nenhum convite no momento.
           </p>
         ) : (
-          pending.map((inv) => (
+          visibleInvites.map((inv) => (
             <PendingInviteRow
               key={inv.id}
               invite={inv}

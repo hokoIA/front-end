@@ -4,6 +4,7 @@ import type { TeamInviteUi, TeamMemberUi } from "./ui";
 export const MOCK_TEAM_MEMBERS: TeamMemberUi[] = [
   {
     id: "m1",
+    idUser: "u1",
     name: "Você (exemplo)",
     email: "admin@exemplo.com",
     role: "admin",
@@ -14,6 +15,7 @@ export const MOCK_TEAM_MEMBERS: TeamMemberUi[] = [
   },
   {
     id: "m2",
+    idUser: "u2",
     name: "Ana Marketing",
     email: "ana@exemplo.com",
     role: "team",

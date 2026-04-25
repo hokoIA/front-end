@@ -1,27 +1,18 @@
 "use client";
 
 import { InviteMemberForm } from "@/features/team/components/invite-member-form";
-import type { TeamRoleUi } from "@/features/team/types/ui";
 import { Mail } from "lucide-react";
 
 export function InviteMemberCard({
   email,
-  role,
-  message,
   onEmailChange,
-  onRoleChange,
-  onMessageChange,
   onSubmit,
   loading,
   readOnly,
   readOnlyHint,
 }: {
   email: string;
-  role: TeamRoleUi;
-  message: string;
   onEmailChange: (v: string) => void;
-  onRoleChange: (v: TeamRoleUi) => void;
-  onMessageChange: (v: string) => void;
   onSubmit: () => void;
   loading?: boolean;
   readOnly?: boolean;
@@ -42,7 +33,7 @@ export function InviteMemberCard({
           </h2>
           <p className="mt-1 text-sm text-hk-muted">
             Envie um convite por e-mail. O destinatário receberá o link para
-            entrar nesta conta com o nível escolhido.
+            entrar nesta conta como Equipe.
           </p>
         </div>
       </div>
@@ -55,11 +46,7 @@ export function InviteMemberCard({
         ) : (
           <InviteMemberForm
             email={email}
-            role={role}
-            message={message}
             onEmailChange={onEmailChange}
-            onRoleChange={onRoleChange}
-            onMessageChange={onMessageChange}
             onSubmit={onSubmit}
             loading={loading}
           />

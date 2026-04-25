@@ -14,13 +14,14 @@ export type TeamInviteStatusUi =
 
 export type TeamMemberUi = {
   id: string;
+  idUser: string;
   name: string;
   email: string;
   role: TeamRoleUi;
   status: TeamMemberStatusUi;
   joinedAt?: string;
-  /** Proprietário / admin principal — ações destrutivas bloqueadas na UI. */
-  isPrimary: boolean;
+  disabledAt?: string;
+  isPrimary?: boolean;
   raw: Record<string, unknown>;
 };
 

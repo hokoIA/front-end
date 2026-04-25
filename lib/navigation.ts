@@ -14,6 +14,8 @@ export type NavItem = {
   href: string;
   label: string;
   icon: LucideIcon;
+  permission?: string;
+  managePermission?: string;
 };
 
 export type NavSection = {
@@ -53,7 +55,13 @@ export const MAIN_NAV_SECTIONS: NavSection[] = [
         label: "Clientes & Integrações",
         icon: BriefcaseBusiness,
       },
-      { href: "/equipe", label: "Equipe", icon: Users },
+      {
+        href: "/equipe",
+        label: "Equipe",
+        icon: Users,
+        permission: "page:team:view",
+        managePermission: "team:manage",
+      },
       { href: "/kanban", label: "Kanban", icon: Columns3 },
     ],
   },

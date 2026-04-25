@@ -28,28 +28,35 @@ function mapInviteStatus(raw: unknown): TeamInviteStatusUi {
   return "unknown";
 }
 
+function normalizeInviteStatus(
+  acceptedAt: unknown,
+  expiresAt: unknown,
+): TeamInviteStatusUi {
+  if (acceptedAt) return "accepted";
+  const expires = expiresAt ? new Date(String(expiresAt)) : null;
+  if (expires && Number.isFinite(expires.getTime()) && expires.getTime() < Date.now()) {
+    return "expired";
+  }
+  return "pending";
+}
+
 export function normalizeTeamMember(
   m: TeamMember,
   index: number,
 ): TeamMemberUi {
   const r = record(m) ?? {};
-  const id =
-    str(r.id_team_member ?? r.id ?? r.user_id) || `member-${index}`;
+  const id = str(r.id_team_member ?? r.id) || `member-${index}`;
+  const idUser = str(r.id_user ?? r.user_id ?? r.id_user_fk);
   const email = str(r.email ?? r.mail ?? r.user_email);
   const nameDirect = str(
     r.name ?? r.nome ?? r.full_name ?? r.display_name,
   );
+  const statusRaw = str(r.status).toLowerCase();
   const disabled =
     r.disabled === true ||
     r.active === false ||
-    str(r.status).toLowerCase() === "disabled" ||
-    str(r.status).toLowerCase() === "inactive";
-  const isPrimary =
-    r.is_owner === true ||
-    r.owner === true ||
-    r.primary === true ||
-    r.is_primary === true ||
-    str(r.account_role).toLowerCase() === "owner";
+    statusRaw === "disabled" ||
+    statusRaw === "inactive";
 
   const u = record(r.user);
   const nameFromUser = u ? str(u.name ?? u.email) : "";
@@ -57,6 +64,7 @@ export function normalizeTeamMember(
 
   return {
     id,
+    idUser,
     name: displayName,
     email: email || "—",
     role: mapTeamRole(r.role ?? r.papel ?? r.access_level),
@@ -67,7 +75,7 @@ export function normalizeTeamMember(
         r.data_entrada ??
         r.member_since,
     ) || undefined,
-    isPrimary,
+    disabledAt: str(r.disabled_at) || undefined,
     raw: r,
   };
 }
@@ -79,19 +87,23 @@ export function normalizeTeamInvite(
   const r = record(inv) ?? {};
   const id = str(r.id_invite ?? r.id) || `invite-${index}`;
   const email = str(r.email ?? r.mail ?? r.invited_email);
+  const sentAt = str(
+    r.created_at ?? r.sent_at ?? r.invited_at ?? r.data_envio,
+  );
+  const expiresAt = str(
+    r.expires_at ?? r.expiration ?? r.valid_until ?? r.data_expiracao,
+  );
+
   return {
     id,
     email: email || "—",
-    role: mapTeamRole(
-      r.role ?? r.papel ?? r.invited_role ?? r.access_level,
-    ),
-    status: mapInviteStatus(r.status ?? r.situacao),
-    sentAt: str(
-      r.sent_at ?? r.created_at ?? r.invited_at ?? r.data_envio,
-    ) || undefined,
-    expiresAt: str(
-      r.expires_at ?? r.expiration ?? r.valid_until ?? r.data_expiracao,
-    ) || undefined,
+    role: "team",
+    status:
+      r.status || r.situacao
+        ? mapInviteStatus(r.status ?? r.situacao)
+        : normalizeInviteStatus(r.accepted_at, r.expires_at),
+    sentAt: sentAt || undefined,
+    expiresAt: expiresAt || undefined,
     raw: r,
   };
 }
