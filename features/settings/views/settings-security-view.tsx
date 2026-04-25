@@ -9,7 +9,7 @@ export function SettingsSecurityView() {
   const deleteMut = useDeleteAccountMutation();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-7 lg:space-y-8">
       <SettingsPageHeader
         title="Segurança"
         description="Proteção da conta, sessão com cookie HTTP-only e ações sensíveis com confirmação explícita."

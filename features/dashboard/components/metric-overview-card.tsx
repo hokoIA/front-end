@@ -22,22 +22,22 @@ export function MetricOverviewCard({
   return (
     <div
       className={cn(
-        "rounded-lg border border-hk-border-subtle bg-hk-surface px-4 py-3",
+        "rounded-xl border border-hk-border-subtle bg-hk-surface px-4 py-3.5 shadow-hk-xs",
         className,
       )}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-hk-muted">
+      <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-hk-muted">
         {label}
       </p>
       {loading ? (
         <Skeleton className="mt-2 h-8 w-24" />
       ) : (
-        <p className="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-hk-deep">
+        <p className="mt-1.5 text-[1.85rem] font-semibold tabular-nums tracking-[-0.02em] text-hk-deep">
           {value === null ? "—" : formatCompactNumber(value)}
         </p>
       )}
       {hint && !loading && (
-        <p className="mt-1 text-xs text-hk-muted">{hint}</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-hk-muted">{hint}</p>
       )}
     </div>
   );

@@ -78,7 +78,7 @@ export function SettingsBillingView() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-7 lg:space-y-8">
       <SettingsPageHeader
         title="Assinatura"
         description="Modelo ho.ko: plano base mensal com clientes incluídos e valor fixo por cliente adicional. Os números consolidados refletem a API quando disponível; caso contrário, usamos a contagem de clientes da plataforma."

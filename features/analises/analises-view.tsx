@@ -30,6 +30,8 @@ import { getAnalyzeBaseUrl } from "@/lib/api/http-client";
 import { getErrorKind } from "@/lib/api/errors";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DataPanel } from "@/components/data-display/data-panel";
+import { SectionHeader } from "@/components/data-display/section-header";
 import { Building2 } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -208,7 +210,7 @@ export function AnalisesView() {
   const kind = genError ? getErrorKind(genError) : null;
 
   return (
-    <div className="hk-page space-y-8 pb-16 pt-1 lg:pt-2">
+    <div className="hk-page space-y-7 pb-16 pt-3 lg:space-y-8 lg:pt-4">
       <AnalysisPageHeader />
 
       {initialBusy ? (
@@ -220,13 +222,13 @@ export function AnalisesView() {
         <AnalysisNoCustomerState />
       ) : selected ? (
         <>
-          <Card className="border-hk-border-subtle bg-hk-surface/90 p-4 shadow-none">
+          <Card className="border-hk-border-subtle bg-hk-surface p-4 shadow-hk-xs">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-full bg-hk-canvas text-hk-action">
                 <Building2 className="size-5" strokeWidth={1.5} />
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-hk-muted">
+                <p className="hk-overline">
                   Análise para
                 </p>
                 <p className="text-base font-semibold text-hk-deep">
@@ -247,18 +249,18 @@ export function AnalisesView() {
               integrationWarning={integrationWarning}
             />
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="max-w-xl text-xs leading-relaxed text-hk-muted">
-                Ao gerar, a plataforma estrutura uma narrativa executiva — não uma
-                conversa. O resultado combina período, foco, tipo de análise e
-                plataformas escolhidas.
-              </p>
+            <DataPanel className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <SectionHeader
+                compact
+                title="Gerar leitura estratégica"
+                description="A saída é uma narrativa executiva disciplinada, baseada em período, foco, tipo de análise e plataformas selecionadas."
+              />
               <AnalysisGenerateButton
                 onClick={() => void runGenerate()}
                 loading={analyzeMutation.isPending}
                 disabled={!selected}
               />
-            </div>
+            </DataPanel>
           </div>
 
           <AnalysisGenerationProgress active={analyzeMutation.isPending} />

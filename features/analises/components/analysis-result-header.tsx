@@ -21,10 +21,10 @@ export function AnalysisResultHeader({ meta }: Props) {
   }).format(new Date(meta.generatedAt));
 
   return (
-    <div className="border-b border-hk-border-subtle bg-hk-canvas/50 px-5 py-4">
+    <div className="border-b border-hk-border-subtle bg-hk-surface-muted/60 px-5 py-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-hk-muted">
+          <p className="hk-overline">
             Relatório estratégico
           </p>
           <h2 className="mt-1 text-lg font-semibold text-hk-deep">

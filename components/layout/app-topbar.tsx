@@ -1,7 +1,6 @@
 "use client";
 
 import { Logo } from "@/components/brand/logo";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -45,7 +44,7 @@ export function AppTopbar({ className }: { className?: string }) {
   return (
     <header
       className={cn(
-        "hk-print-hide sticky top-0 z-30 flex h-[3.25rem] shrink-0 items-center gap-2 border-b border-transparent bg-hk-surface px-3 sm:gap-3 sm:px-4 lg:h-14 lg:px-6",
+        "hk-print-hide sticky top-0 z-30 flex h-[3.35rem] shrink-0 items-center gap-2 border-b border-hk-divider/85 bg-hk-surface/95 px-3 backdrop-blur sm:gap-3 sm:px-4 lg:h-14 lg:px-6",
         className,
       )}
       style={{
@@ -63,7 +62,7 @@ export function AppTopbar({ className }: { className?: string }) {
             <Menu className="size-5" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="left-0 top-0 flex h-full max-w-[min(100%,20rem)] translate-x-0 translate-y-0 flex-col rounded-none border-y-0 border-l-0 border-r-hk-divider p-0 shadow-hk-md sm:max-w-[min(100%,20rem)]">
+        <DialogContent className="left-0 top-0 flex h-full max-w-[min(100%,20rem)] translate-x-0 translate-y-0 flex-col rounded-none border-y-0 border-l-0 border-r-hk-divider p-0 shadow-hk-lg sm:max-w-[min(100%,20rem)]">
           <DialogHeader className="border-b border-hk-divider px-4 py-3.5 text-left">
             <DialogTitle className="sr-only">Navegação principal</DialogTitle>
             <Logo />
@@ -91,9 +90,9 @@ export function AppTopbar({ className }: { className?: string }) {
 
       <div className="min-w-0 flex-1 md:max-w-[14rem] md:flex-none lg:max-w-[18rem]">
         {!isReady || isLoadingCustomers ? (
-          <div className="hk-skeleton h-9 w-full rounded-md" />
+          <div className="hk-skeleton h-9 w-full rounded-lg" />
         ) : customers.length === 0 ? (
-          <div className="flex h-9 w-full items-center rounded-md border border-dashed border-hk-border-subtle bg-hk-surface-muted/80 px-3 text-xs font-medium text-hk-muted">
+          <div className="flex h-9 w-full items-center rounded-lg border border-dashed border-hk-border-subtle bg-hk-surface-muted/80 px-3 text-xs font-medium text-hk-muted">
             Nenhum cliente cadastrado
           </div>
         ) : (
@@ -102,7 +101,7 @@ export function AppTopbar({ className }: { className?: string }) {
             onValueChange={(id) => selectCustomer(id)}
           >
             <SelectTrigger
-              className="h-9 border-hk-border-subtle bg-hk-surface text-left text-sm font-medium shadow-none transition-colors hover:border-hk-border focus:ring-hk-action/20"
+              className="h-9 border-hk-border-subtle bg-hk-surface text-left text-sm font-medium shadow-none hover:border-hk-border focus:ring-hk-action/20"
               aria-label="Cliente selecionado"
             >
               <SelectValue placeholder="Selecionar cliente" />
@@ -123,7 +122,7 @@ export function AppTopbar({ className }: { className?: string }) {
           <Button
             variant="ghost"
             size="icon"
-            className="shrink-0 rounded-full border border-hk-border-subtle bg-hk-surface text-hk-action shadow-none transition-colors hover:border-hk-border hover:bg-hk-surface-muted/80"
+            className="shrink-0 rounded-full border border-hk-border-subtle bg-hk-surface text-hk-action shadow-none hover:border-hk-border hover:bg-hk-surface-muted/80"
             aria-label="Menu da conta"
           >
             <User className="size-4" />

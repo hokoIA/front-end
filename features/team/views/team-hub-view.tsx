@@ -31,6 +31,7 @@ import {
   useUpdateTeamMemberRoleMutation,
 } from "@/hooks/api/use-team-queries";
 import { Button } from "@/components/ui/button";
+import { SectionHeader } from "@/components/data-display/section-header";
 import {
   Dialog,
   DialogContent,
@@ -189,7 +190,7 @@ export function TeamHubView() {
 
   if (rbacQ.isPending) {
     return (
-      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
+      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-7">
         <TeamPageHeader />
         <TeamOverviewBar
           activeCount={0}
@@ -205,7 +206,7 @@ export function TeamHubView() {
 
   if (rbacQ.isError || !rbac) {
     return (
-      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
+      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-7">
         <TeamPageHeader />
         <TeamErrorState
           error={rbacQ.error instanceof Error ? rbacQ.error : null}
@@ -217,7 +218,7 @@ export function TeamHubView() {
 
   if (!canAccess || !canManage) {
     return (
-      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
+      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-7">
         <TeamPageHeader />
         <TeamNoPermissionState />
       </div>
@@ -226,7 +227,7 @@ export function TeamHubView() {
 
   if (membersQ.isError) {
     return (
-      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-8">
+      <div className="hk-page hk-page--narrow flex flex-col gap-6 py-7">
         <TeamPageHeader />
         <TeamErrorState
           error={membersQ.error instanceof Error ? membersQ.error : null}
@@ -242,7 +243,7 @@ export function TeamHubView() {
     overview.teamCount === 0;
 
   return (
-    <div className="hk-page flex flex-col gap-8 py-8">
+    <div className="hk-page flex flex-col gap-7 py-7 lg:gap-8">
       <TeamPageHeader />
 
       <TeamOverviewBar
@@ -254,12 +255,19 @@ export function TeamHubView() {
         loading={loadingList}
       />
 
-      <InviteMemberCard
-        email={inviteEmail}
-        onEmailChange={setInviteEmail}
-        onSubmit={sendInvite}
-        loading={createInv.isPending}
-      />
+      <section className="space-y-3">
+        <SectionHeader
+          compact
+          title="Convites e administração"
+          description="Envie convites e gerencie papéis da equipe com segurança."
+        />
+        <InviteMemberCard
+          email={inviteEmail}
+          onEmailChange={setInviteEmail}
+          onSubmit={sendInvite}
+          loading={createInv.isPending}
+        />
+      </section>
 
       {members.length === 0 && !loadingList ? (
         <TeamEmptyState isAdmin={canManage} />

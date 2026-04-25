@@ -4,6 +4,8 @@ import type { ContentPostRow } from "@/features/dashboard/types";
 import { formatCompactNumber } from "@/features/dashboard/utils/format";
 import { formatDisplayDate } from "@/features/dashboard/utils/format";
 import { PlatformIconFromLabel } from "@/components/platforms/platform-icon";
+import { DataPanel } from "@/components/data-display/data-panel";
+import { SectionHeader } from "@/components/data-display/section-header";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -97,22 +99,18 @@ export function PostsPerformanceTable({
   } = useClientPagination(rows, CLIENT_PAGE_SIZE_DEFAULT, paginationResetKey);
 
   return (
-    <section
+    <DataPanel
       className={cn(
-        "space-y-4 rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm md:p-5",
+        "space-y-4",
         className,
       )}
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-base font-semibold text-hk-deep">
-            Conteúdos do período
-          </h2>
-          <p className="text-sm text-hk-muted">
-            Lista unificada (Facebook + Instagram) com filtros e ordenação
-            locais.
-          </p>
-        </div>
+        <SectionHeader
+          compact
+          title="Conteúdos do período"
+          description="Lista unificada (Facebook + Instagram) com filtros e ordenação locais."
+        />
         <div className="flex flex-wrap items-center gap-2 print:hidden">
           <Select value={platform} onValueChange={setPlatform}>
             <SelectTrigger className="h-9 w-[160px] text-xs">
@@ -302,6 +300,6 @@ export function PostsPerformanceTable({
           </footer>
         </>
       )}
-    </section>
+    </DataPanel>
   );
 }

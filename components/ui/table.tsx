@@ -6,7 +6,7 @@ const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto rounded-xl border border-hk-border-subtle bg-hk-surface shadow-none">
+  <div className="relative w-full overflow-auto rounded-xl border border-hk-border-subtle bg-hk-surface shadow-hk-sm">
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
@@ -23,7 +23,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      "border-b border-hk-divider bg-hk-surface-muted/70",
+      "border-b border-hk-divider bg-hk-surface-muted/86",
       className,
     )}
     {...props}
@@ -35,7 +35,14 @@ const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
+  <tbody
+    ref={ref}
+    className={cn(
+      "[&_tr:last-child]:border-0 [&_tr:nth-child(even)]:bg-hk-surface-muted/25",
+      className,
+    )}
+    {...props}
+  />
 ));
 TableBody.displayName = "TableBody";
 
@@ -46,7 +53,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b border-hk-border-subtle/80 transition-colors hover:bg-hk-surface-muted/50 data-[state=selected]:bg-hk-surface-muted/70",
+      "border-b border-hk-border-subtle/85 transition-colors hover:bg-hk-surface-muted/72 data-[state=selected]:bg-hk-surface-soft",
       className,
     )}
     {...props}
@@ -61,7 +68,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-11 px-4 text-left align-middle text-[11px] font-bold uppercase tracking-[0.08em] text-hk-muted",
+      "h-11 px-4 text-left align-middle text-[10px] font-bold uppercase tracking-[0.11em] text-hk-muted",
       className,
     )}
     {...props}
@@ -76,7 +83,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "p-4 align-middle text-sm font-medium leading-snug text-hk-ink",
+      "px-4 py-3.5 align-middle text-sm font-medium leading-snug text-hk-ink",
       className,
     )}
     {...props}

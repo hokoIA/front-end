@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/data-display/page-header";
 import { Download } from "lucide-react";
-import Link from "next/link";
 
 type DashboardPageHeaderProps = {
   /** Período já aplicado — habilita impressão da visão atual. */
@@ -15,52 +15,28 @@ export function DashboardPageHeader({
   onPrintPeriod,
 }: DashboardPageHeaderProps) {
   return (
-    <header className="border-b border-hk-border-subtle pb-6">
-      <nav
-        aria-label="Breadcrumb"
-        className="mb-3 text-xs text-hk-muted"
-      >
-        <ol className="flex flex-wrap items-center gap-1">
-          <li>
-            <Link
-              href="/dashboard"
-              className="transition-colors hover:text-hk-action"
-            >
-              Início
-            </Link>
-          </li>
-          <li className="text-hk-border" aria-hidden>
-            /
-          </li>
-          <li className="font-medium text-hk-ink">Dashboard</li>
-        </ol>
-      </nav>
-      <div className="min-w-0 space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight text-hk-deep">
-          Dashboard
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-hk-muted">
-          Leitura consolidada da performance do cliente no período. Métricas
-          agrupadas por significado estratégico — alcance, engajamento, audiência,
-          tráfego e conteúdo.
-        </p>
-      </div>
-      <Button
-        type="button"
-        variant="secondary"
-        size="sm"
-        className="shrink-0 gap-2 print:hidden"
-        disabled={!printEnabled}
-        title={
-          printEnabled
-            ? "Imprimir ou salvar como PDF a visão atual do período (navegador)."
-            : "Aplique um período no dashboard para exportar a visão atual."
-        }
-        onClick={onPrintPeriod}
-      >
-        <Download className="size-4 opacity-60" />
-        Exportar período
-      </Button>
-    </header>
+    <PageHeader
+      eyebrow="Visão consolidada"
+      title="Dashboard"
+      description="Leitura operacional e estratégica da performance do cliente no período: alcance, visibilidade, audiência, tráfego e conteúdo."
+      actions={
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="shrink-0 gap-2 print:hidden"
+          disabled={!printEnabled}
+          title={
+            printEnabled
+              ? "Imprimir ou salvar como PDF a visão atual do período (navegador)."
+              : "Aplique um período no dashboard para exportar a visão atual."
+          }
+          onClick={onPrintPeriod}
+        >
+          <Download className="size-4 opacity-60" />
+          Exportar período
+        </Button>
+      }
+    />
   );
 }

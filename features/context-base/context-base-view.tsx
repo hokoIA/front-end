@@ -31,6 +31,8 @@ import {
 import { formStateFromListItem } from "./utils/form-from-list-item";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DataPanel } from "@/components/data-display/data-panel";
+import { SectionHeader } from "@/components/data-display/section-header";
 import {
   useDocumentDeleteMutation,
   useDocumentDetailsMutation,
@@ -319,7 +321,7 @@ export function ContextBaseView() {
   );
 
   return (
-    <div className="hk-page space-y-8 pb-16 pt-1 lg:pt-2">
+    <div className="hk-page space-y-7 pb-16 pt-3 lg:space-y-8 lg:pt-4">
       <ContextBasePageHeader />
       <ContextBaseIntroPanel />
 
@@ -332,8 +334,8 @@ export function ContextBaseView() {
         <ContextNoCustomerState />
       ) : (
         <>
-          <Card className="border-hk-border-subtle bg-hk-surface/90 p-4 shadow-none">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-hk-muted">
+          <Card className="border-hk-border-subtle bg-hk-surface p-4 shadow-hk-xs">
+            <p className="hk-overline">
               Contexto ativo
             </p>
             <p className="mt-1 text-base font-semibold text-hk-deep">
@@ -365,10 +367,12 @@ export function ContextBaseView() {
             />
           )}
 
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-hk-deep">
-              Área B — Acervo documental
-            </h2>
+          <DataPanel className="space-y-4">
+            <SectionHeader
+              compact
+              title="Acervo documental"
+              description="Filtre, revise e gerencie documentos enviados para o contexto do cliente."
+            />
             <ContextDocumentsToolbar filters={filters} onChange={setFilters} />
             {listError ? (
               <ContextErrorState
@@ -389,7 +393,7 @@ export function ContextBaseView() {
                 onSelect={(doc) => void handleOpenDetails(doc)}
               />
             )}
-          </div>
+          </DataPanel>
 
           <ContextDocumentDetailsDialog
             doc={detailDoc}

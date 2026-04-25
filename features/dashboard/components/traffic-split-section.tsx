@@ -9,6 +9,7 @@ import { SingleSeriesLineChart } from "@/components/charts/single-series-line-ch
 import { ChartFullscreenDialog } from "@/components/charts/chart-fullscreen-dialog";
 import { InsightPanel } from "@/features/dashboard/components/insight-panel";
 import { InsightTriggerButton } from "@/features/dashboard/components/insight-trigger-button";
+import { SectionHeader } from "@/components/data-display/section-header";
 import { cn } from "@/lib/utils/cn";
 
 type TrafficSplitSectionProps = {
@@ -61,10 +62,7 @@ export function TrafficSplitSection({
       )}
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-1">
-          <h2 className="text-base font-semibold text-hk-deep">{title}</h2>
-          <p className="max-w-3xl text-sm text-hk-muted">{description}</p>
-        </div>
+        <SectionHeader compact title={title} description={description} />
         <div className="flex shrink-0 items-center gap-0.5 print:hidden">
           <ChartFullscreenDialog
             title={title}
@@ -138,8 +136,8 @@ export function TrafficSplitSection({
             }
           />
         </div>
-        <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-hk-border-subtle bg-hk-canvas/30 p-3">
-          <p className="text-[11px] font-semibold uppercase text-hk-muted">
+        <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-hk-border-subtle bg-hk-surface-muted/55 p-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-hk-muted">
             Fontes de tráfego
           </p>
           <div className="min-h-[200px] w-full min-w-0">

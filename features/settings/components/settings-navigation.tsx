@@ -24,10 +24,10 @@ export function SettingsNavigation() {
               <Link
                 href={item.href}
                 className={cn(
-                  "block rounded-lg px-3 py-2.5 text-sm transition-colors",
+                  "block rounded-lg border px-3 py-2.5 text-sm transition-colors",
                   active
-                    ? "bg-hk-deep/10 font-medium text-hk-deep"
-                    : "text-hk-muted hover:bg-hk-canvas hover:text-hk-ink",
+                    ? "border-hk-border bg-hk-deep/[0.08] font-medium text-hk-deep"
+                    : "border-transparent text-hk-muted hover:border-hk-border-subtle hover:bg-hk-surface-muted hover:text-hk-ink",
                 )}
               >
                 <span className="block">{item.label}</span>

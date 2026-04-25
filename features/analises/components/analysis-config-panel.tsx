@@ -7,7 +7,6 @@ import { AnalysisPlatformsMultiSelect } from "@/features/analises/components/ana
 import { AnalysisStrategicFocusField } from "@/features/analises/components/analysis-strategic-focus-field";
 import { AnalysisTypeField } from "@/features/analises/components/analysis-type-field";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils/cn";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
@@ -30,10 +29,10 @@ export function AnalysisConfigPanel({
     <section className="rounded-xl border border-hk-border bg-hk-surface shadow-hk-sm">
       <div className="flex items-center justify-between gap-3 border-b border-hk-border-subtle px-4 py-3 md:px-5">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-hk-muted">
+          <p className="hk-overline">
             Configuração da análise
           </p>
-          <p className="text-sm font-medium text-hk-deep">
+          <p className="text-sm font-semibold text-hk-deep">
             Período, foco e cobertura de plataformas
           </p>
         </div>

@@ -9,26 +9,20 @@ import Link from "next/link";
 const STORAGE_KEY = "hk.sidebar.collapsed";
 
 export function AppChrome({ children }: { children: ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
     try {
-      const v = localStorage.getItem(STORAGE_KEY);
-      if (v === "1") setCollapsed(true);
+      return localStorage.getItem(STORAGE_KEY) === "1";
     } catch {
-      /* ignore */
+      return false;
     }
-    setMounted(true);
-  }, []);
-
+  });
   useEffect(() => {
-    if (!mounted) return;
     document.documentElement.style.setProperty(
       "--hk-sidebar-current",
       collapsed ? "var(--hk-sidebar-collapsed)" : "var(--hk-sidebar-width)",
     );
-  }, [collapsed, mounted]);
+  }, [collapsed]);
 
   const toggleSidebar = useCallback(() => {
     setCollapsed((c) => {
@@ -47,12 +41,11 @@ export function AppChrome({ children }: { children: ReactNode }) {
       <AppSidebar
         collapsed={collapsed}
         onToggle={toggleSidebar}
-        mounted={mounted}
       />
       <div className="flex min-h-svh flex-col transition-[padding] duration-200 ease-out md:pl-[var(--hk-sidebar-current)] print:!pl-0">
         <AppTopbar />
-        <main className="hk-main min-w-0 flex-1">{children}</main>
-        <footer className="hk-print-hide border-t border-hk-divider hk-footer-surface px-4 py-3 sm:px-5 lg:px-8">
+        <main className="hk-main min-w-0 flex-1 pb-8">{children}</main>
+        <footer className="hk-print-hide border-t border-hk-divider hk-footer-surface px-4 py-3.5 sm:px-5 lg:px-8">
           <nav
             aria-label="Institucional"
             className="mx-auto flex max-w-[var(--hk-content-max)] flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-medium tracking-wide text-hk-muted"

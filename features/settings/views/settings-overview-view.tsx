@@ -23,7 +23,7 @@ export function SettingsOverviewView() {
   const items = SETTINGS_NAV_ITEMS.filter((i) => i.href !== "/configuracoes");
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-7 lg:space-y-8">
       <SettingsPageHeader
         title="Visão geral"
         description="Resumo da conta, cobrança e atalhos para cada área administrativa do workspace."
@@ -31,7 +31,7 @@ export function SettingsOverviewView() {
       />
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card className="border-hk-border bg-hk-surface/90">
+        <Card className="border-hk-border bg-hk-surface">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-hk-muted">
               Conta
@@ -48,7 +48,7 @@ export function SettingsOverviewView() {
             </CardDescription>
           </CardHeader>
         </Card>
-        <Card className="border-hk-border bg-hk-surface/90">
+        <Card className="border-hk-border bg-hk-surface">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-hk-muted">
               Assinatura

@@ -41,7 +41,7 @@ import {
   useKanbanColumnMutations,
   useKanbanLabelMutations,
 } from "@/hooks/api/use-kanban-queries";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 const UNASSIGNED = "unassigned";
@@ -157,11 +157,7 @@ export function KanbanHubView() {
   );
   const [labelEditing, setLabelEditing] = useState<KanbanLabelUi | null>(null);
 
-  useEffect(() => {
-    if (!selectedClientId && clients.length > 0) {
-      setSelectedClientId(clients[0].id);
-    }
-  }, [clients, selectedClientId]);
+  const activeClientId = selectedClientId ?? clients[0]?.id ?? null;
 
   const {
     create: createCol,
@@ -503,13 +499,13 @@ export function KanbanHubView() {
       <KanbanClientsPanel
         clients={clients}
         team={team}
-        selectedId={selectedClientId}
+        selectedId={activeClientId}
         onSelectClient={setSelectedClientId}
         onSaveProfile={(body) => {
-          if (!selectedClientId) return;
+          if (!activeClientId) return;
           setClientProfileError(null);
           putProfile.mutate(
-            { idCustomer: selectedClientId, body },
+            { idCustomer: activeClientId, body },
             {
               onSuccess: () => {
                 toast.success("Configuração salva.");
@@ -527,7 +523,7 @@ export function KanbanHubView() {
           );
         }}
         onRequestRemoveProfile={() => {
-          const c = clients.find((x) => x.id === selectedClientId);
+          const c = clients.find((x) => x.id === activeClientId);
           if (!c) return;
           setConfirm({
             kind: "profile",
@@ -577,7 +573,7 @@ export function KanbanHubView() {
   );
 
   return (
-    <div className="hk-page flex flex-col gap-8 py-8">
+    <div className="hk-page flex flex-col gap-7 py-7 lg:gap-8">
       <KanbanPageHeader />
 
       <KanbanTabs

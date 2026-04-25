@@ -12,7 +12,7 @@ import {
 
 export function SettingsLegalView() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-7 lg:space-y-8">
       <SettingsPageHeader
         title="Legal & institucional"
         description="Documentos que regem o uso do SaaS. Mantidos acessíveis dentro do módulo administrativo, sem competir com a navegação operacional do dia a dia."

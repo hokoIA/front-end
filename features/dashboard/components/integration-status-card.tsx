@@ -17,11 +17,11 @@ const opLabel: Record<IntegrationOperationalState, string> = {
 function dotClass(op: IntegrationOperationalState): string {
   switch (op) {
     case "connected":
-      return "bg-emerald-500";
+      return "bg-hk-success";
     case "disconnected":
       return "bg-hk-muted";
     case "needs_renewal":
-      return "bg-amber-500";
+      return "bg-hk-warning";
     default:
       return "bg-hk-border";
   }
@@ -42,7 +42,7 @@ export function IntegrationStatusCard({ card }: { card: IntegrationCardModel }) 
           : null;
 
   return (
-    <div className="flex min-w-[140px] flex-1 flex-col gap-2 rounded-lg border border-hk-border-subtle bg-hk-canvas/40 px-3 py-2.5">
+    <div className="flex min-w-[150px] flex-1 flex-col gap-2 rounded-xl border border-hk-border-subtle bg-hk-surface px-3.5 py-3 shadow-hk-xs">
       <div className="flex items-center gap-2">
         <PlatformIcon platform={iconFor(card.surface)} size="sm" plain />
         <span
@@ -61,9 +61,9 @@ export function IntegrationStatusCard({ card }: { card: IntegrationCardModel }) 
           className={cn(
             "text-[10px] font-medium",
             card.periodCoverage === "no_data"
-              ? "text-amber-700"
+              ? "text-hk-warning"
               : card.periodCoverage === "has_data"
-                ? "text-emerald-700"
+                ? "text-hk-success"
                 : "text-hk-muted",
           )}
         >

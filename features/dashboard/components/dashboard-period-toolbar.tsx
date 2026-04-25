@@ -48,10 +48,10 @@ export function DashboardPeriodToolbar({
     <section className="hk-print-hide rounded-xl border border-hk-border bg-hk-surface shadow-hk-sm">
       <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-5">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wider text-hk-muted">
+          <p className="hk-overline">
             Centro de leitura
           </p>
-          <p className="truncate text-sm font-medium text-hk-deep">
+          <p className="truncate text-sm font-semibold text-hk-deep">
             Período analítico
           </p>
         </div>
@@ -106,7 +106,8 @@ export function DashboardPeriodToolbar({
                 onChange={(e) => onDateStartChange(e.target.value)}
                 disabled={disabled}
                 className={cn(
-                  "flex h-10 w-full rounded-md border border-hk-border bg-hk-canvas/40 px-3 text-sm text-hk-ink",
+                  "flex h-10 w-full rounded-lg border border-hk-border-subtle bg-hk-surface px-3 text-sm text-hk-ink transition-[border-color,box-shadow]",
+                  "hover:border-hk-border",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hk-action/25",
                   "disabled:opacity-50",
                 )}
@@ -123,7 +124,8 @@ export function DashboardPeriodToolbar({
                 onChange={(e) => onDateEndChange(e.target.value)}
                 disabled={disabled}
                 className={cn(
-                  "flex h-10 w-full rounded-md border border-hk-border bg-hk-canvas/40 px-3 text-sm text-hk-ink",
+                  "flex h-10 w-full rounded-lg border border-hk-border-subtle bg-hk-surface px-3 text-sm text-hk-ink transition-[border-color,box-shadow]",
+                  "hover:border-hk-border",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hk-action/25",
                   "disabled:opacity-50",
                 )}

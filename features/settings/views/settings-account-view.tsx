@@ -36,7 +36,7 @@ export function SettingsAccountView() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-7 lg:space-y-8">
       <SettingsPageHeader
         title="Conta"
         description="Identidade do seu usuário na plataforma: perfil visível à equipe, avatar e dados cadastrais alinhados ao API Gateway."

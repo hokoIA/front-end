@@ -9,6 +9,8 @@ import { ContentsSummaryStrip } from "@/features/dashboard/components/contents-s
 import { DashboardGlobalLoading } from "@/features/dashboard/components/dashboard-global-loading";
 import { DashboardPageHeader } from "@/features/dashboard/components/dashboard-page-header";
 import { DashboardPeriodToolbar } from "@/features/dashboard/components/dashboard-period-toolbar";
+import { DataPanel } from "@/components/data-display/data-panel";
+import { SectionHeader } from "@/components/data-display/section-header";
 import {
   DashboardErrorState,
   DashboardNoCustomerState,
@@ -201,7 +203,7 @@ export function DashboardView() {
 
   if (!customerReady) {
     return (
-      <div className="hk-page space-y-8 py-6 lg:py-8">
+      <div className="hk-page space-y-7 py-6 lg:py-7">
         <DashboardPageHeader printEnabled={false} />
         <div className="hk-skeleton h-32 rounded-xl" />
       </div>
@@ -210,7 +212,7 @@ export function DashboardView() {
 
   if (!customerId) {
     return (
-      <div className="hk-page space-y-8 py-6 lg:py-8">
+      <div className="hk-page space-y-7 py-6 lg:py-7">
         <DashboardPageHeader printEnabled={false} />
         <DashboardNoCustomerState />
       </div>
@@ -218,7 +220,7 @@ export function DashboardView() {
   }
 
   return (
-    <div className="hk-page space-y-8 pb-16 pt-1 lg:pt-2">
+    <div className="hk-page space-y-7 pb-16 pt-3 lg:space-y-8 lg:pt-4">
       <DashboardGlobalLoading active={isFetching} />
       <DashboardPageHeader
         printEnabled={!!appliedRange}
@@ -257,23 +259,25 @@ export function DashboardView() {
         disabled={!customerId}
       />
 
-      <div className="space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-hk-muted">
-          Integrações
-        </p>
-        <div className="flex flex-wrap gap-2">
+      <DataPanel className="space-y-3">
+        <SectionHeader
+          compact
+          title="Conectividade e prontidão"
+          description="Estado operacional das fontes conectadas para o período selecionado."
+        />
+        <div className="flex flex-wrap gap-2.5">
           {intLoading
             ? Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="hk-skeleton h-[72px] min-w-[140px] flex-1 rounded-xl"
+                  className="hk-skeleton h-[88px] min-w-[150px] flex-1 rounded-xl"
                 />
               ))
             : integrationCards.map((c) => (
                 <IntegrationStatusCard key={c.surface} card={c} />
               ))}
         </div>
-      </div>
+      </DataPanel>
 
       {appliedRange && !intLoading && connectedCount === 0 && (
         <DashboardNoIntegrationsState />
@@ -320,10 +324,12 @@ export function DashboardView() {
 
       {appliedRange && snapshot && !authError && !allQueriesFailed && (
         <>
-          <section className="space-y-3">
-            <h2 className="text-sm font-semibold text-hk-deep">
-              Visão geral do período
-            </h2>
+          <DataPanel className="space-y-3">
+            <SectionHeader
+              compact
+              title="Visão geral do período"
+              description="KPIs consolidados para leitura executiva rápida."
+            />
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
               <MetricOverviewCard
                 label="Alcance consolidado"
@@ -360,9 +366,9 @@ export function DashboardView() {
                 loading={overviewLoading}
               />
             </div>
-          </section>
+          </DataPanel>
 
-          <div className="flex flex-col gap-3 rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm sm:flex-row sm:items-center sm:justify-between">
+          <DataPanel className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-semibold text-hk-deep">
                 Leitura assistida do período
@@ -381,7 +387,7 @@ export function DashboardView() {
                 onClick={onPeriodAnalyze}
               />
             </div>
-          </div>
+          </DataPanel>
           <InsightPanel
             title="Insight geral"
             text={periodInsight}
@@ -481,24 +487,17 @@ export function DashboardView() {
             }
           />
 
-          <section
-            id="contents"
-            className="space-y-4 rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm md:p-5"
-          >
-            <div>
-              <h2 className="text-base font-semibold text-hk-deep">
-                Conteúdos do período
-              </h2>
-              <p className="mt-1 text-sm text-hk-muted">
-                Totais reportados pela API e lista unificada de publicações em
-                Facebook e Instagram.
-              </p>
-            </div>
+          <DataPanel id="contents" className="space-y-4">
+            <SectionHeader
+              compact
+              title="Conteúdos do período"
+              description="Totais reportados pela API e lista unificada de publicações em Facebook e Instagram."
+            />
             <ContentsSummaryStrip
               summary={snapshot.postsMeta.summary}
               loading={queryPosts.isPending}
             />
-          </section>
+          </DataPanel>
 
           <TopPostsPanel
             posts={pickTopPosts(snapshot.posts, 3)}

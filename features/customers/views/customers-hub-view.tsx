@@ -19,6 +19,7 @@ import { useCustomersQuery } from "@/hooks/api/use-customers-queries";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { Customer } from "@/lib/types/customer";
 import { Button } from "@/components/ui/button";
+import { SectionHeader } from "@/components/data-display/section-header";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -79,7 +80,7 @@ export function CustomersHubView() {
 
   if (isError) {
     return (
-      <div className="hk-page hk-page--mid flex flex-col gap-6 py-8">
+      <div className="hk-page hk-page--mid flex flex-col gap-6 py-7">
         <CustomersPageHeader />
         <CustomersErrorState
           error={error instanceof Error ? error : null}
@@ -90,7 +91,7 @@ export function CustomersHubView() {
   }
 
   return (
-    <div className="hk-page flex flex-col gap-8 py-8">
+    <div className="hk-page flex flex-col gap-7 py-7 lg:gap-8">
       <CustomersPageHeader />
 
       <CustomersOverviewBar
@@ -107,15 +108,11 @@ export function CustomersHubView() {
       />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-hk-deep">
-            Carteira de clientes
-          </h2>
-          <p className="text-sm text-hk-muted">
-            Localize, filtre e abra o hub operacional para conectar fontes de
-            dados.
-          </p>
-        </div>
+        <SectionHeader
+          compact
+          title="Carteira de clientes"
+          description="Localize, filtre e abra o hub operacional para conectar fontes de dados."
+        />
         <Button
           type="button"
           className="gap-2 self-start bg-hk-action text-white hover:bg-hk-strong sm:self-auto"

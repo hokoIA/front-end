@@ -7,6 +7,7 @@ import { getFriendlyErrorMessage } from "@/lib/api/errors";
 import { InsightPanel } from "@/features/dashboard/components/insight-panel";
 import { InsightTriggerButton } from "@/features/dashboard/components/insight-trigger-button";
 import { PlatformIconFromLabel } from "@/components/platforms/platform-icon";
+import { SectionHeader } from "@/components/data-display/section-header";
 import { cn } from "@/lib/utils/cn";
 
 type FollowersSnapshotSectionProps = {
@@ -55,10 +56,7 @@ export function FollowersSnapshotSection({
       )}
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-1">
-          <h2 className="text-base font-semibold text-hk-deep">{title}</h2>
-          <p className="max-w-3xl text-sm text-hk-muted">{description}</p>
-        </div>
+        <SectionHeader compact title={title} description={description} />
         <div className="print:hidden">
           <InsightTriggerButton
             label="Insight deste bloco"
@@ -97,7 +95,7 @@ export function FollowersSnapshotSection({
           {rows.map((row) => (
             <div
               key={row.platformKey}
-              className="flex flex-col rounded-xl border border-hk-border-subtle bg-hk-canvas/40 p-4"
+              className="flex flex-col rounded-xl border border-hk-border-subtle bg-hk-surface-muted/45 p-4"
             >
               <div className="mb-3 flex items-center gap-2">
                 <PlatformIconFromLabel label={row.platformKey} size="md" />

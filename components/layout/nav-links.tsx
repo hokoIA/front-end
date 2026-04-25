@@ -34,7 +34,7 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
       {MAIN_NAV_SECTIONS.map((section) => (
         <div key={section.title}>
           {!collapsed && (
-            <p className="mb-2.5 px-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-hk-muted">
+            <p className="hk-overline mb-2.5 px-3">
               {section.title}
             </p>
           )}
@@ -55,15 +55,17 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
                     title={collapsed ? item.label : undefined}
                     onClick={() => onNavigate?.()}
                     className={cn(
-                      "group relative flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-colors duration-150",
-                      collapsed ? "justify-center px-0" : "border-l-[3px] pl-2.5",
-                      collapsed && active && "bg-hk-deep/[0.07] text-hk-deep",
-                      collapsed && !active && "text-hk-muted hover:bg-hk-deep/[0.04] hover:text-hk-ink",
+                      "group relative flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-[background-color,color,border-color] duration-150",
+                      collapsed ? "justify-center px-0" : "border-l-[3px] pl-3 pr-2",
+                      collapsed && active && "bg-hk-deep/[0.09] text-hk-deep",
+                      collapsed &&
+                        !active &&
+                        "text-hk-muted hover:bg-hk-deep/[0.045] hover:text-hk-ink",
                       !collapsed && active &&
-                        "border-hk-action bg-hk-deep/[0.06] text-hk-deep",
+                        "border-hk-action bg-hk-deep/[0.08] text-hk-deep",
                       !collapsed &&
                         !active &&
-                        "border-transparent text-hk-muted hover:border-hk-border-subtle hover:bg-hk-deep/[0.035] hover:text-hk-ink",
+                        "border-transparent text-hk-muted hover:border-hk-border-subtle hover:bg-hk-deep/[0.045] hover:text-hk-ink",
                     )}
                   >
                     <Icon

@@ -41,7 +41,7 @@ export function Breadcrumbs({ className }: { className?: string }) {
     <nav
       aria-label="Breadcrumb"
       className={cn(
-        "text-[11px] font-semibold uppercase tracking-[0.08em] text-hk-muted",
+        "text-xs font-medium tracking-[0.01em] text-hk-muted",
         className,
       )}
     >
@@ -54,7 +54,7 @@ export function Breadcrumbs({ className }: { className?: string }) {
               </span>
             )}
             {c.isLast ? (
-              <span className="font-bold tracking-normal text-hk-deep">
+              <span className="font-semibold tracking-normal text-hk-deep">
                 {c.label}
               </span>
             ) : (

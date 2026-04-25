@@ -21,6 +21,8 @@ import { useCustomersQuery } from "@/hooks/api/use-customers-queries";
 import { useGoalsQuery } from "@/hooks/api/use-goals-queries";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { DataPanel } from "@/components/data-display/data-panel";
+import { SectionHeader } from "@/components/data-display/section-header";
 import {
   Select,
   SelectContent,
@@ -124,7 +126,7 @@ export function PlanningHubView() {
 
   if (goalsError) {
     return (
-      <div className="hk-page flex flex-col gap-6 py-8">
+      <div className="hk-page flex flex-col gap-6 py-7">
         <GoalsPageHeader />
         <GoalsErrorState
           error={goalsErr instanceof Error ? goalsErr : null}
@@ -135,12 +137,12 @@ export function PlanningHubView() {
   }
 
   return (
-    <div className="hk-page flex flex-col gap-8 py-8">
+    <div className="hk-page flex flex-col gap-7 py-7 lg:gap-8">
       <GoalsPageHeader />
 
-      <section
+      <DataPanel
         aria-label="Contexto global"
-        className="rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm md:p-5"
+        className="p-4 md:p-5"
       >
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="max-w-xl">
@@ -180,7 +182,7 @@ export function PlanningHubView() {
             escolhendo o cliente no formulário.
           </p>
         ) : null}
-      </section>
+      </DataPanel>
 
       <GoalsOverviewBar
         active={overview.active}
@@ -195,11 +197,13 @@ export function PlanningHubView() {
       />
 
       <section aria-label="Ações principais" className="space-y-4">
-        <h2 className="text-sm font-semibold text-hk-deep">
-          Criação e inteligência
-        </h2>
+        <SectionHeader
+          compact
+          title="Criação e inteligência"
+          description="Abra o fluxo manual de metas ou peça sugestões orientadas pela IA."
+        />
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="flex flex-col rounded-xl border border-hk-border bg-gradient-to-br from-hk-surface to-hk-cyan/5 p-5 shadow-hk-sm">
+          <div className="flex flex-col rounded-xl border border-hk-border bg-hk-surface p-5 shadow-hk-sm">
             <Target className="h-8 w-8 text-hk-action" aria-hidden />
             <h3 className="mt-3 font-semibold text-hk-deep">Nova meta</h3>
             <p className="mt-1 flex-1 text-sm text-hk-muted">
@@ -217,7 +221,7 @@ export function PlanningHubView() {
               Abrir fluxo de nova meta
             </Button>
           </div>
-          <div className="flex flex-col rounded-xl border border-hk-border bg-gradient-to-br from-hk-surface to-hk-lime/10 p-5 shadow-hk-sm">
+          <div className="flex flex-col rounded-xl border border-hk-border bg-hk-surface p-5 shadow-hk-sm">
             <Lightbulb className="h-8 w-8 text-hk-deep" aria-hidden />
             <h3 className="mt-3 font-semibold text-hk-deep">
               Pedir sugestões da IA
@@ -240,15 +244,11 @@ export function PlanningHubView() {
 
       {contextCustomer === "all" ? <GoalsNoCustomerState /> : null}
 
-      <div>
-        <h2 className="text-sm font-semibold text-hk-deep">
-          Carteira de metas
-        </h2>
-        <p className="mt-1 text-sm text-hk-muted">
-          Status e KPIs refletem o contrato atual da API. Não há progresso
-          calculado vindo do backend.
-        </p>
-      </div>
+      <SectionHeader
+        compact
+        title="Carteira de metas"
+        description="Status e KPIs refletem o contrato atual da API. Não há progresso calculado vindo do backend."
+      />
 
       <GoalsFiltersToolbar value={filters} onChange={setFilters} />
 
