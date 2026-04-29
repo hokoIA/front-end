@@ -1,14 +1,23 @@
 import type { NextConfig } from "next";
 
-const backendTarget =
-  process.env.BACKEND_PROXY_TARGET || "https://www.hokoainalytics.com.br";
+function normalizeBase(raw: string): string {
+  return raw.replace(/\/$/, "");
+}
 
-console.log("[next.config] BACKEND_PROXY_TARGET =", backendTarget);
+const backendProxyTarget = process.env.BACKEND_PROXY_TARGET?.trim();
+const fallbackApiBase = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+
+if (!backendProxyTarget && process.env.NODE_ENV === "production") {
+  throw new Error(
+    "[next.config] BACKEND_PROXY_TARGET é obrigatório em produção para o proxy /api e /customer.",
+  );
+}
+
+const backendTarget = normalizeBase(
+  backendProxyTarget || fallbackApiBase || "http://localhost:4000",
+);
 
 const nextConfig: NextConfig = {
-  env: {
-    NEXT_PUBLIC_BACKEND_PROXY_TARGET: backendTarget,
-  },
   async rewrites() {
     return [
       {

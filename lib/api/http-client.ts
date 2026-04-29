@@ -6,8 +6,8 @@
  *   cookies no fluxo CORS (o backend deve responder com `Access-Control-Allow-Credentials: true`
  *   e `Access-Control-Allow-Origin` explícito, nunca `*`).
  * - `NEXT_PUBLIC_API_BASE_URL` deve ser a URL **absoluta** do gateway (ex. https://api-gateway-…onrender.com).
- *   Se ficar vazio em produção, `/api/*` vira caminho relativo ao domínio do Next e o cookie da API
- *   nunca participa do pedido.
+ *   Se ficar vazio, o cliente usa caminho relativo (`/api/*` e `/customer/*`) e depende
+ *   do rewrite/proxy do Next via `BACKEND_PROXY_TARGET`.
  *
  * `NEXT_PUBLIC_ANALYZE_API_BASE_URL` — serviço de IA (analyze/documents), também com credentials.
  */
@@ -60,12 +60,6 @@ export function getApiBaseUrl(): string {
 export function getAnalyzeBaseUrl(): string {
   return normalizeBase(process.env.NEXT_PUBLIC_ANALYZE_API_BASE_URL);
 }
-
-function getProxyTarget(): string {
-  return normalizeBase(process.env.NEXT_PUBLIC_BACKEND_PROXY_TARGET);
-}
-
-let warnedEmptyApiBase = false;
 
 function resolveUrl(path: string, base: HttpBase): string {
   if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -156,19 +150,6 @@ export async function httpFetch(
     (serializedBody !== undefined && serializedBody !== null
       ? "POST"
       : "GET");
-
-  if (
-    typeof window !== "undefined" &&
-    base === "api" &&
-    !getApiBaseUrl() &&
-    !getProxyTarget() &&
-    !warnedEmptyApiBase
-  ) {
-    warnedEmptyApiBase = true;
-    console.warn(
-      "[ho.ko] NEXT_PUBLIC_API_BASE_URL está vazio e nenhum BACKEND_PROXY_TARGET público foi detectado. Configure rewrite/proxy ou URL direta da API.",
-    );
-  }
 
   let res: Response;
   try {

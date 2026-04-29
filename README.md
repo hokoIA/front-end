@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Front-end (Next.js)
 
-## Getting Started
-
-First, run the development server:
+## Execucao local
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy no Render (topologia B - proxy no Next)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Este front usa rewrite/proxy no `next.config.ts` para encaminhar:
+- `/api/:path*`
+- `/customer/:path*`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+para o backend definido em `BACKEND_PROXY_TARGET`.
 
-## Learn More
+### Variaveis obrigatorias
 
-To learn more about Next.js, take a look at the following resources:
+- `BACKEND_PROXY_TARGET=https://api-gateway-ye0f.onrender.com`
+- `NEXT_PUBLIC_API_BASE_URL=` (deixar vazio no modo proxy)
+- `NEXT_PUBLIC_ANALYZE_API_BASE_URL=https://analyze-backend-5jyg.onrender.com`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Se `BACKEND_PROXY_TARGET` nao estiver definido em producao, o build falha por seguranca de configuracao.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Checklist rapido de validacao
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Login funciona e cria sessao
+- `GET /api/auth-status` retorna autenticado apos login
+- Refresh da pagina mantem sessao
+- Rotas de cliente (`/customer/*`) respondem sem erro de CORS
