@@ -1,3 +1,4 @@
+// app/page.tsx
 import type { Metadata } from "next";
 import { LandingPage } from "@/features/landing/landing-page";
 

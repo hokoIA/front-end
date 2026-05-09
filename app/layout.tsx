@@ -1,6 +1,8 @@
+// app/layout.tsx
 import { AppProviders } from "@/components/providers/app-providers";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -29,6 +31,8 @@ export default function RootLayout({
       <body suppressHydrationWarning className="min-h-full font-sans">
         <AppProviders>{children}</AppProviders>
       </body>
+
+      <GoogleAnalytics gaId="G-L3EZ3QE0GY" />
     </html>
   );
 }
