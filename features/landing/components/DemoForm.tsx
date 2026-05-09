@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DialogHeader, DialogTitle, DialogDescription } from '@/features/landing/ui/dialog';
 import { Loader as Loader2, CircleCheck as CheckCircle, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
+import { trackEvent } from "@/lib/analytics";
 
 const formSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -58,6 +59,13 @@ export default function DemoForm() {
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload?.message || 'Erro no envio');
+
+      trackEvent("generate_lead", {
+        form_name: "demo_form",
+        lead_type: "demo_request",
+        company_size: data.companySize,
+        source_component: "DemoForm",
+      });
 
       setIsSubmitted(true);
       toast.success('Solicitação enviada com sucesso! Entraremos em contato em breve.');

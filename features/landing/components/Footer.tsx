@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Linkedin, Twitter, Instagram } from 'lucide-react';
 import Logo from './Logo';
+import { trackEvent } from "@/lib/analytics";
 
 const footerSections = [
   {
@@ -44,17 +45,21 @@ const footerSections = [
 ];
 
 const socialLinks = [
-  { name: 'LinkedIn', icon: Linkedin, href: '#' },
-  { name: 'Twitter', icon: Twitter, href: '#' },
-  { name: 'Instagram', icon: Instagram, href: '#' },
+  { name: 'LinkedIn', icon: Linkedin, href: 'https://www.linkedin.com/company/hokocompany' },
+  { name: 'Instagram', icon: Instagram, href: 'https://www.instagram.com/hokoainalytics' },
 ];
 
 export default function Footer() {
   const scrollToSection = (href: string) => {
-    if (href.startsWith('#')) {
+    trackEvent("section_nav_click", {
+      location: "footer",
+      target_section: href,
+    });
+
+    if (href.startsWith("#")) {
       const element = document.querySelector(href);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: "smooth" });
       }
     }
   };
@@ -79,7 +84,7 @@ export default function Footer() {
               {/*<p className="text-slate-300 mb-8 leading-relaxed">
                 Uma ferramenta de inteligência de marca e comunicação que conecta performance, percepção e valor para decisões mais rápidas, embasadas e estratégicas.
               </p>*/}
-              
+
               {/* Contact info */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
@@ -142,10 +147,32 @@ export default function Footer() {
             >
               <span>&copy; 2025 ho.ko AI.nalytics. Todos os direitos reservados.</span>
               <div className="flex space-x-6">
-                <button className="hover:text-white transition-colors focus-ring rounded" onClick={() => window.location.href = "/legal/termos"}>
+                <button
+                  className="hover:text-white transition-colors focus-ring rounded"
+                  onClick={() => {
+                    trackEvent("legal_click", {
+                      location: "footer",
+                      label: "Termos de Uso",
+                      destination: "/legal/termos",
+                    });
+
+                    window.location.href = "/legal/termos";
+                  }}
+                >
                   Termos de Uso
                 </button>
-                <button className="hover:text-white transition-colors focus-ring rounded" onClick={() => window.location.href = "/legal/privacidade"}>
+                <button
+                  className="hover:text-white transition-colors focus-ring rounded"
+                  onClick={() => {
+                    trackEvent("legal_click", {
+                      location: "footer",
+                      label: "Política de Privacidade",
+                      destination: "/legal/privacidade",
+                    });
+
+                    window.location.href = "/legal/privacidade";
+                  }}
+                >
                   Política de Privacidade
                 </button>
               </div>
@@ -165,8 +192,16 @@ export default function Footer() {
                   <a
                     key={social.name}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-10 h-10 bg-slate-800/50 hover:bg-hoko-primary rounded-lg flex items-center justify-center transition-all duration-300 magnetic focus-ring"
                     aria-label={social.name}
+                    onClick={() => {
+                      trackEvent("social_click", {
+                        platform: social.name,
+                        location: "footer",
+                      });
+                    }}
                   >
                     <Icon className="h-5 w-5" />
                   </a>

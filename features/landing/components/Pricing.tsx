@@ -7,6 +7,7 @@ import { Badge } from '@/features/landing/ui/badge';
 import { Slider } from '@/features/landing/ui/slider';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/features/landing/ui/accordion';
 import { Check, Calculator, Users } from 'lucide-react';
+import { trackEvent } from "@/lib/analytics";
 
 const BASE_PRICE = 299;
 const INCLUDED_CLIENTS = 3;
@@ -117,6 +118,17 @@ export default function Pricing() {
                     max={30}
                     step={1}
                     onValueChange={(v) => setClients(v[0] ?? 1)}
+                    onValueCommit={(v) => {
+                      const selectedClients = v[0] ?? 1;
+                      const extraClients = Math.max(0, selectedClients - INCLUDED_CLIENTS);
+                      const total = BASE_PRICE + extraClients * EXTRA_PER_CLIENT;
+
+                      trackEvent("pricing_calculator_change", {
+                        clients: selectedClients,
+                        extra_clients: extraClients,
+                        total_monthly_value: total,
+                      });
+                    }}
                     className="mt-2"
                   />
                   <p className="text-xs text-muted-foreground mt-2">
@@ -151,7 +163,16 @@ export default function Pricing() {
                   className="w-full magnetic gradient-brand text-white border-0"
                   size="lg"
                   onClick={() => {
-                    window.location.href = '/login';
+                    trackEvent("signup_cta_click", {
+                      location: "pricing",
+                      label: "Começar agora",
+                      clients,
+                      extra_clients: pricing.extraClients,
+                      total_monthly_value: pricing.total,
+                      destination: "/login",
+                    });
+
+                    window.location.href = "/login";
                   }}
                 >
                   Começar agora
@@ -160,7 +181,16 @@ export default function Pricing() {
                 <div className="text-center">
                   <span className="text-xs text-muted-foreground">
                     Precisa de algo específico (white‑label, integrações extras, SLA)?{' '}
-                    <a href="#contact" className="text-hoko-tertiary hover:underline">
+                    <a
+                      href="#contact"
+                      className="text-hoko-tertiary hover:underline"
+                      onClick={() => {
+                        trackEvent("pricing_contact_click", {
+                          location: "pricing",
+                          target_section: "#contact",
+                        });
+                      }}
+                    >
                       Fale com a gente
                     </a>
                     .

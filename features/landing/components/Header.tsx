@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/features/landing/ui/dial
 import { Menu, X } from 'lucide-react';
 import DemoForm from './DemoForm';
 import Logo from './Logo';
+import { trackEvent } from "@/lib/analytics";
 
 const navigation = [
   { name: 'Dashboard', href: '#dashboard' },
@@ -85,9 +86,14 @@ export default function Header() {
   }, []);
 
   const scrollToSection = (href: string) => {
+    trackEvent("section_nav_click", {
+      location: "header",
+      target_section: href,
+    });
+
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: "smooth" });
       setIsOpen(false);
     }
   };
@@ -129,13 +135,30 @@ export default function Header() {
               <Button
                 variant="ghost"
                 className="w-full justify-start"
-                onClick={() => { window.location.href = isLoggedIn ? '/dashboard' : '/login'; }}
+                onClick={() => {
+                  trackEvent("login_click", {
+                    location: "header_desktop",
+                    label: isLoggedIn ? "Acessar" : "Login",
+                    destination: isLoggedIn ? "/dashboard" : "/login",
+                  });
+
+                  window.location.href = isLoggedIn ? "/dashboard" : "/login";
+                }}
               >
                 {isLoggedIn ? 'Acessar' : 'Login'}
               </Button>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="magnetic gradient-brand text-white border-0">
+                  <Button
+                    size="sm"
+                    className="magnetic gradient-brand text-white border-0"
+                    onClick={() => {
+                      trackEvent("demo_modal_open", {
+                        location: "header_desktop",
+                        label: "Solicite uma demonstração",
+                      });
+                    }}
+                  >
                     Solicite uma demonstração
                   </Button>
                 </DialogTrigger>
@@ -178,13 +201,29 @@ export default function Header() {
                 <Button
                   variant="ghost"
                   className="w-full justify-start"
-                  onClick={() => { window.location.href = isLoggedIn ? '/dashboard' : '/login'; }}
+                  onClick={() => {
+                    trackEvent("login_click", {
+                      location: "header_mobile",
+                      label: isLoggedIn ? "Acessar" : "Login",
+                      destination: isLoggedIn ? "/dashboard" : "/login",
+                    });
+
+                    window.location.href = isLoggedIn ? "/dashboard" : "/login";
+                  }}
                 >
                   {isLoggedIn ? 'Acessar' : 'Login'}
                 </Button>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button className="w-full gradient-brand text-white border-0">
+                    <Button
+                      className="w-full gradient-brand text-white border-0"
+                      onClick={() => {
+                        trackEvent("demo_modal_open", {
+                          location: "header_mobile",
+                          label: "Solicite uma demonstração",
+                        });
+                      }}
+                    >
                       Solicite uma demonstração
                     </Button>
                   </DialogTrigger>

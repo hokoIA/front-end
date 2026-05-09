@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/features/landing/ui/dial
 import { ArrowRight, Play } from 'lucide-react';
 import DemoForm from './DemoForm';
 import DashboardMockup from './DashboardMockup';
+import { trackEvent } from "@/lib/analytics";
 
 export default function Hero() {
   return (
@@ -78,14 +79,36 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <Button size="lg" className="magnetic gradient-brand text-white border-0 group w-full sm:w-auto" onClick={() => { window.location.href = '/login'; }}>
+              <Button
+                size="lg"
+                className="magnetic gradient-brand text-white border-0 group w-full sm:w-auto"
+                onClick={() => {
+                  trackEvent("signup_cta_click", {
+                    location: "hero",
+                    label: "Experimente agora",
+                    destination: "/login",
+                  });
+
+                  window.location.href = "/login";
+                }}
+              >
                 Experimente agora
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
 
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="lg" className="magnetic group w-full sm:w-auto">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="magnetic group w-full sm:w-auto"
+                    onClick={() => {
+                      trackEvent("demo_modal_open", {
+                        location: "hero",
+                        label: "Solicite uma demonstração",
+                      });
+                    }}
+                  >
                     <Play className="mr-2 h-4 w-4" />
                     Solicite uma demonstração
                   </Button>

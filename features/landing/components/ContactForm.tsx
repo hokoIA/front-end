@@ -12,6 +12,7 @@ import { Textarea } from '@/features/landing/ui/textarea';
 import { SheetHeader, SheetTitle, SheetDescription } from '@/features/landing/ui/sheet';
 import { Loader as Loader2, CircleCheck as CheckCircle, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { trackEvent } from "@/lib/analytics";
 
 const formSchema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -46,6 +47,12 @@ export default function ContactForm() {
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload?.message || 'Erro no envio');
+
+      trackEvent("generate_lead", {
+        form_name: "contact_form",
+        lead_type: "contact_request",
+        source_component: "ContactForm",
+      });
 
       setIsSubmitted(true);
       toast.success('Solicitação enviada com sucesso! Entraremos em contato em breve.');

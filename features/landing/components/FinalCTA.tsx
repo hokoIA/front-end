@@ -5,6 +5,7 @@ import { Button } from '@/features/landing/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/features/landing/ui/sheet';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import ContactForm from './ContactForm';
+import { trackEvent } from "@/lib/analytics";
 
 export default function FinalCTA() {
   return (
@@ -12,7 +13,7 @@ export default function FinalCTA() {
       {/* Background */}
       <div className="absolute inset-0 gradient-brand-finalCTA opacity-90" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.1)_100%)]" />
-      
+
       {/* Animated background elements */}
       <motion.div
         className="absolute top-20 left-20 w-32 h-32 border border-white/20 rounded-full"
@@ -76,6 +77,12 @@ export default function FinalCTA() {
                 <Button
                   size="lg"
                   className="bg-white text-hoko-primary hover:bg-white/90 magnetic group px-8 py-4 text-lg font-semibold"
+                  onClick={() => {
+                    trackEvent("contact_form_open", {
+                      location: "final_cta",
+                      label: "Quero conhecer a plataforma",
+                    });
+                  }}
                 >
                   Quero conhecer a plataforma
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
