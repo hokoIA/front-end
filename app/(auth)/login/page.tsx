@@ -11,15 +11,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/features/auth/schemas";
+import { getHttpErrorMessage } from "@/lib/api/errors";
 import { getAuthStatus, loginRequest } from "@/lib/api/auth";
 import { getBillingMeSafe } from "@/lib/api/billing";
 import { queryKeys } from "@/lib/api/query-keys";
 import { hasActiveOrTrialingSubscription } from "@/lib/types/billing";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -30,10 +32,18 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+  const [showPassword, setShowPassword] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
+  const verified = searchParams.get("verified");
+
+  useEffect(() => {
+    if (verified === "1") {
+      toast.success("E-mail confirmado com sucesso. Faça login para continuar.");
+    }
+  }, [verified]);
 
   async function onSubmit(values: FormValues) {
     try {
@@ -72,10 +82,8 @@ function LoginForm() {
       }
 
       router.replace("/configuracoes/assinatura");
-    } catch {
-      toast.error(
-        "Não foi possível entrar. Verifique as credenciais ou a URL da API.",
-      );
+    } catch (error) {
+      toast.error(getHttpErrorMessage(error));
     }
   }
 
@@ -118,12 +126,23 @@ function LoginForm() {
                 Esqueci minha senha
               </Link>
             </div>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              {...form.register("password")}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                className="pr-10"
+                {...form.register("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-hk-muted transition-colors hover:text-hk-deep"
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
             {form.formState.errors.password && (
               <p className="text-xs text-red-600">
                 {form.formState.errors.password.message}

@@ -10,6 +10,11 @@ export type RegisterBody = {
   name?: string;
 };
 
+export type VerifyEmailResponse = {
+  success: boolean;
+  message: string;
+};
+
 export async function loginRequest(body: LoginBody): Promise<void> {
   await httpFetch(endpoints.auth.login(), { method: "POST", json: body });
 }
@@ -23,6 +28,15 @@ export async function registerRequest(body: RegisterBody): Promise<void> {
 
 /** @deprecated Prefira `registerRequest`. */
 export const register = registerRequest;
+
+export async function verifyEmailRequest(
+  token: string,
+): Promise<VerifyEmailResponse> {
+  return httpJson<VerifyEmailResponse>(endpoints.auth.verifyEmail(), {
+    method: "GET",
+    searchParams: { token, format: "json" },
+  });
+}
 
 export async function logoutRequest(): Promise<void> {
   await httpFetch(endpoints.auth.logout(), { method: "POST" });

@@ -7,6 +7,7 @@ export const endpoints = {
   auth: {
     register: () => "/api/register" as const,
     login: () => "/api/login" as const,
+    verifyEmail: () => "/api/verify-email" as const,
     logout: () => "/api/logout" as const,
     profile: () => "/api/profile" as const,
     authStatus: () => "/api/auth-status" as const,
