@@ -39,6 +39,10 @@ export function SettingsBillingView() {
   const subActive = hasActiveOrTrialingSubscription(billingQuery.data);
 
   async function openPortal() {
+    if (!subActive) {
+      toast.message("Portal liberado após ativar uma assinatura.");
+      return;
+    }
     try {
       const res = await portalMut.mutateAsync(undefined);
       const url = extractPortalUrl(res);
@@ -104,6 +108,7 @@ export function SettingsBillingView() {
             onManagePortal={() => void openPortal()}
             onCheckout={() => void openCheckout()}
             portalLoading={portalMut.isPending}
+            portalDisabled={!subActive}
             checkoutLoading={checkoutMut.isPending}
             showCheckout={!subActive}
           />
@@ -135,8 +140,7 @@ export function SettingsBillingView() {
                 </CardTitle>
                 <CardDescription>
                   Ative um plano para liberar todos os módulos conforme o contrato
-                  comercial. O valor exibido acima é a referência de produto (base +
-                  clientes).
+                  comercial.
                 </CardDescription>
               </CardHeader>
             </Card>

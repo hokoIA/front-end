@@ -17,7 +17,7 @@ const labels: Record<PlatformUiStatusKey, string> = {
   needs_renewal: "Requer renovação",
   no_data: "Sem dados",
   error: "Em erro",
-  unknown: "Estado desconhecido",
+  unknown: "Desconectado",
 };
 
 const styles: Record<PlatformUiStatusKey, string> = {

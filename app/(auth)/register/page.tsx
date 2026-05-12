@@ -60,6 +60,11 @@ export default function RegisterPage() {
       ok: /[a-z]/.test(passwordValue),
     },
     {
+      id: "number",
+      label: "Pelo menos 1 número",
+      ok: /[0-9]/.test(passwordValue),
+    },
+    {
       id: "special",
       label: "Pelo menos 1 caractere especial",
       ok: /[^A-Za-z0-9]/.test(passwordValue),

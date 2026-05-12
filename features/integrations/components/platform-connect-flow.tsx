@@ -127,11 +127,6 @@ export function PlatformConnectFlow({
               <li>Selecione página, propriedade ou canal.</li>
               <li>Salve a conexão e aguarde o status atualizado.</li>
             </ol>
-            <p className="rounded-md border border-hk-border-subtle bg-hk-canvas/80 p-3 text-xs">
-              Dica: o contrato exato do corpo do POST pode variar por ambiente.
-              Enviamos chaves comuns (<code className="text-hk-action">id_customer</code>{" "}
-              + identificador do recurso) para maximizar compatibilidade.
-            </p>
           </div>
         )}
 
@@ -187,9 +182,6 @@ export function PlatformConnectFlow({
         )}
 
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            Fechar
-          </Button>
           {step === "intro" && (
             <>
               <Button type="button" variant="secondary" onClick={oauthOnly}>

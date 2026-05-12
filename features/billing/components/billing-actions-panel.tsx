@@ -14,6 +14,7 @@ type Props = {
   onManagePortal: () => void;
   onCheckout?: () => void;
   portalLoading: boolean;
+  portalDisabled?: boolean;
   checkoutLoading?: boolean;
   showCheckout?: boolean;
 };
@@ -22,6 +23,7 @@ export function BillingActionsPanel({
   onManagePortal,
   onCheckout,
   portalLoading,
+  portalDisabled,
   checkoutLoading,
   showCheckout,
 }: Props) {
@@ -38,7 +40,7 @@ export function BillingActionsPanel({
         <Button
           type="button"
           className="gap-2"
-          disabled={portalLoading}
+          disabled={portalLoading || portalDisabled}
           onClick={onManagePortal}
         >
           {portalLoading ? (

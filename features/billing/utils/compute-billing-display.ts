@@ -92,21 +92,35 @@ export function buildBillingDisplay(
 ): BillingDisplayModel {
   const r = record(billing);
   const sub = record(r?.subscription);
+  const hasSubscription =
+    !!sub ||
+    !!str(r?.status) ||
+    !!str(r?.plan_code) ||
+    !!str(r?.stripe_subscription_id);
   const statusRaw =
     str(sub?.status) ??
     str(sub?.subscription_status) ??
     str(r?.status) ??
-    "unknown";
+    (hasSubscription ? "unknown" : "none");
   const normalized =
-    statusRaw === "none" || !billing
+    statusRaw === "none" || !billing || !hasSubscription
       ? "none"
       : (statusRaw as BillingDisplayModel["status"]);
 
   const activeClients = resolveActiveClientCount(billing, listCustomerCount);
-  const usage = {
-    activeClients,
-    ...computeUsageBreakdown(activeClients),
-  };
+  const usage = normalized === "none"
+    ? {
+        activeClients,
+        includedSlots: HK_INCLUDED_CLIENTS,
+        excessClients: Math.max(0, activeClients - HK_INCLUDED_CLIENTS),
+        baseMonthlyBrl: 0,
+        extrasMonthlyBrl: 0,
+        totalMonthlyBrl: 0,
+      }
+    : {
+        activeClients,
+        ...computeUsageBreakdown(activeClients),
+      };
 
   const cancelAtPeriodEnd =
     bool(sub?.cancel_at_period_end) || bool(r?.cancel_at_period_end);
@@ -125,7 +139,9 @@ export function buildBillingDisplay(
     null;
 
   const planLabel =
-    str(r?.plan_name) ?? str(sub?.plan_name) ?? "Plano ho.ko — base + clientes";
+    normalized === "none"
+      ? "Nenhum plano ativo"
+      : (str(r?.plan_name) ?? str(sub?.plan_name) ?? "Plano ho.ko — base + clientes");
 
   const lastPay = str(r?.last_payment_status);
   const paymentSummary =

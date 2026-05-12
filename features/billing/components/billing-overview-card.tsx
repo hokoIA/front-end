@@ -22,6 +22,8 @@ function money(n: number) {
 }
 
 export function BillingOverviewCard({ display }: Props) {
+  const noActiveSubscription = display.status === "none";
+
   return (
     <Card className="border-hk-border shadow-hk-sm">
       <CardHeader>
@@ -38,18 +40,23 @@ export function BillingOverviewCard({ display }: Props) {
       <CardContent className="space-y-4">
         <div className="rounded-lg border border-hk-border-subtle bg-hk-canvas/50 p-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-hk-muted">
-            Mensalidade estimada (produto)
+            {noActiveSubscription
+              ? "Cobrança mensal atual"
+              : "Mensalidade estimada (produto)"}
           </p>
           <p className="mt-1 text-2xl font-semibold tabular-nums text-hk-deep">
             {money(display.usage.totalMonthlyBrl)}
           </p>
           <p className="mt-2 text-xs text-hk-muted">
-            Base {money(display.usage.baseMonthlyBrl)}
-            {display.usage.excessClients > 0
-              ? ` + ${display.usage.excessClients} cliente(s) adicional(is) × ${money(
-                  display.usage.extrasMonthlyBrl / display.usage.excessClients,
-                )} cada`
-              : " · sem clientes excedentes"}
+            {noActiveSubscription
+              ? "Sem assinatura ativa no momento."
+              : `Base ${money(display.usage.baseMonthlyBrl)}${
+                  display.usage.excessClients > 0
+                    ? ` + ${display.usage.excessClients} cliente(s) adicional(is) × ${money(
+                        display.usage.extrasMonthlyBrl / display.usage.excessClients,
+                      )} cada`
+                    : " · sem clientes excedentes"
+                }`}
           </p>
         </div>
         {display.paymentSummary ? (
