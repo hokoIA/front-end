@@ -13,6 +13,7 @@ import { SettingsErrorState } from "../components/settings-states";
 import {
   useBillingCheckoutMutation,
   useBillingMeQuery,
+  useBillingPlansQuery,
   useBillingPortalMutation,
 } from "@/hooks/api/use-billing-queries";
 import { useCustomersQuery } from "@/hooks/api/use-customers-queries";
@@ -26,8 +27,29 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 
+function resolveDefaultPlanCode(raw: unknown): string | null {
+  if (!raw || typeof raw !== "object") return null;
+  const root = raw as Record<string, unknown>;
+
+  const directPlans = Array.isArray(root.plans) ? root.plans : null;
+  const rootAsList = Array.isArray(raw) ? raw : null;
+  const plans = directPlans ?? rootAsList;
+  if (!plans) return null;
+
+  for (const item of plans) {
+    if (!item || typeof item !== "object") continue;
+    const code = (item as Record<string, unknown>).code;
+    if (typeof code === "string" && code.trim()) {
+      return code;
+    }
+  }
+
+  return null;
+}
+
 export function SettingsBillingView() {
   const billingQuery = useBillingMeQuery();
+  const plansQuery = useBillingPlansQuery();
   const customersQuery = useCustomersQuery();
   const portalMut = useBillingPortalMutation();
   const checkoutMut = useBillingCheckoutMutation();
@@ -37,6 +59,7 @@ export function SettingsBillingView() {
     customersQuery.data?.length ?? 0,
   );
   const subActive = hasActiveOrTrialingSubscription(billingQuery.data);
+  const defaultPlanCode = resolveDefaultPlanCode(plansQuery.data);
 
   async function openPortal() {
     if (!subActive) {
@@ -59,8 +82,12 @@ export function SettingsBillingView() {
   }
 
   async function openCheckout() {
+    if (!defaultPlanCode) {
+      toast.error("Não foi possível identificar um plano disponível para checkout.");
+      return;
+    }
     try {
-      const res = await checkoutMut.mutateAsync({});
+      const res = await checkoutMut.mutateAsync({ plan_code: defaultPlanCode });
       const url = extractCheckoutUrl(res);
       if (url) {
         window.location.href = url;
@@ -109,7 +136,7 @@ export function SettingsBillingView() {
             onCheckout={() => void openCheckout()}
             portalLoading={portalMut.isPending}
             portalDisabled={!subActive}
-            checkoutLoading={checkoutMut.isPending}
+            checkoutLoading={checkoutMut.isPending || plansQuery.isPending}
             showCheckout={!subActive}
           />
           {(display.cancelAtPeriodEnd ||
