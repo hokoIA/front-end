@@ -104,8 +104,19 @@ export function PlatformConnectFlow({
   };
 
   const oauthOnly = () => {
-    setStep("connecting");
-    connectMut.mutate(adapter.buildConnectPayload(customerId));
+    const authPathByApiKey: Record<
+      IntegrationPlatformAdapter["apiKey"],
+      string
+    > = {
+      meta: "/api/meta/auth",
+      google_analytics: "/api/googleAnalytics/auth",
+      youtube: "/api/youtube/auth",
+      linkedin: "/api/linkedin/auth",
+    };
+    const authPath = authPathByApiKey[adapter.apiKey];
+    window.location.assign(
+      `${authPath}?id_customer=${encodeURIComponent(customerId)}`,
+    );
   };
 
   return (
