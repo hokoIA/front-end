@@ -18,6 +18,44 @@ const backendTarget = normalizeBase(
 );
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "hokoainalytics.com.br",
+          },
+        ],
+        destination: "https://www.hokoainalytics.com/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "www.hokoainalytics.com.br",
+          },
+        ],
+        destination: "https://www.hokoainalytics.com/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "hokoainalytics.com",
+          },
+        ],
+        destination: "https://www.hokoainalytics.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
+
   async rewrites() {
     return [
       {
