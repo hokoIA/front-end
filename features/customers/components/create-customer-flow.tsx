@@ -88,7 +88,7 @@ export function CreateCustomerFlow({
               Novo cliente
             </DialogTitle>
             <DialogDescription className="text-white/80">
-              Cadastro inicial rápido: crie o cliente agora e conecte as
+              Crie o cliente agora e conecte as
               plataformas em seguida para liberar dados no painel.
             </DialogDescription>
           </DialogHeader>

@@ -1,12 +1,11 @@
 /** Conteúdo institucional de suporte (ajuste com dados reais da ho.ko). */
 export const SUPPORT_CONTACT = {
-  email: "suporte@hoko.com.br",
-  commercialWhatsapp: "+55 (11) 0000-0000",
-  phone: "+55 (11) 0000-0000",
-  address: "São Paulo, SP — Brasil",
+  email: "marketing@hokocomunicacao.com.br",
+  commercialWhatsapp: "+55 (19) 99714-8221",
+  phone: "+55 (19) 99714-8221",
+  address: "Campinas, SP — Brasil",
   hours: "Segunda a sexta, 9h às 18h (horário de Brasília)",
-  preferredChannel:
-    "Para incidentes e dúvidas técnicas, use o e-mail de suporte. Para propostas comerciais, WhatsApp comercial.",
+  preferredChannel: "Sobre dúvidas técnicas, use o e-mail de suporte. Para propostas comerciais, WhatsApp comercial.",
 } as const;
 
 export type SupportFaqItem = { q: string; a: string };

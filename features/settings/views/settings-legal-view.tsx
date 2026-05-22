@@ -15,7 +15,7 @@ export function SettingsLegalView() {
     <div className="space-y-7 lg:space-y-8">
       <SettingsPageHeader
         title="Legal & institucional"
-        description="Documentos que regem o uso do SaaS. Mantidos acessíveis dentro do módulo administrativo, sem competir com a navegação operacional do dia a dia."
+        description="Documentos que regem o uso da plataforma."
         eyebrow="Configurações"
       />
       <Card className="border-hk-border bg-hk-canvas/40">
@@ -23,11 +23,6 @@ export function SettingsLegalView() {
           <CardTitle className="text-base text-hk-deep">
             Transparência
           </CardTitle>
-          <CardDescription>
-            Os textos completos residem em páginas dedicadas (mesma sessão
-            autenticada). Atualize o conteúdo jurídico diretamente nessas rotas
-            antes do go-live.
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <LegalLinksPanel />

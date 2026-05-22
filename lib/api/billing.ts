@@ -16,6 +16,13 @@ export async function postBillingCheckout(
   return httpJson(endpoints.billing.checkout(), { method: "POST", json: body });
 }
 
+export async function postBillingConfirmCheckout(session_id: string): Promise<unknown> {
+  return httpJson(endpoints.billing.confirmCheckout(), {
+    method: "POST",
+    json: { session_id },
+  });
+}
+
 export async function postBillingPortal(
   body?: Record<string, unknown>,
 ): Promise<unknown> {

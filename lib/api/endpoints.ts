@@ -19,6 +19,7 @@ export const endpoints = {
     plans: () => "/api/billing/plans" as const,
     me: () => "/api/billing/me" as const,
     checkout: () => "/api/billing/checkout" as const,
+    confirmCheckout: () => "/api/billing/confirm-checkout" as const,
     portal: () => "/api/billing/portal" as const,
   },
   customer: {

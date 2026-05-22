@@ -10,11 +10,11 @@ export function CustomerEmptyState({ onCreate }: { onCreate: () => void }) {
         <BriefcaseBusiness className="h-7 w-7" aria-hidden />
       </div>
       <h2 className="mt-6 text-lg font-semibold text-hk-deep">
-        Nenhum cliente na carteira ainda
+        Nenhum cliente criado ainda
       </h2>
       <p className="mt-2 max-w-md text-sm text-hk-muted">
-        Esta é a central de ativação: crie o primeiro cliente e, em seguida,
-        conecte Meta, Google Analytics, YouTube e LinkedIn para liberar
+        Crie o primeiro cliente e, em seguida,
+        conecte as plataformas (Meta, Google Analytics, YouTube e LinkedIn, etc) para liberar
         dashboards e metas.
       </p>
       <Button

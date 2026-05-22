@@ -2,6 +2,7 @@ import {
   getBillingMe,
   getBillingPlans,
   postBillingCheckout,
+  postBillingConfirmCheckout,
   postBillingPortal,
 } from "@/lib/api/billing";
 import { queryKeys } from "@/lib/api/query-keys";
@@ -37,6 +38,16 @@ export function useBillingPortalMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body?: Record<string, unknown>) => postBillingPortal(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.billing.all });
+    },
+  });
+}
+
+export function useBillingConfirmCheckoutMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (session_id: string) => postBillingConfirmCheckout(session_id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.billing.all });
     },

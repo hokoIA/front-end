@@ -107,12 +107,7 @@ export function CustomerDetailPanel({
         <DialogContent className="max-h-[min(90vh,880px)] w-[min(96vw,42rem)] max-w-none overflow-y-auto border-hk-border p-0 gap-0">
           <div className="border-b border-hk-border bg-gradient-to-r from-hk-deep/5 to-hk-cyan/10 px-6 py-4">
             <DialogHeader>
-              <DialogTitle>Hub operacional do cliente</DialogTitle>
-              <DialogDescription>
-                Gestão da carteira (A) e das integrações por plataforma (B).
-                Garanta que as fontes estejam prontas antes de priorizar metas e
-                relatórios.
-              </DialogDescription>
+              <DialogTitle>Operacional do cliente</DialogTitle>
             </DialogHeader>
           </div>
 
@@ -144,8 +139,7 @@ export function CustomerDetailPanel({
                 Plataformas & conexões
               </h3>
               <p className="mt-1 text-xs text-hk-muted">
-                Cada bloco reflete o último estado conhecido da API. Use
-                conectar/renovar para OAuth e escolha de recurso.
+                Cada bloco diz respeito a uma plataforma específica.
               </p>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {CUSTOMER_HUB_PLATFORM_ADAPTERS.map((adapter) => {

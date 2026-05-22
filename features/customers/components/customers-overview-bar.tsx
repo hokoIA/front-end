@@ -64,7 +64,7 @@ export function CustomersOverviewBar(props: {
     >
       <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-sm font-semibold text-hk-deep">
-          Visão geral operacional
+          Visão geral
         </h2>
         {props.batchDisabled ? (
           <p className="text-xs text-hk-muted">

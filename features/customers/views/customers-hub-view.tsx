@@ -7,7 +7,6 @@ import { CustomerList } from "@/features/customers/components/customer-list";
 import { CustomersErrorState } from "@/features/customers/components/customers-error-state";
 import { CustomersFiltersToolbar } from "@/features/customers/components/customers-filters-toolbar";
 import { CustomersOverviewBar } from "@/features/customers/components/customers-overview-bar";
-import { CustomersPageHeader } from "@/features/customers/components/customers-page-header";
 import { defaultCustomerHubFilters } from "@/features/customers/types/filters";
 import {
   computeHubOverview,
@@ -81,7 +80,6 @@ export function CustomersHubView() {
   if (isError) {
     return (
       <div className="hk-page hk-page--mid flex flex-col gap-6 py-7">
-        <CustomersPageHeader />
         <CustomersErrorState
           error={error instanceof Error ? error : null}
           onRetry={() => void refetch()}
@@ -92,7 +90,6 @@ export function CustomersHubView() {
 
   return (
     <div className="hk-page flex flex-col gap-7 py-7 lg:gap-8">
-      <CustomersPageHeader />
 
       <CustomersOverviewBar
         total={overview.total}
@@ -111,7 +108,7 @@ export function CustomersHubView() {
         <SectionHeader
           compact
           title="Carteira de clientes"
-          description="Localize, filtre e abra o hub operacional para conectar fontes de dados."
+          description="Localize, filtre e conecte as plataformas dos clientes."
         />
         <Button
           type="button"

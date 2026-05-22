@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   BillingActionsPanel,
   BillingCycleCard,
@@ -48,6 +50,8 @@ function resolveDefaultPlanCode(raw: unknown): string | null {
 }
 
 export function SettingsBillingView() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const billingQuery = useBillingMeQuery();
   const plansQuery = useBillingPlansQuery();
   const customersQuery = useCustomersQuery();
@@ -60,6 +64,23 @@ export function SettingsBillingView() {
   );
   const subActive = hasActiveOrTrialingSubscription(billingQuery.data);
   const defaultPlanCode = resolveDefaultPlanCode(plansQuery.data);
+
+  useEffect(() => {
+    const checkout = searchParams.get("checkout");
+    if (!checkout) return;
+
+    if (checkout === "success") {
+      toast.success("Pagamento confirmado. Sua assinatura será atualizada em instantes.");
+      void billingQuery.refetch();
+    } else if (checkout === "cancel") {
+      toast.message("Checkout cancelado. Nenhuma cobrança foi realizada.");
+    }
+
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete("checkout");
+    const qs = next.toString();
+    router.replace(qs ? `/configuracoes/assinatura?${qs}` : "/configuracoes/assinatura");
+  }, [searchParams, router, billingQuery]);
 
   async function openPortal() {
     if (!subActive) {
@@ -112,7 +133,7 @@ export function SettingsBillingView() {
     <div className="space-y-7 lg:space-y-8">
       <SettingsPageHeader
         title="Assinatura"
-        description="Modelo ho.ko: plano base mensal com clientes incluídos e valor fixo por cliente adicional. Os números consolidados refletem a API quando disponível; caso contrário, usamos a contagem de clientes da plataforma."
+        description="Plano base mensal com 3 clientes e valor fixo por cliente adicional."
         eyebrow="Configurações"
       />
 
