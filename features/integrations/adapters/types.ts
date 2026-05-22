@@ -18,6 +18,7 @@ export type IntegrationPlatformAdapter = {
   buildConnectPayload: (
     customerId: string,
     resourceId?: string,
+    resource?: IntegrationResourceOption,
   ) => Record<string, unknown>;
   supportsDisconnect: boolean;
   supportsSwapResource: boolean;

@@ -14,11 +14,13 @@ const metaBase = {
   apiKey: "meta" as const,
   listResources: getMetaPages,
   connect: postMetaConnect,
-  buildConnectPayload: (customerId: string, resourceId?: string) =>
-    resourceId
-      ? { id_customer: customerId, page_id: resourceId }
-      : { id_customer: customerId },
-  connectPayloadHints: ["id_customer", "page_id / recurso Meta"],
+  connectPayloadHints: [
+    "id_customer",
+    "platform",
+    "resource_id",
+    "resource_name",
+    "resource_access_token",
+  ],
   supportsDisconnect: false,
   supportsSwapResource: false,
   supportsResync: false,
@@ -30,6 +32,19 @@ export const metaFacebookAdapter: IntegrationPlatformAdapter = {
   label: "Meta / Facebook",
   description:
     "Páginas do Facebook vinculadas à conta Meta. A mesma autorização costuma cobrir Instagram.",
+  buildConnectPayload: (customerId, resourceId, resource) => {
+    const raw = resource?.raw as
+      | { name?: string; access_token?: string }
+      | undefined;
+
+    return {
+      id_customer: customerId,
+      platform: "facebook",
+      resource_id: resourceId,
+      resource_name: raw?.name ?? resource?.label ?? null,
+      resource_access_token: raw?.access_token,
+    };
+  },
 };
 
 export const metaInstagramAdapter: IntegrationPlatformAdapter = {
@@ -38,6 +53,19 @@ export const metaInstagramAdapter: IntegrationPlatformAdapter = {
   label: "Meta / Instagram",
   description:
     "Contas comerciais do Instagram. Normalmente autorizadas junto com a conta Meta.",
+  buildConnectPayload: (customerId, resourceId, resource) => {
+    const raw = resource?.raw as
+      | { name?: string; access_token?: string }
+      | undefined;
+
+    return {
+      id_customer: customerId,
+      platform: "instagram",
+      resource_id: resourceId,
+      resource_name: raw?.name ?? resource?.label ?? null,
+      resource_access_token: raw?.access_token,
+    };
+  },
 };
 
 export const googleAnalyticsAdapter: IntegrationPlatformAdapter = {

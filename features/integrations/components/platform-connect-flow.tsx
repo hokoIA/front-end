@@ -83,7 +83,12 @@ export function PlatformConnectFlow({
     }
   }, [open]);
 
-  const options = integrationResourcesFromUnknown(resourcesQuery.data);
+  const options = integrationResourcesFromUnknown(
+    resourcesQuery.data,
+    adapter.key === "facebook" || adapter.key === "instagram"
+      ? adapter.key
+      : undefined,
+  );
 
   const goResources = () => {
     setStep("resources");
@@ -95,10 +100,14 @@ export function PlatformConnectFlow({
       return;
     }
     setStep("connecting");
+
+    const selectedResource = options.find((o) => o.id === selectedId);
+
     connectMut.mutate(
       adapter.buildConnectPayload(
         customerId,
         selectedId || undefined,
+        selectedResource,
       ),
     );
   };

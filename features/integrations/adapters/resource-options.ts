@@ -14,12 +14,12 @@ function idLabelPair(row: Record<string, unknown>): IntegrationResourceOption | 
   if (!id) return null;
   const label = String(
     row.name ??
-      row.title ??
-      row.label ??
-      row.page_name ??
-      row.property_name ??
-      row.display_name ??
-      id,
+    row.title ??
+    row.label ??
+    row.page_name ??
+    row.property_name ??
+    row.display_name ??
+    id,
   );
   return { id, label, raw: row };
 }
@@ -27,6 +27,7 @@ function idLabelPair(row: Record<string, unknown>): IntegrationResourceOption | 
 /** Normaliza listas genéricas retornadas pela API em opções de seleção. */
 export function integrationResourcesFromUnknown(
   data: unknown,
+  platform?: "facebook" | "instagram",
 ): IntegrationResourceOption[] {
   if (Array.isArray(data)) {
     return data
@@ -37,8 +38,18 @@ export function integrationResourcesFromUnknown(
       )
       .filter(Boolean) as IntegrationResourceOption[];
   }
+
   const r = record(data);
   if (!r) return [];
+
+  if (platform === "facebook" && Array.isArray(r.facebook)) {
+    return integrationResourcesFromUnknown(r.facebook);
+  }
+
+  if (platform === "instagram" && Array.isArray(r.instagram)) {
+    return integrationResourcesFromUnknown(r.instagram);
+  }
+
   const candidates = [
     r.data,
     r.pages,
@@ -47,9 +58,13 @@ export function integrationResourcesFromUnknown(
     r.channels,
     r.organizations,
     r.results,
+    r.facebook,
+    r.instagram,
   ];
+
   for (const c of candidates) {
     if (Array.isArray(c)) return integrationResourcesFromUnknown(c);
   }
+
   return [];
 }
