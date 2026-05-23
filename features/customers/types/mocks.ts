@@ -26,6 +26,9 @@ export function mockIntegrationSummary(
       youtube: "needs_renewal",
       linkedin: "disconnected",
     },
+
+    resources: {},
+
     connectedCount: 2,
     authorizedCount: 0,
     disconnectedCount: 2,

@@ -1,39 +1,52 @@
-import type { TeamInviteUi, TeamMemberUi } from "./ui";
+import type { Customer } from "@/lib/types/customer";
+import type { CustomerIntegrationSummary } from "@/features/integrations/types/customer-summary";
+import type { CustomerReadiness } from "@/features/customers/types/readiness";
 
-/** Dados fictícios para testes de layout (não usar em produção). */
-export const MOCK_TEAM_MEMBERS: TeamMemberUi[] = [
-  {
-    id: "m1",
-    idUser: "u1",
-    name: "Você (exemplo)",
-    email: "admin@exemplo.com",
-    role: "admin",
-    status: "active",
-    joinedAt: "2025-01-10",
-    isPrimary: true,
-    raw: {},
-  },
-  {
-    id: "m2",
-    idUser: "u2",
-    name: "Ana Marketing",
-    email: "ana@exemplo.com",
-    role: "team",
-    status: "active",
-    joinedAt: "2025-03-02",
-    isPrimary: false,
-    raw: {},
-  },
-];
+/** Cliente fictício para testes de UI / story (não misturar em produção). */
+export const MOCK_CUSTOMER_ROW: Customer = {
+  id_customer: "mock-1",
+  name: "Cliente Exemplo",
+  empresa: "Marca Demo",
+  email: "contato@demo.com",
+  telefone: "+55 11 90000-0000",
+  status: "active",
+};
 
-export const MOCK_TEAM_INVITES: TeamInviteUi[] = [
-  {
-    id: "i1",
-    email: "novo@exemplo.com",
-    role: "team",
-    status: "pending",
-    sentAt: "2025-04-01",
-    expiresAt: "2025-04-15",
-    raw: {},
-  },
-];
+/** Resumo de integrações fictício alinhado ao tipo de produção. */
+export function mockIntegrationSummary(
+  customerId: string,
+  overrides?: Partial<CustomerIntegrationSummary>,
+): CustomerIntegrationSummary {
+  const base: CustomerIntegrationSummary = {
+    customerId,
+    surfaces: {
+      facebook: "connected",
+      instagram: "disconnected",
+      google_analytics: "unknown",
+      youtube: "needs_renewal",
+      linkedin: "disconnected",
+    },
+    resources: {
+      facebook: {
+        id: "mock-facebook-page-id",
+        name: "Página Facebook Demo",
+      },
+    },
+    connectedCount: 2,
+    authorizedCount: 0,
+    disconnectedCount: 2,
+    unknownCount: 1,
+    renewalCount: 1,
+    readiness: "attention",
+    hasAttention: true,
+  };
+
+  return { ...base, ...overrides };
+}
+
+export const MOCK_READINESS: Record<string, CustomerReadiness> = {
+  novo: "incomplete",
+  parcial: "partial",
+  ok: "ready",
+  alerta: "attention",
+};
