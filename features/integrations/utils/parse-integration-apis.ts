@@ -61,11 +61,13 @@ export function parseCustomerIntegrationRecord(
   const st = String(row.status ?? row.state ?? "")
     .trim()
     .toLowerCase();
+  if (st === "authorized" || st === "authorized_only" || st === "oauth_authorized") {
+    return "authorized";
+  }
   if (
     st === "connected" ||
     st === "active" ||
     st === "ok" ||
-    st === "authorized" ||
     st === "linked"
   ) {
     return "connected";
@@ -101,18 +103,37 @@ export function parseMetaOperational(
   const r = record(data);
   if (!r) return "unknown";
 
+  const facebookStatus = String(r.facebookStatus ?? r.facebook_status ?? "")
+    .trim()
+    .toLowerCase();
+  const instagramStatus = String(r.instagramStatus ?? r.instagram_status ?? "")
+    .trim()
+    .toLowerCase();
+
   const fbConnected =
     r.facebookConnected === true ||
     r.facebook_connected === true ||
     r.fb_connected === true ||
+    facebookStatus === "connected" ||
     (Array.isArray(r.pages) && r.pages.length > 0);
 
   const igConnected =
     r.instagramConnected === true ||
     r.instagram_connected === true ||
     r.ig_connected === true ||
+    instagramStatus === "connected" ||
     (Array.isArray(r.instagram_accounts) && r.instagram_accounts.length > 0) ||
     (Array.isArray(r.instagramAccounts) && r.instagramAccounts.length > 0);
+
+  const fbAuthorized =
+    facebookStatus === "authorized" ||
+    r.facebookAuthorized === true ||
+    r.facebook_authorized === true;
+
+  const igAuthorized =
+    instagramStatus === "authorized" ||
+    r.instagramAuthorized === true ||
+    r.instagram_authorized === true;
 
   const needFb =
     r.needsReauthFacebook === true || r.needs_reauth_facebook === true;
@@ -126,12 +147,16 @@ export function parseMetaOperational(
 
   if (surface === "facebook") {
     if (needFb) return "needs_renewal";
-    if (renewalGlobal && fbConnected) return "needs_renewal";
-    return fbConnected ? "connected" : "disconnected";
+    if (renewalGlobal && (fbConnected || fbAuthorized)) return "needs_renewal";
+    if (fbConnected) return "connected";
+    if (fbAuthorized) return "authorized";
+    return "disconnected";
   }
   if (needIg) return "needs_renewal";
-  if (renewalGlobal && igConnected) return "needs_renewal";
-  return igConnected ? "connected" : "disconnected";
+  if (renewalGlobal && (igConnected || igAuthorized)) return "needs_renewal";
+  if (igConnected) return "connected";
+  if (igAuthorized) return "authorized";
+  return "disconnected";
 }
 
 function applyMetaRenewalHint(
@@ -151,10 +176,10 @@ function applyMetaRenewalHint(
     r.token_expired === true;
 
   if (surface === "facebook" && (needFb || renewalGlobal)) {
-    if (base === "connected" || base === "unknown") return "needs_renewal";
+    if (base === "connected" || base === "authorized" || base === "unknown") return "needs_renewal";
   }
   if (surface === "instagram" && (needIg || renewalGlobal)) {
-    if (base === "connected" || base === "unknown") return "needs_renewal";
+    if (base === "connected" || base === "authorized" || base === "unknown") return "needs_renewal";
   }
   return base;
 }
@@ -189,6 +214,7 @@ export function resolveMetaSurfaceState(
 
   if (
     fromList === "disconnected" ||
+    fromList === "authorized" ||
     fromList === "needs_renewal"
   ) {
     return applyMetaRenewalHint(fromList, metaApiData, surface);

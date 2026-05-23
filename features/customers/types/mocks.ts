@@ -27,6 +27,7 @@ export function mockIntegrationSummary(
       linkedin: "disconnected",
     },
     connectedCount: 2,
+    authorizedCount: 0,
     disconnectedCount: 2,
     unknownCount: 1,
     renewalCount: 1,

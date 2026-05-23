@@ -12,6 +12,7 @@ export type CustomerIntegrationSummary = {
   customerId: string;
   surfaces: SurfaceOperationalMap;
   connectedCount: number;
+  authorizedCount: number;
   disconnectedCount: number;
   unknownCount: number;
   renewalCount: number;

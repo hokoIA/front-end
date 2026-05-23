@@ -86,6 +86,7 @@ export type IntegrationSurface =
 
 export type IntegrationOperationalState =
   | "connected"
+  | "authorized"
   | "disconnected"
   | "needs_renewal"
   | "unknown";

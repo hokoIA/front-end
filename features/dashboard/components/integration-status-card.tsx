@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils/cn";
 
 const opLabel: Record<IntegrationOperationalState, string> = {
   connected: "Conectado",
+  authorized: "Autorizado",
   disconnected: "Desconectado",
   needs_renewal: "Renovar acesso",
   unknown: "Indefinido",
@@ -18,6 +19,8 @@ function dotClass(op: IntegrationOperationalState): string {
   switch (op) {
     case "connected":
       return "bg-hk-success";
+    case "authorized":
+      return "bg-sky-500";
     case "disconnected":
       return "bg-hk-muted";
     case "needs_renewal":

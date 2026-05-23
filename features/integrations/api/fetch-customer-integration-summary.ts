@@ -32,17 +32,29 @@ function countBy(
   return SURFACES.filter((s) => pred(map[s])).length;
 }
 
+function settledValue<T>(result: PromiseSettledResult<T>): T | null {
+  return result.status === "fulfilled" ? result.value : null;
+}
+
+/**
+ * Cada plataforma precisa ser avaliada de forma independente.
+ * Se LinkedIn/GA/YouTube falhar, isso não pode derrubar o status Meta já autorizado.
+ */
 export async function fetchCustomerIntegrationSummary(
   customerId: string,
 ): Promise<CustomerIntegrationSummary> {
-  const [meta, ga, yt, li] = await Promise.all([
+  const [metaResult, gaResult, ytResult, liResult] = await Promise.allSettled([
     getMetaStatus(customerId),
     getGoogleAnalyticsStatus(customerId),
     getYoutubeStatus(customerId),
     getLinkedinOrganizations(customerId),
   ]);
 
-  const linkedinSuccess = true;
+  const meta = settledValue(metaResult);
+  const ga = settledValue(gaResult);
+  const yt = settledValue(ytResult);
+  const li = settledValue(liResult);
+  const linkedinSuccess = liResult.status === "fulfilled";
 
   const surfaces: SurfaceOperationalMap = {
     facebook: parseMetaOperational(meta, "facebook"),
@@ -53,6 +65,7 @@ export async function fetchCustomerIntegrationSummary(
   };
 
   const connectedCount = countBy(surfaces, (op) => op === "connected");
+  const authorizedCount = countBy(surfaces, (op) => op === "authorized");
   const disconnectedCount = countBy(surfaces, (op) => op === "disconnected");
   const unknownCount = countBy(surfaces, (op) => op === "unknown");
   const renewalCount = countBy(surfaces, (op) => op === "needs_renewal");
@@ -67,6 +80,7 @@ export async function fetchCustomerIntegrationSummary(
     customerId,
     surfaces,
     connectedCount,
+    authorizedCount,
     disconnectedCount,
     unknownCount,
     renewalCount,

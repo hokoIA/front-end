@@ -27,7 +27,7 @@ export function IntegrationsHealthBar({
 
   const items = [
     { label: "Conectadas", value: summary.connectedCount, tone: "text-emerald-700" },
-    { label: "Pendentes / indefinidas", value: summary.unknownCount, tone: "text-sky-800" },
+    { label: "Autorizadas / pendentes", value: summary.authorizedCount + summary.unknownCount, tone: "text-sky-800" },
     { label: "Desconectadas", value: summary.disconnectedCount, tone: "text-hk-muted" },
     { label: "Renovação", value: summary.renewalCount, tone: "text-rose-700" },
   ];

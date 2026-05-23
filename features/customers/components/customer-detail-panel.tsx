@@ -2,6 +2,7 @@
 
 import { CustomerSummaryCard } from "@/features/customers/components/customer-summary-card";
 import { CUSTOMER_HUB_PLATFORM_ADAPTERS } from "@/features/integrations/adapters/registry";
+import { parseCustomerIntegrationRecord } from "@/features/integrations/utils/parse-integration-apis";
 import { IntegrationsHealthBar } from "@/features/integrations/components/integrations-health-bar";
 import { PlatformConnectFlow } from "@/features/integrations/components/platform-connect-flow";
 import { PlatformIntegrationCard } from "@/features/integrations/components/platform-integration-card";
@@ -25,6 +26,49 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Archive, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+
+
+function getIntegrationOperationalFallback(customer: Customer, platform: string) {
+  const rows = Array.isArray(customer.integrations) ? customer.integrations : [];
+  const found = rows.find((row) => {
+    const raw = String(row?.platform ?? "").trim().toLowerCase();
+    if (platform === "google_analytics") {
+      return ["google_analytics", "googleanalytics", "ga4", "google"].includes(raw);
+    }
+    return raw === platform;
+  });
+
+  return parseCustomerIntegrationRecord(
+    found as Record<string, unknown> | null | undefined,
+  );
+}
+
+function resolvePanelOperational(
+  customer: Customer,
+  platform: string,
+  summaryState: ReturnType<typeof getIntegrationOperationalFallback> | undefined,
+) {
+  const fallback = getIntegrationOperationalFallback(customer, platform);
+
+  if (
+    (summaryState === "unknown" ||
+      summaryState === "disconnected" ||
+      !summaryState) &&
+    ["authorized", "connected", "needs_renewal"].includes(fallback)
+  ) {
+    return fallback;
+  }
+
+  return summaryState ?? fallback;
+}
+
+function getIntegrationResourceLabel(customer: Customer, platform: string): string | undefined {
+  const rows = Array.isArray(customer.integrations) ? customer.integrations : [];
+  const found = rows.find((row) => String(row.platform ?? "").toLowerCase() === platform);
+  const name = found?.resource_name;
+  return typeof name === "string" && name.trim() ? name : undefined;
+}
 
 function ComingSoonCard({ title }: { title: string }) {
   return (
@@ -143,8 +187,11 @@ export function CustomerDetailPanel({
               </p>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 {CUSTOMER_HUB_PLATFORM_ADAPTERS.map((adapter) => {
-                  const op =
-                    summaryQ.data?.surfaces[adapter.key] ?? "unknown";
+                  const op = resolvePanelOperational(
+                    customer,
+                    adapter.key,
+                    summaryQ.data?.surfaces[adapter.key],
+                  );
                   return (
                     <PlatformIntegrationCard
                       key={adapter.key}
@@ -152,6 +199,7 @@ export function CustomerDetailPanel({
                       label={adapter.label}
                       operational={op}
                       periodCoverage="unknown"
+                      resourceLabel={getIntegrationResourceLabel(customer, adapter.key)}
                       adapter={adapter}
                       onConnect={() => setFlowAdapter(adapter)}
                       onOpenSwap={() => setFlowAdapter(adapter)}
@@ -190,6 +238,11 @@ export function CustomerDetailPanel({
           }}
           customerId={customer.id_customer}
           adapter={flowAdapter}
+          operational={resolvePanelOperational(
+            customer,
+            flowAdapter.key,
+            summaryQ.data?.surfaces[flowAdapter.key],
+          )}
         />
       ) : null}
 

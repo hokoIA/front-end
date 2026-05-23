@@ -11,6 +11,7 @@ export function CustomerList({
   summariesLoading,
   onOpenHub,
   onEditQuick,
+  onDeleteRequest,
   listLoading,
 }: {
   customers: Customer[];
@@ -18,20 +19,21 @@ export function CustomerList({
   summariesLoading?: boolean;
   onOpenHub: (c: Customer) => void;
   onEditQuick: (c: Customer) => void;
+  onDeleteRequest: (c: Customer) => void;
   listLoading?: boolean;
 }) {
   if (listLoading) {
     return (
       <div className="space-y-3" aria-busy="true" aria-label="Carregando clientes">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-28 w-full rounded-xl" />
+          <Skeleton key={i} className="h-16 w-full rounded-lg" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="overflow-hidden rounded-xl border border-hk-border bg-hk-surface shadow-hk-sm divide-y divide-hk-border-subtle">
       {customers.map((c) => (
         <CustomerListItem
           key={c.id_customer}
@@ -40,6 +42,7 @@ export function CustomerList({
           summaryLoading={summariesLoading}
           onOpenHub={() => onOpenHub(c)}
           onEditQuick={() => onEditQuick(c)}
+          onDeleteRequest={() => onDeleteRequest(c)}
         />
       ))}
     </div>

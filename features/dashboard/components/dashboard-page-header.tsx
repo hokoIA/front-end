@@ -16,9 +16,8 @@ export function DashboardPageHeader({
 }: DashboardPageHeaderProps) {
   return (
     <PageHeader
-      eyebrow="Visão consolidada"
       title="Dashboard"
-      description="Leitura operacional e estratégica da performance do cliente no período: alcance, visibilidade, audiência, tráfego e conteúdo."
+      description="Leitura operacional e estratégica da performance do cliente no período."
       actions={
         <Button
           type="button"

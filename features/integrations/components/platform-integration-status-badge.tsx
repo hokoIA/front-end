@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils/cn";
 
 const labels: Record<PlatformUiStatusKey, string> = {
   connected: "Conectado",
+  authorized: "Autorizado",
   disconnected: "Desconectado",
   unauthorized: "Não autorizado",
   awaiting_auth: "Aguardando autorização",
@@ -22,6 +23,7 @@ const labels: Record<PlatformUiStatusKey, string> = {
 
 const styles: Record<PlatformUiStatusKey, string> = {
   connected: "border-emerald-500/40 bg-emerald-500/10 text-emerald-900",
+  authorized: "border-sky-500/40 bg-sky-500/10 text-sky-900",
   disconnected: "border-hk-border bg-hk-canvas text-hk-muted",
   unauthorized: "border-amber-500/40 bg-amber-500/10 text-amber-900",
   awaiting_auth: "border-sky-500/40 bg-sky-500/10 text-sky-900",

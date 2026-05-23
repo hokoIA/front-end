@@ -3,6 +3,7 @@ import type { IntegrationOperationalState } from "@/features/dashboard/types";
 /** Rótulos de produto para badges (mapeados a partir do estado operacional + cobertura). */
 export type PlatformUiStatusKey =
   | "connected"
+  | "authorized"
   | "disconnected"
   | "unauthorized"
   | "awaiting_auth"
@@ -17,6 +18,7 @@ export function mapOperationalToUiKey(
   periodCoverage?: "unknown" | "has_data" | "no_data",
 ): PlatformUiStatusKey {
   if (op === "needs_renewal") return "needs_renewal";
+  if (op === "authorized") return "authorized";
   if (op === "connected") {
     if (periodCoverage === "no_data") return "no_data";
     return "connected";

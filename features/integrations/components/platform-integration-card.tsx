@@ -40,9 +40,13 @@ export function PlatformIntegrationCard({
   onRemoveRequest?: () => void;
 }) {
   const needsRenewal = operational === "needs_renewal";
+  const isAuthorized = operational === "authorized";
   const showConnect =
-    operational === "disconnected" || operational === "unknown";
+    operational === "disconnected" || operational === "unknown" || isAuthorized;
   const showRenew = needsRenewal;
+  const primaryActionLabel = isAuthorized ? "Escolher recurso" : "Conectar";
+  const displayResourceLabel =
+    resourceLabel ?? (isAuthorized ? "Pendente de seleção" : "—");
 
   const disconnect = () => {
     onRemoveRequest?.();
@@ -68,7 +72,7 @@ export function PlatformIntegrationCard({
         <div>
           <h3 className="font-semibold text-hk-deep">{label}</h3>
           <p className="mt-1 text-xs text-hk-muted">
-            Recurso: {resourceLabel ?? "—"}
+            Recurso: {displayResourceLabel}
           </p>
         </div>
         <PlatformIntegrationStatusBadge
@@ -103,6 +107,12 @@ export function PlatformIntegrationCard({
         </p>
       ) : null}
 
+      {isAuthorized ? (
+        <p className="mt-3 rounded-md border border-sky-200/80 bg-sky-50/80 px-2 py-1.5 text-xs text-sky-950">
+          Conta autorizada. Falta apenas escolher o ativo desta plataforma.
+        </p>
+      ) : null}
+
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {showConnect ? (
           <Button
@@ -111,7 +121,7 @@ export function PlatformIntegrationCard({
             className="bg-hk-action text-white hover:bg-hk-strong"
             onClick={onConnect}
           >
-            Autorizar / conectar
+            {primaryActionLabel}
           </Button>
         ) : null}
         {showRenew ? (

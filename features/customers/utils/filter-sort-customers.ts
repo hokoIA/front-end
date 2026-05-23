@@ -47,11 +47,11 @@ export function filterAndSortCustomers(
         case "with_active":
           return s.connectedCount > 0;
         case "without":
-          return s.connectedCount === 0;
+          return s.connectedCount === 0 && s.authorizedCount === 0;
         case "with_alert":
           return s.hasAttention;
         case "with_pending":
-          return s.unknownCount > 0 && s.connectedCount < 5;
+          return (s.unknownCount + s.authorizedCount) > 0 && s.connectedCount < 5;
         default:
           return true;
       }
@@ -121,8 +121,8 @@ export function computeHubOverview(input: {
     if (st !== "archived" && st !== "inactive") active += 1;
     const s = summaries.get(c.id_customer);
     if (!summariesReady || !s) continue;
-    if (s.connectedCount === 0) withoutIntegration += 1;
-    if (s.unknownCount > 0 && s.connectedCount > 0 && s.connectedCount < 5) {
+    if (s.connectedCount === 0 && s.authorizedCount === 0) withoutIntegration += 1;
+    if ((s.unknownCount + s.authorizedCount) > 0 && s.connectedCount < 5) {
       pendingIntegration += 1;
     }
     if (s.hasAttention) attentionIntegration += 1;

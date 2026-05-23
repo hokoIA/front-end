@@ -14,13 +14,14 @@ import {
 } from "@/features/customers/utils/filter-sort-customers";
 import { CUSTOMER_LIST_INTEGRATION_SUMMARY_LIMIT } from "@/features/integrations/hooks/use-customers-integration-summaries";
 import { useCustomersIntegrationSummaries } from "@/features/integrations/hooks/use-customers-integration-summaries";
-import { useCustomersQuery } from "@/hooks/api/use-customers-queries";
+import { useCustomersQuery, useDeleteCustomerMutation } from "@/hooks/api/use-customers-queries";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { Customer } from "@/lib/types/customer";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/data-display/section-header";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 import { useMemo, useState } from "react";
 
 export function CustomersHubView() {
@@ -31,6 +32,7 @@ export function CustomersHubView() {
   const [createOpen, setCreateOpen] = useState(false);
   const [detailCustomer, setDetailCustomer] = useState<Customer | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const deleteCustomer = useDeleteCustomerMutation();
 
   const ids = useMemo(
     () => customers.map((c) => c.id_customer),
@@ -61,6 +63,20 @@ export function CustomersHubView() {
   const openHub = (c: Customer) => {
     setDetailCustomer(c);
     setDetailOpen(true);
+  };
+
+  const deleteFromList = async (c: Customer) => {
+    const ok = window.confirm(
+      `Deseja excluir/desativar o cliente ${c.name}?`,
+    );
+    if (!ok) return;
+
+    try {
+      await deleteCustomer.mutateAsync(c.id_customer);
+      toast.success("Cliente excluído/desativado.");
+    } catch {
+      toast.error("Não foi possível excluir/desativar o cliente.");
+    }
   };
 
   const handleCreated = (id?: string) => {
@@ -139,6 +155,7 @@ export function CustomersHubView() {
               listLoading={isPending}
               onOpenHub={openHub}
               onEditQuick={openHub}
+              onDeleteRequest={deleteFromList}
             />
           )}
         </>

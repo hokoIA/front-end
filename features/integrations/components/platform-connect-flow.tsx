@@ -1,5 +1,6 @@
 "use client";
 
+import type { IntegrationOperationalState } from "@/features/dashboard/types";
 import type { IntegrationPlatformAdapter } from "@/features/integrations/adapters/types";
 import { integrationResourcesFromUnknown } from "@/features/integrations/adapters/resource-options";
 import { extractOAuthRedirectUrl } from "@/features/integrations/utils/oauth-response";
@@ -33,11 +34,13 @@ export function PlatformConnectFlow({
   onOpenChange,
   customerId,
   adapter,
+  operational,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customerId: string;
   adapter: IntegrationPlatformAdapter;
+  operational?: IntegrationOperationalState;
 }) {
   const qc = useQueryClient();
   const [step, setStep] = useState<Step>("intro");
@@ -77,11 +80,14 @@ export function PlatformConnectFlow({
   });
 
   useEffect(() => {
-    if (!open) {
-      setStep("intro");
+    if (open) {
+      setStep(operational === "authorized" ? "resources" : "intro");
       setSelectedId("");
+      return;
     }
-  }, [open]);
+    setStep("intro");
+    setSelectedId("");
+  }, [open, operational]);
 
   const options = integrationResourcesFromUnknown(
     resourcesQuery.data,
@@ -90,9 +96,6 @@ export function PlatformConnectFlow({
       : undefined,
   );
 
-  const goResources = () => {
-    setStep("resources");
-  };
 
   const submitConnect = () => {
     if (options.length > 0 && !selectedId) {
@@ -134,19 +137,18 @@ export function PlatformConnectFlow({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ShieldCheck className="h-5 w-5 text-hk-action" aria-hidden />
-            Conectar {adapter.label}
+            {operational === "authorized" ? "Escolher recurso" : "Conectar"}{" "}
+            {adapter.label}
           </DialogTitle>
           <DialogDescription>{adapter.description}</DialogDescription>
         </DialogHeader>
 
         {step === "intro" && (
           <div className="space-y-3 text-sm text-hk-muted">
-            <ol className="list-decimal space-y-2 pl-4">
-              <li>Autorize via OAuth na plataforma.</li>
-              <li>Liste os recursos disponíveis para este cliente.</li>
-              <li>Selecione página, propriedade ou canal.</li>
-              <li>Salve a conexão e aguarde o status atualizado.</li>
-            </ol>
+            <p>
+              Autorize a conta na plataforma. Depois do retorno, a tela permitirá
+              escolher o ativo específico do cliente.
+            </p>
           </div>
         )}
 
@@ -164,8 +166,8 @@ export function PlatformConnectFlow({
               </p>
             ) : options.length === 0 ? (
               <p className="text-sm text-hk-muted">
-                Nenhum recurso retornado. Você pode tentar iniciar só com OAuth
-                — alguns fluxos preenchem recursos após a primeira autorização.
+                Nenhum recurso foi retornado para esta conta. Reautorize a conta
+                ou confirme se o usuário possui acesso ao ativo.
               </p>
             ) : (
               <div className="grid gap-2">
@@ -203,18 +205,13 @@ export function PlatformConnectFlow({
 
         <DialogFooter className="gap-2 sm:gap-0">
           {step === "intro" && (
-            <>
-              <Button type="button" variant="secondary" onClick={oauthOnly}>
-                Só autorizar (OAuth)
-              </Button>
-              <Button
-                type="button"
-                className="bg-hk-action text-white hover:bg-hk-strong"
-                onClick={goResources}
-              >
-                Listar e escolher recurso
-              </Button>
-            </>
+            <Button
+              type="button"
+              className="bg-hk-action text-white hover:bg-hk-strong"
+              onClick={oauthOnly}
+            >
+              Autorizar conta
+            </Button>
           )}
           {step === "resources" && (
             <Button
