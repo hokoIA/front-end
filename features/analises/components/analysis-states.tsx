@@ -39,11 +39,11 @@ export function AnalysisNoIntegrationsState() {
           <Unplug className="size-5" />
         </div>
         <CardTitle className="text-base text-hk-deep">
-          Cobertura limitada de integrações
+          Integrações pendentes
         </CardTitle>
         <CardDescription>
-          Nenhuma integração principal aparece ativa. A leitura pode ficar
-          superficial — conecte fontes em Clientes & Integrações.
+          Nenhuma integração aparece como ativa para este cliente. Conecte ao
+          menos uma fonte para liberar a geração de análises.
         </CardDescription>
       </CardHeader>
       <CardContent>

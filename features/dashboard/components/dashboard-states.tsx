@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getFriendlyErrorMessage } from "@/lib/api/errors";
-import { Building2, PlugZap, Radio } from "lucide-react";
+import { Building2, Unplug, Radio } from "lucide-react";
 import Link from "next/link";
 
 export function DashboardNoCustomerState() {
@@ -38,20 +38,21 @@ export function DashboardNoCustomerState() {
 
 export function DashboardNoIntegrationsState() {
   return (
-    <Card className="border-hk-border bg-hk-surface">
+    <Card className="border-amber-200 bg-amber-50/40">
       <CardHeader className="pb-2">
-        <div className="flex size-11 items-center justify-center rounded-full bg-amber-50 text-amber-700">
-          <PlugZap className="size-5" strokeWidth={1.5} />
+        <div className="flex size-10 items-center justify-center rounded-full bg-amber-100 text-amber-800">
+          <Unplug className="size-5" />
         </div>
-        <CardTitle className="text-lg text-hk-deep">
+        <CardTitle className="text-base text-hk-deep">
           Integrações pendentes
         </CardTitle>
         <CardDescription>
-          Nenhuma integração aparece como ativa para este cliente.
+          Nenhuma integração aparece como ativa para este cliente. Conecte ao
+          menos uma fonte para liberar a geração de análises.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Button asChild variant="secondary" size="sm">
+        <Button asChild size="sm" variant="secondary">
           <Link href="/clientes">Configurar integrações</Link>
         </Button>
       </CardContent>

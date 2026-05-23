@@ -30,10 +30,8 @@ import { getAnalyzeBaseUrl } from "@/lib/api/http-client";
 import { getErrorKind } from "@/lib/api/errors";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DataPanel } from "@/components/data-display/data-panel";
-import { SectionHeader } from "@/components/data-display/section-header";
 import { Building2 } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 function safeExportBaseName(
@@ -83,6 +81,45 @@ export function AnalisesView() {
     [integrationCards],
   );
 
+  const availablePlatforms = useMemo<AnalysisPlatformValue[]>(() => {
+    return integrationCards
+      .filter((card) => card.operational === "connected")
+      .map((card) => card.surface)
+      .filter((surface): surface is AnalysisPlatformValue =>
+        [
+          "facebook",
+          "instagram",
+          "google_analytics",
+          "linkedin",
+          "youtube",
+        ].includes(surface),
+      );
+  }, [integrationCards]);
+
+  const showPendingIntegrationsState = Boolean(selected) && !integrationsLoading && !anyIntegrationConnected;
+  const canRenderAnalysis = Boolean(selected) && !integrationsLoading && anyIntegrationConnected;
+
+  useEffect(() => {
+    if (integrationsLoading) return;
+
+    setForm((current) => {
+      const nextPlatforms = current.platforms.filter((platform) =>
+        availablePlatforms.includes(platform),
+      );
+
+      const unchanged =
+        nextPlatforms.length === current.platforms.length &&
+        nextPlatforms.every((platform, index) => platform === current.platforms[index]);
+
+      if (unchanged) return current;
+
+      return {
+        ...current,
+        platforms: nextPlatforms,
+      };
+    });
+  }, [availablePlatforms, integrationsLoading]);
+
   const disconnectedSelectedLabels = useMemo(() => {
     return form.platforms
       .filter((p: AnalysisPlatformValue) => {
@@ -105,6 +142,10 @@ export function AnalisesView() {
   const runGenerate = useCallback(async () => {
     if (!selected) {
       toast.error("Selecione um cliente.");
+      return;
+    }
+    if (!anyIntegrationConnected) {
+      toast.error("Conecte ao menos uma integração antes de gerar a análise.");
       return;
     }
     if (!datesValid(form.dateStart, form.dateEnd)) {
@@ -166,7 +207,7 @@ export function AnalisesView() {
         toast.error("Falha ao gerar a análise.");
       }
     }
-  }, [selected, form, agencyId, analyzeMutation]);
+  }, [selected, form, agencyId, analyzeMutation, anyIntegrationConnected]);
 
   const initialBusy =
     authed &&
@@ -182,9 +223,7 @@ export function AnalisesView() {
         </div>
       );
     }
-    if (!anyIntegrationConnected) {
-      return <AnalysisNoIntegrationsState />;
-    }
+    if (!anyIntegrationConnected) return null;
     return (
       <AnalysisLowCoverageBanner
         disconnectedLabels={disconnectedSelectedLabels}
@@ -201,10 +240,10 @@ export function AnalisesView() {
 
   const exportFileName = resultMeta
     ? safeExportBaseName(
-        resultMeta.customerName,
-        resultMeta.dateStart,
-        resultMeta.dateEnd,
-      )
+      resultMeta.customerName,
+      resultMeta.dateStart,
+      resultMeta.dateEnd,
+    )
     : "analise";
 
   const kind = genError ? getErrorKind(genError) : null;
@@ -220,47 +259,25 @@ export function AnalisesView() {
         </div>
       ) : showEmptyCustomer ? (
         <AnalysisNoCustomerState />
-      ) : selected ? (
+      ) : showPendingIntegrationsState ? (
+        <AnalysisNoIntegrationsState />
+      ) : canRenderAnalysis && selected ? (
         <>
-          <Card className="border-hk-border-subtle bg-hk-surface p-4 shadow-hk-xs">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-hk-canvas text-hk-action">
-                <Building2 className="size-5" strokeWidth={1.5} />
-              </div>
-              <div>
-                <p className="hk-overline">
-                  Análise para
-                </p>
-                <p className="text-base font-semibold text-hk-deep">
-                  {selected.name}
-                </p>
-                <p className="text-xs text-hk-muted">
-                  Toda a leitura abaixo usa este cliente como referência única.
-                </p>
-              </div>
-            </div>
-          </Card>
-
           <div ref={configAnchorRef} id="analise-config" className="space-y-6">
             <AnalysisConfigPanel
               form={form}
               setForm={setForm}
               disabled={analyzeMutation.isPending}
               integrationWarning={integrationWarning}
+              platformOptions={availablePlatforms}
+              actions={
+                <AnalysisGenerateButton
+                  onClick={() => void runGenerate()}
+                  loading={analyzeMutation.isPending}
+                  disabled={!selected || integrationsLoading || !anyIntegrationConnected}
+                />
+              }
             />
-
-            <DataPanel className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <SectionHeader
-                compact
-                title="Gerar leitura estratégica"
-                description="A saída é uma narrativa executiva disciplinada, baseada em período, foco, tipo de análise e plataformas selecionadas."
-              />
-              <AnalysisGenerateButton
-                onClick={() => void runGenerate()}
-                loading={analyzeMutation.isPending}
-                disabled={!selected}
-              />
-            </DataPanel>
           </div>
 
           <AnalysisGenerationProgress active={analyzeMutation.isPending} />

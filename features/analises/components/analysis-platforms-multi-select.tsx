@@ -17,13 +17,17 @@ type Props = {
   value: AnalysisPlatformValue[];
   onChange: (v: AnalysisPlatformValue[]) => void;
   disabled?: boolean;
+  options?: AnalysisPlatformValue[];
 };
 
 export function AnalysisPlatformsMultiSelect({
   value,
   onChange,
   disabled,
+  options,
 }: Props) {
+  const visibleOptions = options ?? ALL;
+
   function toggle(p: AnalysisPlatformValue) {
     if (value.includes(p)) {
       onChange(value.filter((x) => x !== p));
@@ -36,7 +40,7 @@ export function AnalysisPlatformsMultiSelect({
     <div className="space-y-2">
       <Label className="text-hk-muted">Plataformas incluídas</Label>
       <div className="grid gap-2 sm:grid-cols-2">
-        {ALL.map((p) => (
+        {visibleOptions.map((p) => (
           <label
             key={p}
             className="flex cursor-pointer items-center gap-2 rounded-md border border-hk-border-subtle bg-hk-canvas/40 px-3 py-2.5 text-sm hover:bg-hk-canvas/70"

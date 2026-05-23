@@ -1,6 +1,6 @@
 "use client";
 
-import type { AnalysisFormState } from "@/features/analises/types";
+import type { AnalysisFormState, AnalysisPlatformValue, } from "@/features/analises/types";
 import { AnalysisBiasInput } from "@/features/analises/components/analysis-bias-input";
 import { AnalysisDateRangeField } from "@/features/analises/components/analysis-date-range-field";
 import { AnalysisPlatformsMultiSelect } from "@/features/analises/components/analysis-platforms-multi-select";
@@ -15,6 +15,8 @@ type Props = {
   setForm: React.Dispatch<React.SetStateAction<AnalysisFormState>>;
   disabled?: boolean;
   integrationWarning?: React.ReactNode;
+  actions?: React.ReactNode;
+  platformOptions?: AnalysisPlatformValue[];
 };
 
 export function AnalysisConfigPanel({
@@ -22,6 +24,8 @@ export function AnalysisConfigPanel({
   setForm,
   disabled,
   integrationWarning,
+  actions,
+  platformOptions,
 }: Props) {
   const [open, setOpen] = useState(true);
 
@@ -31,9 +35,6 @@ export function AnalysisConfigPanel({
         <div>
           <p className="hk-overline">
             Configuração da análise
-          </p>
-          <p className="text-sm font-semibold text-hk-deep">
-            Período, foco e cobertura de plataformas
           </p>
         </div>
         <Button
@@ -81,12 +82,19 @@ export function AnalysisConfigPanel({
             value={form.platforms}
             onChange={(platforms) => setForm((f) => ({ ...f, platforms }))}
             disabled={disabled}
+            options={platformOptions}
           />
           <AnalysisBiasInput
             value={form.bias}
             onChange={(bias) => setForm((f) => ({ ...f, bias }))}
             disabled={disabled}
           />
+
+          {actions ? (
+            <div className="flex justify-end border-t border-hk-border-subtle pt-5">
+              {actions}
+            </div>
+          ) : null}
         </div>
       )}
     </section>

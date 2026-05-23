@@ -72,7 +72,7 @@ export function PlatformIntegrationCard({
         <div>
           <h3 className="font-semibold text-hk-deep">{label}</h3>
           <p className="mt-1 text-xs text-hk-muted">
-            Recurso: {displayResourceLabel}
+            {displayResourceLabel}
           </p>
         </div>
         <PlatformIntegrationStatusBadge
@@ -82,22 +82,12 @@ export function PlatformIntegrationCard({
       </div>
 
       <dl className="mt-3 grid gap-1 text-xs text-hk-muted">
-        <div className="flex justify-between gap-2">
-          <dt className="text-hk-muted">Tipo</dt>
-          <dd className="text-right text-hk-ink">Conta / ativo conectado</dd>
-        </div>
         {validityLabel ? (
           <div className="flex justify-between gap-2">
             <dt>Validade</dt>
             <dd className="text-right text-hk-ink">{validityLabel}</dd>
           </div>
         ) : null}
-        <div className="flex justify-between gap-2">
-          <dt>Último estado</dt>
-          <dd className="text-right text-hk-ink">
-            {lastKnownLabel ?? "Sincronizado com a API"}
-          </dd>
-        </div>
       </dl>
 
       {needsRenewal ? (
