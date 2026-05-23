@@ -109,7 +109,7 @@ export function PostsPerformanceTable({
         <SectionHeader
           compact
           title="Conteúdos do período"
-          description="Lista unificada (Facebook + Instagram) com filtros e ordenação locais."
+          description="Lista unificada (Facebook + Instagram)."
         />
         <div className="flex flex-wrap items-center gap-2 print:hidden">
           <Select value={platform} onValueChange={setPlatform}>

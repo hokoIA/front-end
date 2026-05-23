@@ -47,8 +47,7 @@ export function DashboardNoIntegrationsState() {
           Integrações pendentes
         </CardTitle>
         <CardDescription>
-          Nenhuma integração aparece como ativa para este cliente. Conecte ao
-          menos uma fonte para liberar leitura consolidada.
+          Nenhuma integração aparece como ativa para este cliente.
         </CardDescription>
       </CardHeader>
       <CardContent>

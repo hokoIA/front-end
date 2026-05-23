@@ -27,8 +27,7 @@ export function TopPostsPanel({ posts, loading, className }: TopPostsPanelProps)
           Destaques do período
         </h2>
         <p className="mt-1 text-sm text-hk-muted">
-          Top 3 por engajamento (curtidas, comentários e compartilhamentos)
-          combinados na resposta atual.
+          Top 3 por engajamento.
         </p>
       </div>
       {loading ? (

@@ -47,9 +47,14 @@ export function ComparisonMetricSection({
 }: ComparisonMetricSectionProps) {
   const rows = comparison?.rows ?? [];
   const labels = comparison?.labels ?? [];
+  const visibleLines = lines.filter((line) => rows.some((row) => Number(row[line.dataKey] ?? 0) > 0),);
+  const visibleByPlatform: Record<string, number> = Object.fromEntries(Object.entries(byPlatform).filter(([, value]) => Number(value) > 0),);
+  const visibleTotal = total && total > 0 ? total : Object.values(visibleByPlatform).reduce((acc, value) => acc + value, 0);
+
   const hasData =
-    (total ?? 0) > 0 ||
-    Object.values(byPlatform).some((v) => v > 0);
+    visibleLines.length > 0 ||
+    visibleTotal > 0 ||
+    Object.values(visibleByPlatform).some((v) => v > 0);
 
   return (
     <section
@@ -69,7 +74,7 @@ export function ComparisonMetricSection({
           >
             <MultiSeriesLineChart
               labels={labels}
-              lines={lines}
+              lines={visibleLines}
               rows={rows}
               loading={queryLoading}
               minChartHeight={420}
@@ -104,7 +109,7 @@ export function ComparisonMetricSection({
         <div className="min-w-0">
           <MultiSeriesLineChart
             labels={labels}
-            lines={lines}
+            lines={visibleLines}
             rows={rows}
             loading={queryLoading}
             emptyLabel={
@@ -119,10 +124,10 @@ export function ComparisonMetricSection({
             Totais por origem
           </p>
           <ul className="flex flex-col gap-1.5">
-            {Object.keys(byPlatform).length === 0 && !queryLoading ? (
+            {Object.keys(visibleByPlatform).length === 0 && !queryLoading ? (
               <li className="text-xs text-hk-muted">—</li>
             ) : (
-              Object.entries(byPlatform).map(([k, v]) => (
+              Object.entries(visibleByPlatform).map(([k, v]) => (
                 <li
                   key={k}
                   className="flex items-center justify-between gap-2 rounded-md border border-hk-border-subtle bg-hk-surface/80 px-2.5 py-1.5 text-xs"
@@ -140,11 +145,11 @@ export function ComparisonMetricSection({
               ))
             )}
           </ul>
-          {total !== undefined && total > 0 && (
+          {visibleTotal > 0 && (
             <p className="text-xs text-hk-muted">
               Total consolidado:{" "}
               <span className="font-semibold text-hk-ink">
-                {formatCompactNumber(total)}
+                {formatCompactNumber(visibleTotal)}
               </span>
             </p>
           )}

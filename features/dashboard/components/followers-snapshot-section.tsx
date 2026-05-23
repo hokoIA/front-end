@@ -41,11 +41,13 @@ export function FollowersSnapshotSection({
     block.audienceSnapshot && block.audienceSnapshot.length > 0
       ? block.audienceSnapshot
       : Object.entries(block.byPlatform).map(([k, v]) => ({
-          platformKey: k,
-          label: k,
-          value: v,
-        }));
-  const hasData = blockHasNumericData(block);
+        platformKey: k,
+        label: k,
+        value: v,
+      }));
+
+  const visibleRows = rows.filter((row) => Number(row.value) > 0);
+  const hasData = visibleRows.length > 0;
 
   return (
     <section
@@ -92,7 +94,7 @@ export function FollowersSnapshotSection({
         </p>
       ) : (
         <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {rows.map((row) => (
+          {visibleRows.map((row) => (
             <div
               key={row.platformKey}
               className="flex flex-col rounded-xl border border-hk-border-subtle bg-hk-surface-muted/45 p-4"

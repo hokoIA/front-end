@@ -48,21 +48,30 @@ export const MAIN_NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    title: "Produção",
+    items: [
+      { 
+        href: "/kanban",
+        label: "Kanban",
+        icon: Columns3
+      },
+    ],
+  },
+  {
     title: "Operações",
     items: [
       {
         href: "/clientes",
         label: "Clientes & Integrações",
-        icon: BriefcaseBusiness,
+        icon: Users,
       },
       {
         href: "/equipe",
         label: "Equipe",
-        icon: Users,
+        icon: BriefcaseBusiness,
         permission: "page:team:view",
         managePermission: "team:manage",
       },
-      { href: "/kanban", label: "Kanban", icon: Columns3 },
     ],
   },
   {

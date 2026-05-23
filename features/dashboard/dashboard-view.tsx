@@ -113,12 +113,21 @@ export function DashboardView() {
       customerId,
       selected,
       platformCoverage,
-      appliedRange !== null,
+      Boolean(customerId),
     );
 
-  const connectedCount = integrationCards.filter(
+  const visibleIntegrationCards = integrationCards.filter(
+    (c) => c.operational === "connected" || c.operational === "needs_renewal",
+  );
+
+  const connectedCount = visibleIntegrationCards.filter(
     (c) => c.operational === "connected",
   ).length;
+
+  const hasConnectedIntegrations = connectedCount > 0;
+  const showPendingIntegrationsState = !intLoading && !hasConnectedIntegrations;
+  const canRenderDashboardData =
+    appliedRange !== null && !intLoading && hasConnectedIntegrations;
 
   const printPeriod = useDashboardPrint({
     documentTitle: "Dashboard ho.ko",
@@ -201,6 +210,49 @@ export function DashboardView() {
     return impressionsComparisonLines(hasGoogle, hasLinkedin);
   }, [snapshot?.impressions.comparison?.rows]);
 
+  const visibleOverviewMetrics = useMemo(() => {
+    if (!snapshot) return [];
+
+    const postsCount =
+      snapshot.postsMeta.summary?.amountContents ?? snapshot.posts.length;
+
+    return [
+      {
+        label: "Alcance consolidado",
+        value: snapshot.reach.total ?? null,
+      },
+      {
+        label: "Impressões / views",
+        value: snapshot.impressions.total ?? null,
+      },
+      {
+        label: "Audiência",
+        value: snapshot.followers.total ?? null,
+        hint: "Seguidores",
+      },
+      {
+        label: "Tráfego do site",
+        value: snapshot.traffic.total ?? null,
+      },
+      {
+        label: "Volume de busca",
+        value: snapshot.search.total ?? null,
+      },
+      {
+        label: "Conteúdos publicados",
+        value: postsCount,
+      },
+    ].filter((metric) => overviewLoading || (metric.value ?? 0) > 0);
+  }, [snapshot, overviewLoading]);
+
+  const hasReachData = snapshot ? blockHasNumericData(snapshot.reach) : false;
+  const hasImpressionsData = snapshot ? blockHasNumericData(snapshot.impressions) : false;
+  const hasFollowersData = snapshot ? blockHasNumericData(snapshot.followers) : false;
+  const hasTrafficData = snapshot ? blockHasNumericData(snapshot.traffic) : false;
+  const hasSearchData = snapshot ? blockHasNumericData(snapshot.search) : false;
+  const hasContentsData = snapshot ? (snapshot.postsMeta.summary?.amountContents ?? 0) > 0 || (snapshot.postsMeta.summary?.totalEngagement ?? 0) > 0 || snapshot.posts.length > 0 : false;
+  const topPosts = useMemo(() => (snapshot ? pickTopPosts(snapshot.posts, 3) : []), [snapshot],);
+
   if (!customerReady) {
     return (
       <div className="hk-page space-y-7 py-6 lg:py-7">
@@ -223,11 +275,35 @@ export function DashboardView() {
     <div className="hk-page space-y-7 pb-16 pt-3 lg:space-y-8 lg:pt-4">
       <DashboardGlobalLoading active={isFetching} />
       <DashboardPageHeader
-        printEnabled={!!appliedRange}
+        printEnabled={!!appliedRange && !showPendingIntegrationsState}
         onPrintPeriod={printPeriod}
       />
 
-      {appliedRange && selected ? (
+      {!showPendingIntegrationsState &&
+        (intLoading || visibleIntegrationCards.length > 0) && (
+          <DataPanel className="space-y-3">
+            <SectionHeader
+              compact
+              title="Status de conexões"
+              description=""
+            />
+
+            <div className="flex flex-wrap gap-2.5">
+              {intLoading
+                ? Array.from({ length: 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="hk-skeleton h-[88px] min-w-[150px] flex-1 rounded-xl"
+                  />
+                ))
+                : visibleIntegrationCards.map((c) => (
+                  <IntegrationStatusCard key={c.surface} card={c} />
+                ))}
+            </div>
+          </DataPanel>
+        )}
+
+      {!showPendingIntegrationsState && appliedRange && selected ? (
         <div className="hidden border-b border-hk-border pb-3 print:block">
           <p className="text-base font-semibold text-hk-deep">
             Resumo para impressão
@@ -242,56 +318,36 @@ export function DashboardView() {
         </div>
       ) : null}
 
-      <DashboardPeriodToolbar
-        customerId={customerId}
-        dateStart={draft.start}
-        dateEnd={draft.end}
-        onDateStartChange={(v) => setDraft((d) => ({ ...d, start: v }))}
-        onDateEndChange={(v) => setDraft((d) => ({ ...d, end: v }))}
-        onApply={() => {
-          if (draft.start > draft.end) {
-            toast.error("A data inicial não pode ser posterior à final.");
-            return;
-          }
-          setAppliedRange({ ...draft });
-        }}
-        isLoading={overviewLoading}
-        disabled={!customerId}
-      />
-
-      <DataPanel className="space-y-3">
-        <SectionHeader
-          compact
-          title="Conectividade e prontidão"
-          description="Estado operacional das fontes conectadas para o período selecionado."
-        />
-        <div className="flex flex-wrap gap-2.5">
-          {intLoading
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="hk-skeleton h-[88px] min-w-[150px] flex-1 rounded-xl"
-                />
-              ))
-            : integrationCards.map((c) => (
-                <IntegrationStatusCard key={c.surface} card={c} />
-              ))}
-        </div>
-      </DataPanel>
-
-      {appliedRange && !intLoading && connectedCount === 0 && (
+      {showPendingIntegrationsState ? (
         <DashboardNoIntegrationsState />
+      ) : (
+        <DashboardPeriodToolbar
+          customerId={customerId}
+          dateStart={draft.start}
+          dateEnd={draft.end}
+          onDateStartChange={(v) => setDraft((d) => ({ ...d, start: v }))}
+          onDateEndChange={(v) => setDraft((d) => ({ ...d, end: v }))}
+          onApply={() => {
+            if (draft.start > draft.end) {
+              toast.error("A data inicial não pode ser posterior à final.");
+              return;
+            }
+            setAppliedRange({ ...draft });
+          }}
+          isLoading={overviewLoading}
+          disabled={!customerId}
+        />
       )}
 
-      {appliedRange && authError && (
+      {canRenderDashboardData && authError && (
         <DashboardErrorState error={authError} onRetry={() => refetchAll()} />
       )}
 
-      {appliedRange && !authError && allQueriesFailed && firstError && (
+      {canRenderDashboardData && !authError && allQueriesFailed && firstError && (
         <DashboardErrorState error={firstError} onRetry={() => refetchAll()} />
       )}
 
-      {appliedRange && someQueriesFailed && !authError && !allQueriesFailed && (
+      {canRenderDashboardData && someQueriesFailed && !authError && !allQueriesFailed && (
         <div className="rounded-xl border border-amber-200/80 bg-amber-50/60 px-4 py-3 text-sm text-amber-950">
           <span className="font-medium">Carregamento parcial.</span>{" "}
           Alguns indicadores falharam; cada bloco abaixo mostra o erro
@@ -300,7 +356,7 @@ export function DashboardView() {
         </div>
       )}
 
-      {appliedRange &&
+      {canRenderDashboardData &&
         !isPending &&
         !authError &&
         !allQueriesFailed &&
@@ -308,7 +364,7 @@ export function DashboardView() {
         !hasData &&
         !someQueriesFailed && <DashboardNoDataState />}
 
-      {appliedRange &&
+      {canRenderDashboardData &&
         !isPending &&
         !authError &&
         !allQueriesFailed &&
@@ -322,49 +378,24 @@ export function DashboardView() {
           </div>
         )}
 
-      {appliedRange && snapshot && !authError && !allQueriesFailed && (
+      {canRenderDashboardData && snapshot && !authError && !allQueriesFailed && (
         <>
           <DataPanel className="space-y-3">
             <SectionHeader
               compact
               title="Visão geral do período"
-              description="KPIs consolidados para leitura executiva rápida."
+              description=""
             />
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-              <MetricOverviewCard
-                label="Alcance consolidado"
-                value={snapshot.reach.total ?? null}
-                loading={overviewLoading}
-              />
-              <MetricOverviewCard
-                label="Impressões / views"
-                value={snapshot.impressions.total ?? null}
-                loading={overviewLoading}
-              />
-              <MetricOverviewCard
-                label="Audiência (snapshot)"
-                value={snapshot.followers.total ?? null}
-                hint="Seguidores / base no período conforme API"
-                loading={overviewLoading}
-              />
-              <MetricOverviewCard
-                label="Tráfego (site)"
-                value={snapshot.traffic.total ?? null}
-                loading={overviewLoading}
-              />
-              <MetricOverviewCard
-                label="Volume de busca"
-                value={snapshot.search.total ?? null}
-                loading={overviewLoading}
-              />
-              <MetricOverviewCard
-                label="Conteúdos publicados"
-                value={
-                  snapshot.postsMeta.summary?.amountContents ??
-                  snapshot.posts.length
-                }
-                loading={overviewLoading}
-              />
+              {visibleOverviewMetrics.map((metric) => (
+                <MetricOverviewCard
+                  key={metric.label}
+                  label={metric.label}
+                  value={metric.value}
+                  hint={metric.hint}
+                  loading={overviewLoading}
+                />
+              ))}
             </div>
           </DataPanel>
 
@@ -394,120 +425,136 @@ export function DashboardView() {
             loading={insightLoadingKey === "period"}
           />
 
-          <ComparisonMetricSection
-            id="reach"
-            title="Alcance"
-            description="Comparação temporal entre redes: cada linha é uma plataforma no mesmo eixo de datas."
-            comparison={snapshot.reach.comparison}
-            lines={reachComparisonLines()}
-            byPlatform={snapshot.reach.byPlatform}
-            total={snapshot.reach.total}
-            queryLoading={queryReach.isPending}
-            queryError={queryReach.error}
-            onRetry={() => queryReach.refetch()}
-            insightText={blockInsights.reach ?? null}
-            insightLoading={insightLoadingKey === "reach"}
-            onInsight={() =>
-              makeBlockHandler("reach", "Alcance", snapshot.reach)
-            }
-          />
-
-          <ComparisonMetricSection
-            id="impressions"
-            title="Impressões e visualizações"
-            description="Volume de exposição ao longo do tempo, por plataforma disponível na resposta."
-            comparison={snapshot.impressions.comparison}
-            lines={impressionLineDefs}
-            byPlatform={snapshot.impressions.byPlatform}
-            total={snapshot.impressions.total}
-            queryLoading={qImp.isPending}
-            queryError={qImp.error}
-            onRetry={() => qImp.refetch()}
-            insightText={blockInsights.impressions ?? null}
-            insightLoading={insightLoadingKey === "impressions"}
-            onInsight={() =>
-              makeBlockHandler(
-                "impressions",
-                "Impressões / visualizações",
-                snapshot.impressions,
-              )
-            }
-          />
-
-          <FollowersSnapshotSection
-            id="followers"
-            title="Seguidores e audiência"
-            description="Snapshot por plataforma no período — leitura principal nos cartões abaixo."
-            block={snapshot.followers}
-            queryLoading={qFol.isPending}
-            queryError={qFol.error}
-            onRetry={() => qFol.refetch()}
-            insightText={blockInsights.followers ?? null}
-            insightLoading={insightLoadingKey === "followers"}
-            onInsight={() =>
-              makeBlockHandler(
-                "followers",
-                "Seguidores / audiência",
-                snapshot.followers,
-              )
-            }
-          />
-
-          <TrafficSplitSection
-            id="traffic"
-            title="Tráfego do site"
-            description="Sessões ao longo do tempo e distribuição por canal de aquisição."
-            block={snapshot.traffic}
-            queryLoading={qTra.isPending}
-            queryError={qTra.error}
-            onRetry={() => qTra.refetch()}
-            insightText={blockInsights.traffic ?? null}
-            insightLoading={insightLoadingKey === "traffic"}
-            onInsight={() =>
-              makeBlockHandler("traffic", "Tráfego do site", snapshot.traffic)
-            }
-          />
-
-          <SearchOrganicSection
-            id="search"
-            title="Busca e orgânico"
-            description="Sessões orgânicas na série principal; totais e leads complementam a leitura."
-            block={snapshot.search}
-            queryLoading={qSea.isPending}
-            queryError={qSea.error}
-            onRetry={() => qSea.refetch()}
-            insightText={blockInsights.search ?? null}
-            insightLoading={insightLoadingKey === "search"}
-            onInsight={() =>
-              makeBlockHandler(
-                "search",
-                "Volume de busca / orgânico",
-                snapshot.search,
-              )
-            }
-          />
-
-          <DataPanel id="contents" className="space-y-4">
-            <SectionHeader
-              compact
-              title="Conteúdos do período"
-              description="Totais reportados pela API e lista unificada de publicações em Facebook e Instagram."
+          {(hasReachData || queryReach.isPending || queryReach.error) && (
+            <ComparisonMetricSection
+              id="reach"
+              title="Alcance"
+              description=""
+              comparison={snapshot.reach.comparison}
+              lines={reachComparisonLines()}
+              byPlatform={snapshot.reach.byPlatform}
+              total={snapshot.reach.total}
+              queryLoading={queryReach.isPending}
+              queryError={queryReach.error}
+              onRetry={() => queryReach.refetch()}
+              insightText={blockInsights.reach ?? null}
+              insightLoading={insightLoadingKey === "reach"}
+              onInsight={() =>
+                makeBlockHandler("reach", "Alcance", snapshot.reach)
+              }
             />
-            <ContentsSummaryStrip
-              summary={snapshot.postsMeta.summary}
+          )}
+
+          {(hasImpressionsData || qImp.isPending || qImp.error) && (
+            <ComparisonMetricSection
+              id="impressions"
+              title="Visualizações"
+              description=""
+              comparison={snapshot.impressions.comparison}
+              lines={impressionLineDefs}
+              byPlatform={snapshot.impressions.byPlatform}
+              total={snapshot.impressions.total}
+              queryLoading={qImp.isPending}
+              queryError={qImp.error}
+              onRetry={() => qImp.refetch()}
+              insightText={blockInsights.impressions ?? null}
+              insightLoading={insightLoadingKey === "impressions"}
+              onInsight={() =>
+                makeBlockHandler(
+                  "impressions",
+                  "Impressões / visualizações",
+                  snapshot.impressions,
+                )
+              }
+            />
+          )}
+
+          {(hasFollowersData || qFol.isPending || qFol.error) && (
+            <FollowersSnapshotSection
+              id="followers"
+              title="Seguidores e audiência"
+              description=""
+              block={snapshot.followers}
+              queryLoading={qFol.isPending}
+              queryError={qFol.error}
+              onRetry={() => qFol.refetch()}
+              insightText={blockInsights.followers ?? null}
+              insightLoading={insightLoadingKey === "followers"}
+              onInsight={() =>
+                makeBlockHandler(
+                  "followers",
+                  "Seguidores / audiência",
+                  snapshot.followers,
+                )
+              }
+            />
+          )}
+
+          {(hasTrafficData || qTra.isPending || qTra.error) && (
+            <TrafficSplitSection
+              id="traffic"
+              title="Tráfego do site"
+              description=""
+              block={snapshot.traffic}
+              queryLoading={qTra.isPending}
+              queryError={qTra.error}
+              onRetry={() => qTra.refetch()}
+              insightText={blockInsights.traffic ?? null}
+              insightLoading={insightLoadingKey === "traffic"}
+              onInsight={() =>
+                makeBlockHandler("traffic", "Tráfego do site", snapshot.traffic)
+              }
+            />
+          )}
+
+          {(hasSearchData || qSea.isPending || qSea.error) && (
+            <SearchOrganicSection
+              id="search"
+              title="Busca e orgânico"
+              description=""
+              block={snapshot.search}
+              queryLoading={qSea.isPending}
+              queryError={qSea.error}
+              onRetry={() => qSea.refetch()}
+              insightText={blockInsights.search ?? null}
+              insightLoading={insightLoadingKey === "search"}
+              onInsight={() =>
+                makeBlockHandler(
+                  "search",
+                  "Volume de busca / orgânico",
+                  snapshot.search,
+                )
+              }
+            />
+          )}
+
+          {(hasContentsData || queryPosts.isPending) && (
+            <DataPanel id="contents" className="space-y-4">
+              <SectionHeader
+                compact
+                title="Conteúdos do período"
+                description=""
+              />
+              <ContentsSummaryStrip
+                summary={snapshot.postsMeta.summary}
+                loading={queryPosts.isPending}
+              />
+            </DataPanel>
+          )}
+
+          {topPosts.length > 0 && (
+            <TopPostsPanel
+              posts={topPosts}
               loading={queryPosts.isPending}
             />
-          </DataPanel>
+          )}
 
-          <TopPostsPanel
-            posts={pickTopPosts(snapshot.posts, 3)}
-            loading={queryPosts.isPending}
-          />
-
-          <PostsPerformanceTable
-            posts={snapshot.posts}
-            loading={queryPosts.isPending}
-          />
+          {snapshot.posts.length > 0 && (
+            <PostsPerformanceTable
+              posts={snapshot.posts}
+              loading={queryPosts.isPending}
+            />
+          )}
         </>
       )}
     </div>
