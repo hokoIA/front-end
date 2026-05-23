@@ -36,6 +36,33 @@ function settledValue<T>(result: PromiseSettledResult<T>): T | null {
   return result.status === "fulfilled" ? result.value : null;
 }
 
+function record(data: unknown): Record<string, unknown> | null {
+  if (typeof data === "object" && data !== null && !Array.isArray(data)) {
+    return data as Record<string, unknown>;
+  }
+
+  return null;
+}
+
+function stringOrNull(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function extractMetaResources(meta: unknown) {
+  const r = record(meta);
+
+  return {
+    facebook: {
+      id: stringOrNull(r?.facebookResourceId ?? r?.facebook_resource_id),
+      name: stringOrNull(r?.facebookResourceName ?? r?.facebook_resource_name),
+    },
+    instagram: {
+      id: stringOrNull(r?.instagramResourceId ?? r?.instagram_resource_id),
+      name: stringOrNull(r?.instagramResourceName ?? r?.instagram_resource_name),
+    },
+  };
+}
+
 /**
  * Cada plataforma precisa ser avaliada de forma independente.
  * Se LinkedIn/GA/YouTube falhar, isso não pode derrubar o status Meta já autorizado.
@@ -63,6 +90,7 @@ export async function fetchCustomerIntegrationSummary(
     youtube: parseGenericOperational(yt),
     linkedin: parseLinkedinOperational(li, linkedinSuccess),
   };
+  const resources = extractMetaResources(meta);
 
   const connectedCount = countBy(surfaces, (op) => op === "connected");
   const authorizedCount = countBy(surfaces, (op) => op === "authorized");
@@ -79,6 +107,7 @@ export async function fetchCustomerIntegrationSummary(
   return {
     customerId,
     surfaces,
+    resources,
     connectedCount,
     authorizedCount,
     disconnectedCount,
@@ -86,5 +115,6 @@ export async function fetchCustomerIntegrationSummary(
     renewalCount,
     readiness,
     hasAttention,
+    
   };
 }

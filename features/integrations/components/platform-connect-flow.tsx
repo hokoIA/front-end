@@ -35,12 +35,14 @@ export function PlatformConnectFlow({
   customerId,
   adapter,
   operational,
+  onConnected,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customerId: string;
   adapter: IntegrationPlatformAdapter;
   operational?: IntegrationOperationalState;
+  onConnected?: () => void | Promise<void>;
 }) {
   const qc = useQueryClient();
   const [step, setStep] = useState<Step>("intro");
@@ -62,15 +64,25 @@ export function PlatformConnectFlow({
 
   const connectMut = useMutation({
     mutationFn: (payload: Record<string, unknown>) => adapter.connect(payload),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       const url = extractOAuthRedirectUrl(data);
+
       if (url) {
         window.location.assign(url);
         return;
       }
-      void qc.invalidateQueries({ queryKey: queryKeys.integrations.all });
-      void qc.invalidateQueries({ queryKey: queryKeys.customers.all });
-      toast.success("Conexão registrada. Sincronizando status…");
+
+      await qc.invalidateQueries({ queryKey: queryKeys.integrations.all });
+      await qc.invalidateQueries({ queryKey: queryKeys.customers.all });
+
+      await qc.refetchQueries({
+        queryKey: queryKeys.integrations.customerSummary(customerId),
+        type: "active",
+      });
+
+      await onConnected?.();
+
+      toast.success("Conexão registrada.");
       onOpenChange(false);
     },
     onError: () => {

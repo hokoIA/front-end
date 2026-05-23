@@ -8,6 +8,7 @@ import { CustomersErrorState } from "@/features/customers/components/customers-e
 import { CustomersFiltersToolbar } from "@/features/customers/components/customers-filters-toolbar";
 import { CustomersOverviewBar } from "@/features/customers/components/customers-overview-bar";
 import { defaultCustomerHubFilters } from "@/features/customers/types/filters";
+import { PageHeader } from "@/components/data-display/page-header";
 import {
   computeHubOverview,
   filterAndSortCustomers,
@@ -105,8 +106,21 @@ export function CustomersHubView() {
   }
 
   return (
-    <div className="hk-page flex flex-col gap-7 py-7 lg:gap-8">
-
+    <div className="hk-page space-y-7 pb-16 pt-3 lg:space-y-8 lg:pt-4">
+      <PageHeader
+        title=""
+        description="Conecte seus clientes com suas plataformas e páginas."
+        actions={
+            <Button
+              type="button"
+              className="gap-2 self-start bg-hk-action text-white hover:bg-hk-strong sm:self-auto"
+              onClick={() => setCreateOpen(true)}
+            >
+              <Plus className="h-4 w-4" aria-hidden />
+              Novo cliente
+            </Button>
+        }
+      />
       <CustomersOverviewBar
         total={overview.total}
         active={overview.active}
@@ -119,22 +133,6 @@ export function CustomersHubView() {
         batchDisabled={batchDisabled}
         listBatchLimit={CUSTOMER_LIST_INTEGRATION_SUMMARY_LIMIT}
       />
-
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <SectionHeader
-          compact
-          title="Carteira de clientes"
-          description="Localize, filtre e conecte as plataformas dos clientes."
-        />
-        <Button
-          type="button"
-          className="gap-2 self-start bg-hk-action text-white hover:bg-hk-strong sm:self-auto"
-          onClick={() => setCreateOpen(true)}
-        >
-          <Plus className="h-4 w-4" aria-hidden />
-          Novo cliente
-        </Button>
-      </div>
 
       <CustomersFiltersToolbar value={filters} onChange={setFilters} />
 

@@ -1,3 +1,4 @@
+// features/customers/components/customer-detail-panel.tsx
 "use client";
 
 import { CustomerSummaryCard } from "@/features/customers/components/customer-summary-card";
@@ -7,6 +8,7 @@ import { IntegrationsHealthBar } from "@/features/integrations/components/integr
 import { PlatformConnectFlow } from "@/features/integrations/components/platform-connect-flow";
 import { PlatformIntegrationCard } from "@/features/integrations/components/platform-integration-card";
 import { useCustomerIntegrationSummary } from "@/features/integrations/hooks/use-customer-integration-summary";
+import type { IntegrationSurface } from "@/features/dashboard/types";
 import type { IntegrationPlatformAdapter } from "@/features/integrations/adapters/types";
 import { getCustomerLifecycleStatus } from "@/features/customers/utils/customer-fields";
 import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
@@ -67,6 +69,15 @@ function getIntegrationResourceLabel(customer: Customer, platform: string): stri
   const rows = Array.isArray(customer.integrations) ? customer.integrations : [];
   const found = rows.find((row) => String(row.platform ?? "").toLowerCase() === platform);
   const name = found?.resource_name;
+  return typeof name === "string" && name.trim() ? name : undefined;
+}
+
+function getSummaryResourceLabel(
+  summary: ReturnType<typeof useCustomerIntegrationSummary>["data"],
+  platform: IntegrationSurface,
+): string | undefined {
+  const name = summary?.resources?.[platform]?.name;
+
   return typeof name === "string" && name.trim() ? name : undefined;
 }
 
@@ -199,7 +210,10 @@ export function CustomerDetailPanel({
                       label={adapter.label}
                       operational={op}
                       periodCoverage="unknown"
-                      resourceLabel={getIntegrationResourceLabel(customer, adapter.key)}
+                      resourceLabel={
+                        getSummaryResourceLabel(summaryQ.data, adapter.key) ??
+                        getIntegrationResourceLabel(customer, adapter.key)
+                      }
                       adapter={adapter}
                       onConnect={() => setFlowAdapter(adapter)}
                       onOpenSwap={() => setFlowAdapter(adapter)}
@@ -243,6 +257,10 @@ export function CustomerDetailPanel({
             flowAdapter.key,
             summaryQ.data?.surfaces[flowAdapter.key],
           )}
+          onConnected={async () => {
+            await summaryQ.refetch();
+            await qc.invalidateQueries({ queryKey: queryKeys.customers.all });
+          }}
         />
       ) : null}
 

@@ -84,17 +84,45 @@ function resolveListSurfaceState(
   return fromSummary ?? fromCustomer;
 }
 
-function platformTone(op: IntegrationOperationalState | undefined): string {
-  if (op === "connected") {
+function hasSurfaceResource(
+  customer: Customer,
+  summary: CustomerIntegrationSummary | undefined,
+  surface: IntegrationSurface,
+): boolean {
+  const summaryResource = summary?.resources?.[surface];
+
+  if (summaryResource?.id || summaryResource?.name) {
+    return true;
+  }
+
+  const rows = Array.isArray(customer.integrations) ? customer.integrations : [];
+
+  const row = rows.find((item) => {
+    const platform = String(item?.platform ?? "").trim().toLowerCase();
+
+    if (surface === "google_analytics") {
+      return ["google_analytics", "googleanalytics", "ga4", "google"].includes(platform);
+    }
+
+    return platform === surface;
+  });
+
+  return Boolean(row?.resource_id || row?.resource_name);
+}
+
+function platformTone(
+  op: IntegrationOperationalState | undefined,
+  hasResource: boolean,
+): string {
+  if (op === "connected" && hasResource) {
     return "border-emerald-500/40 bg-emerald-500/10 text-emerald-900";
   }
-  if (op === "authorized") {
-    return "border-sky-500/40 bg-sky-500/10 text-sky-900";
-  }
+
   if (op === "needs_renewal") {
     return "border-rose-500/50 bg-rose-500/10 text-rose-900";
   }
-  return "border-hk-border bg-hk-canvas text-hk-muted";
+
+  return "border-hk-border bg-hk-surface text-hk-muted";
 }
 
 function platformTitle(
@@ -161,19 +189,36 @@ export function CustomerListItem({
           <div className="mt-1 flex items-center gap-1.5 md:mt-0">
             {PLATFORM_ORDER.map((surface) => {
               const op = resolveListSurfaceState(customer, summary, surface);
-              return (
+              const hasResource = hasSurfaceResource(customer, summary, surface);
+
+              return {
+                surface,
+                op,
+                hasResource,
+              };
+            })
+              .filter(({ op }) =>
+                op === "authorized" || op === "connected" || op === "needs_renewal"
+              )
+              .map(({ surface, op, hasResource }) => (
                 <span
                   key={surface}
                   title={platformTitle(surface, op)}
                   className={cn(
                     "inline-flex size-8 items-center justify-center rounded-full border",
-                    platformTone(op),
+                    platformTone(op, hasResource),
                   )}
                 >
                   <PlatformIcon platform={surface} size="sm" plain />
                 </span>
-              );
-            })}
+              ))}
+
+            {PLATFORM_ORDER.every((surface) => {
+              const op = resolveListSurfaceState(customer, summary, surface);
+              return op !== "authorized" && op !== "connected" && op !== "needs_renewal";
+            }) ? (
+              <span className="text-sm text-hk-muted">—</span>
+            ) : null}
           </div>
         )}
       </div>

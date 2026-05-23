@@ -16,7 +16,7 @@ export function DashboardPageHeader({
 }: DashboardPageHeaderProps) {
   return (
     <PageHeader
-      title="Dashboard"
+      title=""
       description="Leitura operacional e estratégica da performance do cliente no período."
       actions={
         <Button
