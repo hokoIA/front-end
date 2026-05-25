@@ -19,11 +19,12 @@ import { useCustomersQuery, useDeleteCustomerMutation } from "@/hooks/api/use-cu
 import { queryKeys } from "@/lib/api/query-keys";
 import type { Customer } from "@/lib/types/customer";
 import { Button } from "@/components/ui/button";
-import { SectionHeader } from "@/components/data-display/section-header";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useMemo, useState } from "react";
+
+type CustomerPanelMode = "connections" | "details";
 
 export function CustomersHubView() {
   const qc = useQueryClient();
@@ -33,6 +34,7 @@ export function CustomersHubView() {
   const [createOpen, setCreateOpen] = useState(false);
   const [detailCustomer, setDetailCustomer] = useState<Customer | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [detailMode, setDetailMode] = useState<CustomerPanelMode>("connections");
   const deleteCustomer = useDeleteCustomerMutation();
 
   const ids = useMemo(
@@ -61,7 +63,8 @@ export function CustomersHubView() {
     [customers, filters, summaries],
   );
 
-  const openHub = (c: Customer) => {
+  const openPanel = (c: Customer, mode: CustomerPanelMode) => {
+    setDetailMode(mode);
     setDetailCustomer(c);
     setDetailOpen(true);
   };
@@ -87,6 +90,7 @@ export function CustomersHubView() {
       if (id && list) {
         const found = list.find((x) => x.id_customer === id);
         if (found) {
+          setDetailMode("details");
           setDetailCustomer(found);
           setDetailOpen(true);
         }
@@ -151,8 +155,8 @@ export function CustomersHubView() {
               summaries={summaries}
               summariesLoading={summariesLoading}
               listLoading={isPending}
-              onOpenHub={openHub}
-              onEditQuick={openHub}
+              onOpenHub={(c) => openPanel(c, "connections")}
+              onEditQuick={(c) => openPanel(c, "details")}
               onDeleteRequest={deleteFromList}
             />
           )}
@@ -168,6 +172,7 @@ export function CustomersHubView() {
       <CustomerDetailPanel
         customer={detailCustomer}
         open={detailOpen}
+        mode={detailMode}
         onOpenChange={(o) => {
           setDetailOpen(o);
           if (!o) setDetailCustomer(null);

@@ -92,13 +92,17 @@ function ComingSoonCard({ title }: { title: string }) {
   );
 }
 
+export type CustomerDetailPanelMode = "connections" | "details";
+
 export function CustomerDetailPanel({
   customer,
   open,
+  mode,
   onOpenChange,
 }: {
   customer: Customer | null;
   open: boolean;
+  mode: CustomerDetailPanelMode;
   onOpenChange: (open: boolean) => void;
 }) {
   const qc = useQueryClient();
@@ -116,19 +120,13 @@ export function CustomerDetailPanel({
     if (customer && open) selectCustomer(customer.id_customer);
   }, [customer, open, selectCustomer]);
 
-  useEffect(() => {
-    if (!open) {
-      setFlowAdapter(null);
-      setRemoveTarget(null);
-      setArchiveOpen(false);
-    }
-  }, [open]);
-
   const lifecycle = customer
     ? getCustomerLifecycleStatus(customer)
     : "unknown";
   const archivedOrInactive =
     lifecycle === "archived" || lifecycle === "inactive";
+  const showConnections = mode === "connections";
+  const showDetails = mode === "details";
 
   const confirmRemoveIntegration = () => {
     toast.message(
@@ -154,20 +152,31 @@ export function CustomerDetailPanel({
     }
   };
 
+  const handleMainOpenChange = (next: boolean) => {
+    if (!next) {
+      setFlowAdapter(null);
+      setRemoveTarget(null);
+      setArchiveOpen(false);
+    }
+    onOpenChange(next);
+  };
+
   if (!customer) return null;
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={handleMainOpenChange}>
         <DialogContent className="max-h-[min(90vh,880px)] w-[min(96vw,42rem)] max-w-none overflow-y-auto border-hk-border p-0 gap-0">
           <div className="border-b border-hk-border bg-gradient-to-r from-hk-deep/5 to-hk-cyan/10 px-6 py-4">
             <DialogHeader>
-              <DialogTitle>Operacional do cliente</DialogTitle>
+              <DialogTitle>
+                {showConnections ? "Conexões do cliente" : "Dados do cliente"}
+              </DialogTitle>
             </DialogHeader>
           </div>
 
           <div className="space-y-6 px-6 py-5">
-            {archivedOrInactive ? (
+            {showDetails && archivedOrInactive ? (
               <div
                 role="status"
                 className="rounded-lg border border-amber-200 bg-amber-50/90 px-3 py-2 text-sm text-amber-950"
@@ -177,13 +186,17 @@ export function CustomerDetailPanel({
               </div>
             ) : null}
 
-            <CustomerSummaryCard
-              customer={customer}
-              onUpdated={() => {
-                void qc.invalidateQueries({ queryKey: queryKeys.customers.all });
-              }}
-            />
+            {showDetails ? (
+              <CustomerSummaryCard
+                customer={customer}
+                onUpdated={() => {
+                  void qc.invalidateQueries({ queryKey: queryKeys.customers.all });
+                }}
+              />
+            ) : null}
 
+            {showConnections ? (
+              <>
             <IntegrationsHealthBar
               summary={summaryQ.data ?? null}
               loading={summaryQ.isPending}
@@ -227,7 +240,10 @@ export function CustomerDetailPanel({
                 <ComingSoonCard title="Meta Ads" />
               </div>
             </section>
+              </>
+            ) : null}
 
+            {showDetails ? (
             <div className="flex flex-wrap gap-2 border-t border-hk-border-subtle pt-4">
               <Button
                 type="button"
@@ -240,6 +256,7 @@ export function CustomerDetailPanel({
                 Arquivar / desativar cliente
               </Button>
             </div>
+            ) : null}
           </div>
         </DialogContent>
       </Dialog>

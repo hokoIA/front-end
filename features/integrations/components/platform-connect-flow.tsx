@@ -5,6 +5,7 @@ import type { IntegrationPlatformAdapter } from "@/features/integrations/adapter
 import { integrationResourcesFromUnknown } from "@/features/integrations/adapters/resource-options";
 import { extractOAuthRedirectUrl } from "@/features/integrations/utils/oauth-response";
 import { queryKeys } from "@/lib/api/query-keys";
+import { HttpError } from "@/lib/api/http-client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, ShieldCheck } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 type Step = "intro" | "resources" | "connecting" | "error";
@@ -45,7 +46,9 @@ export function PlatformConnectFlow({
   onConnected?: () => void | Promise<void>;
 }) {
   const qc = useQueryClient();
-  const [step, setStep] = useState<Step>("intro");
+  const [step, setStep] = useState<Step>(() =>
+    operational === "authorized" ? "resources" : "intro",
+  );
   const [selectedId, setSelectedId] = useState<string>("");
 
   const resourcesQuery = useQuery({
@@ -91,23 +94,16 @@ export function PlatformConnectFlow({
     },
   });
 
-  useEffect(() => {
-    if (open) {
-      setStep(operational === "authorized" ? "resources" : "intro");
-      setSelectedId("");
-      return;
-    }
-    setStep("intro");
-    setSelectedId("");
-  }, [open, operational]);
-
   const options = integrationResourcesFromUnknown(
     resourcesQuery.data,
     adapter.key === "facebook" || adapter.key === "instagram"
       ? adapter.key
       : undefined,
   );
-
+  const resourceErrorMessage =
+    resourcesQuery.error instanceof HttpError
+      ? resourcesQuery.error.message
+      : "Não foi possível listar recursos. Tente autorizar novamente ou verifique se a sessão ainda é válida.";
 
   const submitConnect = () => {
     if (options.length > 0 && !selectedId) {
@@ -172,10 +168,14 @@ export function PlatformConnectFlow({
                 Carregando recursos…
               </div>
             ) : resourcesQuery.isError ? (
-              <p className="text-sm text-rose-700">
-                Não foi possível listar recursos. Tente autorizar primeiro ou
-                verifique se a sessão ainda é válida.
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-rose-700">
+                  {resourceErrorMessage}
+                </p>
+                <Button type="button" variant="secondary" onClick={oauthOnly}>
+                  Autorizar novamente
+                </Button>
+              </div>
             ) : options.length === 0 ? (
               <p className="text-sm text-hk-muted">
                 Nenhum recurso foi retornado para esta conta. Reautorize a conta
@@ -225,13 +225,16 @@ export function PlatformConnectFlow({
               Autorizar conta
             </Button>
           )}
-          {step === "resources" && (
+          {step === "resources" && !resourcesQuery.isError && (
             <Button
               type="button"
               className="bg-hk-action text-white hover:bg-hk-strong"
               onClick={submitConnect}
               disabled={
-                connectMut.isPending || (options.length > 0 && !selectedId)
+                connectMut.isPending ||
+                resourcesQuery.isPending ||
+                options.length === 0 ||
+                !selectedId
               }
             >
               Salvar conexão
