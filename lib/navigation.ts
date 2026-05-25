@@ -3,6 +3,7 @@ import {
   BookOpen,
   BriefcaseBusiness,
   Columns3,
+  Home,
   LayoutDashboard,
   LineChart,
   Settings,
@@ -27,6 +28,7 @@ export const MAIN_NAV_SECTIONS: NavSection[] = [
   {
     title: "Visão",
     items: [
+      { href: "/inicio", label: "Início", icon: Home },
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     ],
   },

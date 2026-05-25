@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const LABELS: Record<string, string> = {
+  inicio: "Início",
   dashboard: "Dashboard",
   analises: "Análises",
   "alimentar-modelo": "Base de Contexto",

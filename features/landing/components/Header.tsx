@@ -139,10 +139,10 @@ export default function Header() {
                   trackEvent("login_click", {
                     location: "header_desktop",
                     label: isLoggedIn ? "Acessar" : "Login",
-                    destination: isLoggedIn ? "/dashboard" : "/login",
+                    destination: isLoggedIn ? "/inicio" : "/login",
                   });
 
-                  window.location.href = isLoggedIn ? "/dashboard" : "/login";
+                  window.location.href = isLoggedIn ? "/inicio" : "/login";
                 }}
               >
                 {isLoggedIn ? 'Acessar' : 'Login'}
@@ -205,10 +205,10 @@ export default function Header() {
                     trackEvent("login_click", {
                       location: "header_mobile",
                       label: isLoggedIn ? "Acessar" : "Login",
-                      destination: isLoggedIn ? "/dashboard" : "/login",
+                      destination: isLoggedIn ? "/inicio" : "/login",
                     });
 
-                    window.location.href = isLoggedIn ? "/dashboard" : "/login";
+                    window.location.href = isLoggedIn ? "/inicio" : "/login";
                   }}
                 >
                   {isLoggedIn ? 'Acessar' : 'Login'}

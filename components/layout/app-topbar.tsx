@@ -42,7 +42,10 @@ export function AppTopbar({ className }: { className?: string }) {
     useSelectedCustomer();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const hideCustomerSelector =
-    pathname === "/metas" || pathname.startsWith("/metas/");
+    pathname === "/inicio" ||
+    pathname.startsWith("/inicio/") ||
+    pathname === "/metas" ||
+    pathname.startsWith("/metas/");
 
   return (
     <header
@@ -80,7 +83,7 @@ export function AppTopbar({ className }: { className?: string }) {
       </Dialog>
 
       <Link
-        href="/dashboard"
+        href="/inicio"
         className="shrink-0 md:hidden"
         aria-label="Início"
       >

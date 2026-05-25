@@ -57,7 +57,7 @@ function AcceptInviteForm() {
         queryFn: getAuthStatus,
       });
       toast.success("Convite aceito. Bem-vindo(a).");
-      router.replace("/dashboard");
+      router.replace("/inicio");
     },
     onError: (error) => {
       toast.error(getHttpErrorMessage(error));

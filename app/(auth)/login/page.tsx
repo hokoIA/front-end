@@ -72,12 +72,12 @@ function LoginForm() {
           : null;
 
       if (hasActiveOrTrialingSubscription(billing)) {
-        router.replace(next ?? "/dashboard");
+        router.replace(next ?? "/inicio");
         return;
       }
 
       if (billing === null) {
-        router.replace(next ?? "/dashboard");
+        router.replace(next ?? "/inicio");
         return;
       }
 
