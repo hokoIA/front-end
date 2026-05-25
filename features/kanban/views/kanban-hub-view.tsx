@@ -58,11 +58,27 @@ export function KanbanHubView() {
 
   const boardQ = useKanbanBoardDataQuery(authed);
 
-  const rawColumns = Array.isArray(boardQ.data?.columns) ? boardQ.data.columns : [];
-  const rawCards = Array.isArray(boardQ.data?.cards) ? boardQ.data.cards : [];
-  const rawLabels = Array.isArray(boardQ.data?.labels) ? boardQ.data.labels : [];
-  const rawTeam = Array.isArray(boardQ.data?.team) ? boardQ.data.team : [];
-  const rawClients = Array.isArray(boardQ.data?.clients) ? boardQ.data.clients : [];
+  const boardData = boardQ.data;
+  const rawColumns = useMemo(
+    () => (Array.isArray(boardData?.columns) ? boardData.columns : []),
+    [boardData],
+  );
+  const rawCards = useMemo(
+    () => (Array.isArray(boardData?.cards) ? boardData.cards : []),
+    [boardData],
+  );
+  const rawLabels = useMemo(
+    () => (Array.isArray(boardData?.labels) ? boardData.labels : []),
+    [boardData],
+  );
+  const rawTeam = useMemo(
+    () => (Array.isArray(boardData?.team) ? boardData.team : []),
+    [boardData],
+  );
+  const rawClients = useMemo(
+    () => (Array.isArray(boardData?.clients) ? boardData.clients : []),
+    [boardData],
+  );
 
   const columnsUi = useMemo(
     () => rawColumns.map((c, i) => normalizeKanbanColumn(c, i)),
@@ -473,17 +489,6 @@ export function KanbanHubView() {
             moveCard={handleMoveCard}
             movePending={move.isPending}
           />
-          {allCardsUi.length > 0 && filteredCards.length === 0 ? (
-            <p className="text-center text-sm text-hk-muted">
-              Nenhum card corresponde aos filtros. Limpe a busca ou amplie
-              critérios.
-            </p>
-          ) : null}
-          {allCardsUi.length === 0 && sortedReal.length > 0 ? (
-            <p className="text-center text-sm text-hk-muted">
-              Nenhum card ainda. Use &quot;Novo card&quot; para começar.
-            </p>
-          ) : null}
         </>
       )}
     </div>
@@ -573,7 +578,7 @@ export function KanbanHubView() {
   );
 
   return (
-    <div className="hk-page flex flex-col gap-7 py-7 lg:gap-8">
+    <div className="hk-page space-y-7 pb-16 pt-3 lg:space-y-8 lg:pt-4">
       <KanbanPageHeader />
 
       <KanbanTabs

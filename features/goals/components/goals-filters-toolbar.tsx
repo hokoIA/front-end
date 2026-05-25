@@ -2,6 +2,7 @@
 
 import type { PlanningFiltersState } from "@/features/goals/types/filters";
 import type { GoalLifecycleStatus } from "@/features/goals/types/ui";
+import type { Customer } from "@/lib/types/customer";
 import { PLANNING_PLATFORM_OPTIONS } from "@/features/goals/utils/platform-labels";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -27,14 +28,20 @@ const STATUSES: { value: GoalLifecycleStatus | "all"; label: string }[] = [
 export function GoalsFiltersToolbar({
   value,
   onChange,
+  customers,
+  customerScope,
+  onCustomerScopeChange,
 }: {
   value: PlanningFiltersState;
   onChange: (next: PlanningFiltersState) => void;
+  customers: Customer[];
+  customerScope: "all" | string;
+  onCustomerScopeChange: (next: "all" | string) => void;
 }) {
   return (
     <div className="rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm">
       <div className="grid gap-4 lg:grid-cols-12 lg:items-end">
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-3">
           <Label htmlFor="hk-goals-search" className="text-xs text-hk-muted">
             Buscar
           </Label>
@@ -52,7 +59,26 @@ export function GoalsFiltersToolbar({
             />
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:col-span-9 lg:grid-cols-4">
+          <div>
+            <Label className="text-xs text-hk-muted">Cliente</Label>
+            <Select
+              value={customerScope}
+              onValueChange={(v) => onCustomerScopeChange(v as "all" | string)}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder="Todos os clientes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os clientes</SelectItem>
+                {customers.map((c) => (
+                  <SelectItem key={c.id_customer} value={c.id_customer}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div>
             <Label className="text-xs text-hk-muted">Plataforma</Label>
             <Select

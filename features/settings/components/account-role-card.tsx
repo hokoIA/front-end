@@ -24,10 +24,6 @@ export function AccountRoleCard({ rbac, loading }: Props) {
     <Card className="border-hk-border shadow-hk-sm">
       <CardHeader>
         <CardTitle className="text-base text-hk-deep">Papel e permissões</CardTitle>
-        <CardDescription>
-          Informações retornadas por <code className="text-xs">GET /api/rbac/me</code>
-          , quando disponíveis.
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {loading ? (

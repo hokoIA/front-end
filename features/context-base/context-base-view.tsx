@@ -329,20 +329,6 @@ export function ContextBaseView() {
         <ContextNoCustomerState />
       ) : (
         <>
-          <Card className="border-hk-border-subtle bg-hk-surface p-4 shadow-hk-xs">
-            <p className="hk-overline">
-              Contexto ativo
-            </p>
-            <p className="mt-1 text-base font-semibold text-hk-deep">
-              {customerName}
-            </p>
-            <p className="mt-1 text-xs text-hk-muted">
-              Documentos e metadados abaixo serão associados a este cliente no
-              armazenamento (<span className="font-mono text-[11px]">client_id</span>
-              ).
-            </p>
-          </Card>
-
           <ContextDocumentForm
             form={form}
             setForm={setForm}

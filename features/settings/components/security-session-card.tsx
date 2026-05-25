@@ -20,15 +20,10 @@ export function SecuritySessionCard() {
     <Card className="border-hk-border shadow-hk-sm">
       <CardHeader>
         <CardTitle className="text-base text-hk-deep">Sessão atual</CardTitle>
-        <CardDescription>
-          A sessão é mantida por cookie HTTP-only emitido pelo API Gateway. Não
-          armazenamos JWT em <code className="text-xs">localStorage</code>.
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-hk-muted">
-          Para encerrar o acesso neste navegador, use sair abaixo. Políticas de
-          revogação global dependem do backend.
+          Para encerrar o acesso neste navegador, use sair abaixo.
         </p>
         <Button
           type="button"

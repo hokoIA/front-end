@@ -64,9 +64,7 @@ export function DeleteAccountDangerZone({ onDelete }: Props) {
             <CardTitle className="text-base">Zona de risco</CardTitle>
           </div>
           <CardDescription className="text-red-900/80">
-            Excluir a conta remove o acesso ao workspace e pode afetar dados
-            vinculados conforme contrato e lei aplicável. Esta ação costuma ser
-            irreversível no gateway.
+            Esta ação é irreversível.
           </CardDescription>
         </CardHeader>
         <CardContent>

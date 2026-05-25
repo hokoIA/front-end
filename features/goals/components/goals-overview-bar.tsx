@@ -1,7 +1,6 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { platformLabel } from "@/features/goals/utils/platform-labels";
 
 function Stat({
   label,
@@ -44,11 +43,6 @@ export function GoalsOverviewBar(props: {
   readyForFinalHint: number;
   loading?: boolean;
 }) {
-  const platHint =
-    props.platformsWithActive.length > 0
-      ? props.platformsWithActive.map(platformLabel).join(" · ")
-      : "Nenhuma plataforma com meta ativa no filtro atual";
-
   return (
     <section
       aria-label="Visão geral do planejamento"
@@ -57,7 +51,7 @@ export function GoalsOverviewBar(props: {
       <h2 className="text-sm font-semibold text-hk-deep">
         Visão geral do planejamento
       </h2>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <Stat
           label="Metas ativas"
           value={props.active}
@@ -67,7 +61,7 @@ export function GoalsOverviewBar(props: {
           label="Concluídas"
           value={props.completed}
           loading={props.loading}
-          hint="Status concluído no backend"
+          hint=""
         />
         <Stat
           label="Expiradas"
@@ -80,26 +74,14 @@ export function GoalsOverviewBar(props: {
           loading={props.loading}
         />
         <Stat
-          label="Plataformas (ativas)"
-          value={props.platformsWithActive.length}
-          hint={platHint}
-          loading={props.loading}
-        />
-        <Stat
           label="Clientes c/ meta ativa"
           value={props.customersWithActivePlanning}
           loading={props.loading}
         />
         <Stat
-          label="Com análise gerada"
-          value={props.withAnalysis}
-          loading={props.loading}
-          hint="Com base em analysis_text"
-        />
-        <Stat
           label="Prontas p/ gerar análise"
           value={props.readyForFinalHint}
-          hint="Meta ativa com fim ≤ hoje e sem análise"
+          hint=""
           loading={props.loading}
         />
       </div>

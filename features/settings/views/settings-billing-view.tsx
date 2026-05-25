@@ -131,12 +131,6 @@ export function SettingsBillingView() {
 
   return (
     <div className="space-y-7 lg:space-y-8">
-      <SettingsPageHeader
-        title="Assinatura"
-        description="Plano base mensal com 3 clientes e valor fixo por cliente adicional."
-        eyebrow="Configurações"
-      />
-
       {billingQuery.isPending || customersQuery.isPending ? (
         <div className="grid gap-4 md:grid-cols-2">
           <div className="h-48 animate-pulse rounded-xl bg-hk-border-subtle" />

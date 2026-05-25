@@ -20,11 +20,6 @@ export function ChangePasswordCard() {
         </div>
         <div>
           <CardTitle className="text-base text-hk-deep">Senha de acesso</CardTitle>
-          <CardDescription>
-            A autenticação usa cookie seguro após o login. Para redefinir a
-            senha, use o fluxo oficial de recuperação — ele invalida sessões
-            antigas conforme a política do gateway.
-          </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">

@@ -243,7 +243,7 @@ export function TeamHubView() {
     overview.teamCount === 0;
 
   return (
-    <div className="hk-page flex flex-col gap-7 py-7 lg:gap-8">
+    <div className="hk-page space-y-7 pb-16 pt-3 lg:space-y-8 lg:pt-4">
       <TeamPageHeader />
 
       <TeamOverviewBar
@@ -256,11 +256,6 @@ export function TeamHubView() {
       />
 
       <section className="space-y-3">
-        <SectionHeader
-          compact
-          title="Convites e administração"
-          description="Envie convites e gerencie papéis da equipe com segurança."
-        />
         <InviteMemberCard
           email={inviteEmail}
           onEmailChange={setInviteEmail}
@@ -273,12 +268,6 @@ export function TeamHubView() {
         <TeamEmptyState isAdmin={canManage} />
       ) : (
         <>
-          {soloAdminHint ? (
-            <p className="rounded-lg border border-hk-border-subtle bg-hk-canvas/60 px-4 py-3 text-sm text-hk-muted">
-              Você é o único membro ativo com papel de admin. Convide a equipe
-              para compartilhar a conta com segurança.
-            </p>
-          ) : null}
           <TeamMembersList
             members={sortedMembers}
             loading={loadingList}

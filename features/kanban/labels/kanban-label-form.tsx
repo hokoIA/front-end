@@ -12,7 +12,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+const DEFAULT_COLOR = "#64748b";
 
 export function KanbanLabelForm({
   open,
@@ -29,87 +31,109 @@ export function KanbanLabelForm({
   onSubmit: (payload: { name: string; color: string }) => void;
   isPending: boolean;
 }) {
-  const [name, setName] = useState("");
-  const [color, setColor] = useState("#64748b");
+  const formKey = open ? `${mode}-${label?.id ?? "new"}` : "closed";
 
-  useEffect(() => {
-    if (!open) return;
-    if (mode === "edit" && label) {
-      setName(label.name);
-      setColor(label.color || "#64748b");
-    } else {
-      setName("");
-      setColor("#64748b");
-    }
-  }, [open, mode, label]);
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {open ? (
+        <KanbanLabelFormFields
+          key={formKey}
+          mode={mode}
+          label={label}
+          onOpenChange={onOpenChange}
+          onSubmit={onSubmit}
+          isPending={isPending}
+        />
+      ) : null}
+    </Dialog>
+  );
+}
+
+function KanbanLabelFormFields({
+  mode,
+  label,
+  onOpenChange,
+  onSubmit,
+  isPending,
+}: {
+  mode: "create" | "edit";
+  label: KanbanLabelUi | null;
+  onOpenChange: (o: boolean) => void;
+  onSubmit: (payload: { name: string; color: string }) => void;
+  isPending: boolean;
+}) {
+  const [name, setName] = useState(
+    mode === "edit" && label ? label.name : "",
+  );
+  const [color, setColor] = useState(
+    mode === "edit" && label ? label.color || DEFAULT_COLOR : DEFAULT_COLOR,
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const n = name.trim();
     if (!n) return;
-    onSubmit({ name: n, color: color.trim() || "#64748b" });
+    onSubmit({ name: n, color: color.trim() || DEFAULT_COLOR });
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>
-              {mode === "create" ? "Nova etiqueta" : "Editar etiqueta"}
-            </DialogTitle>
-            <DialogDescription>
-              Etiquetas ajudam a filtrar cards por campanha, prioridade ou
-              qualquer convenção da agência.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="hk-label-name">Nome</Label>
+    <DialogContent className="sm:max-w-md">
+      <form onSubmit={handleSubmit}>
+        <DialogHeader>
+          <DialogTitle>
+            {mode === "create" ? "Nova etiqueta" : "Editar etiqueta"}
+          </DialogTitle>
+          <DialogDescription>
+            Etiquetas ajudam a filtrar cards por campanha, prioridade ou
+            qualquer convenção da agência.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="hk-label-name">Nome</Label>
+            <Input
+              id="hk-label-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Ex.: Aprovação pendente"
+              autoFocus
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="hk-label-color">Cor</Label>
+            <div className="flex gap-2">
               <Input
-                id="hk-label-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ex.: Aprovação pendente"
-                autoFocus
+                id="hk-label-color"
+                type="color"
+                className="h-10 w-14 cursor-pointer p-1"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+              />
+              <Input
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="font-mono text-sm"
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="hk-label-color">Cor</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="hk-label-color"
-                  type="color"
-                  className="h-10 w-14 cursor-pointer p-1"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                />
-                <Input
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="font-mono text-sm"
-                />
-              </div>
-            </div>
           </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              className="bg-hk-deep text-white hover:bg-hk-strong"
-              disabled={isPending || !name.trim()}
-            >
-              {isPending ? "Salvando…" : mode === "create" ? "Criar" : "Salvar"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            className="bg-hk-deep text-white hover:bg-hk-strong"
+            disabled={isPending || !name.trim()}
+          >
+            {isPending ? "Salvando…" : mode === "create" ? "Criar" : "Salvar"}
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
   );
 }

@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { KanbanExternalLinkCard } from "./kanban-external-link-card";
 import { KanbanRoleAssignmentField } from "./kanban-role-assignment-field";
 import { Loader2, Save, Trash2, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function KanbanClientConfigPanel({
   client,
@@ -30,16 +30,6 @@ export function KanbanClientConfigPanel({
   removePending: boolean;
   errorMessage?: string | null;
 }) {
-  const [roles, setRoles] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (!client) {
-      setRoles({});
-      return;
-    }
-    setRoles(readKanbanClientRoleAssignments(client));
-  }, [client]);
-
   if (!client) {
     return (
       <div className="flex min-h-[240px] flex-col items-center justify-center rounded-xl border border-dashed border-hk-border bg-hk-canvas/30 p-8 text-center">
@@ -55,6 +45,41 @@ export function KanbanClientConfigPanel({
       </div>
     );
   }
+
+  return (
+    <KanbanClientConfigForm
+      key={client.id}
+      client={client}
+      team={team}
+      onSave={onSave}
+      onRequestRemoveProfile={onRequestRemoveProfile}
+      savePending={savePending}
+      removePending={removePending}
+      errorMessage={errorMessage}
+    />
+  );
+}
+
+function KanbanClientConfigForm({
+  client,
+  team,
+  onSave,
+  onRequestRemoveProfile,
+  savePending,
+  removePending,
+  errorMessage,
+}: {
+  client: KanbanClientRowUi;
+  team: KanbanTeamMemberUi[];
+  onSave: (body: Record<string, unknown>) => void;
+  onRequestRemoveProfile: () => void;
+  savePending: boolean;
+  removePending: boolean;
+  errorMessage?: string | null;
+}) {
+  const [roles, setRoles] = useState<Record<string, string>>(
+    readKanbanClientRoleAssignments(client),
+  );
 
   return (
     <div className="space-y-6">

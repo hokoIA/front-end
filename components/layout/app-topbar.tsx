@@ -29,17 +29,20 @@ import { useLogoutMutation } from "@/hooks/api/use-auth-queries";
 import { cn } from "@/lib/utils/cn";
 import { Menu, User } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Breadcrumbs } from "./breadcrumbs";
 import { NavLinks } from "./nav-links";
 
 export function AppTopbar({ className }: { className?: string }) {
+  const pathname = usePathname();
   const router = useRouter();
   const logout = useLogoutMutation();
   const { customers, selected, selectCustomer, isReady, isLoadingCustomers } =
     useSelectedCustomer();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const hideCustomerSelector =
+    pathname === "/metas" || pathname.startsWith("/metas/");
 
   return (
     <header
@@ -88,34 +91,36 @@ export function AppTopbar({ className }: { className?: string }) {
         <Breadcrumbs />
       </div>
 
-      <div className="min-w-0 flex-1 md:max-w-[14rem] md:flex-none lg:max-w-[18rem]">
-        {!isReady || isLoadingCustomers ? (
-          <div className="hk-skeleton h-9 w-full rounded-lg" />
-        ) : customers.length === 0 ? (
-          <div className="flex h-9 w-full items-center rounded-lg border border-dashed border-hk-border-subtle bg-hk-surface-muted/80 px-3 text-xs font-medium text-hk-muted">
-            Nenhum cliente cadastrado
-          </div>
-        ) : (
-          <Select
-            value={selected?.id_customer}
-            onValueChange={(id) => selectCustomer(id)}
-          >
-            <SelectTrigger
-              className="h-9 border-hk-border-subtle bg-hk-surface text-left text-sm font-medium shadow-none hover:border-hk-border focus:ring-hk-action/20"
-              aria-label="Cliente selecionado"
+      {!hideCustomerSelector ? (
+        <div className="min-w-0 flex-1 md:max-w-[14rem] md:flex-none lg:max-w-[18rem]">
+          {!isReady || isLoadingCustomers ? (
+            <div className="hk-skeleton h-9 w-full rounded-lg" />
+          ) : customers.length === 0 ? (
+            <div className="flex h-9 w-full items-center rounded-lg border border-dashed border-hk-border-subtle bg-hk-surface-muted/80 px-3 text-xs font-medium text-hk-muted">
+              Nenhum cliente cadastrado
+            </div>
+          ) : (
+            <Select
+              value={selected?.id_customer}
+              onValueChange={(id) => selectCustomer(id)}
             >
-              <SelectValue placeholder="Selecionar cliente" />
-            </SelectTrigger>
-            <SelectContent>
-              {customers.map((c) => (
-                <SelectItem key={c.id_customer} value={c.id_customer}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
+              <SelectTrigger
+                className="h-9 border-hk-border-subtle bg-hk-surface text-left text-sm font-medium shadow-none hover:border-hk-border focus:ring-hk-action/20"
+                aria-label="Cliente selecionado"
+              >
+                <SelectValue placeholder="Selecionar cliente" />
+              </SelectTrigger>
+              <SelectContent>
+                {customers.map((c) => (
+                  <SelectItem key={c.id_customer} value={c.id_customer}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      ) : null}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

@@ -34,11 +34,7 @@ export function ContextBaseIntroPanel() {
       <p className="mt-2 max-w-3xl text-sm leading-relaxed text-hk-ink">
         Você está ensinando a plataforma o que é relevante sobre cada cliente:
         o que é oficial, o que é histórico, o que está em revisão e o que já
-        não deve influenciar relatórios. Pense nesta área como{" "}
-        <span className="font-medium text-hk-deep">
-          curadoria da memória organizacional
-        </span>
-        — não como um simples upload.
+        não deve influenciar relatórios.
       </p>
       <ul className="mt-5 grid gap-4 sm:grid-cols-2">
         {ITEMS.map(({ icon: Icon, title, text }) => (

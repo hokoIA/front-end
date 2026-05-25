@@ -164,7 +164,6 @@ export function parseKanbanTeam(data: unknown): KanbanTeamMemberUi[] {
 
 export function normalizeKanbanClientRow(
   row: unknown,
-  index: number,
 ): KanbanClientRowUi | null {
   const r = record(row);
   if (!r) return null;
@@ -188,7 +187,7 @@ export function parseKanbanClients(data: unknown): KanbanClientRowUi[] {
     if (Array.isArray(inner)) rows = inner;
   }
   return rows
-    .map((row, i) => normalizeKanbanClientRow(row, i))
+    .map((row) => normalizeKanbanClientRow(row))
     .filter(Boolean) as KanbanClientRowUi[];
 }
 

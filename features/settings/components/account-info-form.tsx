@@ -69,13 +69,6 @@ export function AccountInfoForm({
         <CardTitle className="text-base text-hk-deep">
           Dados cadastrais
         </CardTitle>
-        <CardDescription>
-          Nome exibido na plataforma. O e-mail é o identificador principal da
-          conta
-          {allowEmailEdit
-            ? " e pode ser alterado quando permitido pela API."
-            : " — alterações de e-mail podem exigir validação no backend."}
-        </CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -106,7 +99,7 @@ export function AccountInfoForm({
             />
             {!allowEmailEdit && (
               <p className="text-xs text-hk-muted">
-                Somente leitura. Se precisar alterar o e-mail corporativo,
+                Se precisar alterar o e-mail corporativo,
                 contate o suporte com aprovação da organização.
               </p>
             )}

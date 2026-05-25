@@ -39,9 +39,6 @@ export function KanbanClientsPanel({
       >
         <div className="border-b border-hk-border px-3 py-3">
           <h2 className="text-sm font-semibold text-hk-deep">Clientes</h2>
-          <p className="mt-0.5 text-xs text-hk-muted">
-            Carteira da agência no módulo Kanban
-          </p>
         </div>
         <KanbanClientList
           clients={clients}

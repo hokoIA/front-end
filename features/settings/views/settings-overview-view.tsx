@@ -24,12 +24,6 @@ export function SettingsOverviewView() {
 
   return (
     <div className="space-y-7 lg:space-y-8">
-      <SettingsPageHeader
-        title="Visão geral"
-        description="Resumo da conta, cobrança e atalhos para cada área administrativa do workspace."
-        eyebrow="Configurações"
-      />
-
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-hk-border bg-hk-surface">
           <CardHeader className="pb-2">
