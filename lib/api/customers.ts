@@ -153,6 +153,15 @@ export async function getLinkedinOrganizations(
   );
 }
 
+export async function getLinkedinStatus(idCustomer: string): Promise<unknown> {
+  return httpJson(
+    withQuery(endpoints.linkedin.status(), {
+      id_customer: idCustomer,
+    }),
+    { method: "GET" },
+  );
+}
+
 export async function postLinkedinConnect(
   body: Record<string, unknown>,
 ): Promise<unknown> {

@@ -11,6 +11,8 @@ export const endpoints = {
     logout: () => "/api/logout" as const,
     profile: () => "/api/profile" as const,
     authStatus: () => "/api/auth-status" as const,
+    inviteValidate: () => "/api/invites/validate" as const,
+    inviteAccept: () => "/api/invites/accept" as const,
     avatar: () => "/api/avatar" as const,
     update: () => "/api/update" as const,
     deleteAccount: () => "/api/delete-account" as const,
@@ -44,6 +46,7 @@ export const endpoints = {
   linkedin: {
     organizations: () => "/api/linkedin/organizations" as const,
     connect: () => "/api/linkedin/connect" as const,
+    status: () => "/api/linkedin/status" as const,
   },
   youtube: {
     channels: () => "/api/youtube/channels" as const,
@@ -100,6 +103,7 @@ export const endpoints = {
       `/api/kanban/clients/${idCustomer}/profile` as const,
     clientPortalLink: (idCustomer: string) =>
       `/api/kanban/clients/${idCustomer}/portal-link` as const,
+    externalCards: () => "/api/kanban/external/cards" as const,
     labels: () => "/api/kanban/labels" as const,
     label: (id: string) => `/api/kanban/labels/${id}` as const,
     columns: () => "/api/kanban/columns" as const,

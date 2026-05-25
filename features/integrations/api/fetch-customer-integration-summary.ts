@@ -12,7 +12,7 @@ import {
 import { computeCustomerReadiness } from "@/features/customers/utils/compute-readiness";
 import {
   getGoogleAnalyticsStatus,
-  getLinkedinOrganizations,
+  getLinkedinStatus,
   getMetaStatus,
   getYoutubeStatus,
 } from "@/lib/api/customers";
@@ -74,7 +74,7 @@ export async function fetchCustomerIntegrationSummary(
     getMetaStatus(customerId),
     getGoogleAnalyticsStatus(customerId),
     getYoutubeStatus(customerId),
-    getLinkedinOrganizations(customerId),
+    getLinkedinStatus(customerId),
   ]);
 
   const meta = settledValue(metaResult);

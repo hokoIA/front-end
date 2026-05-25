@@ -15,6 +15,23 @@ export type VerifyEmailResponse = {
   message: string;
 };
 
+export type InviteValidationResponse = {
+  success: boolean;
+  invite?: {
+    id_invite: number | string;
+    email: string;
+    expires_at: string;
+  };
+  message?: string;
+};
+
+export type AcceptInviteBody = {
+  token: string;
+  name: string;
+  password: string;
+  confirmPassword: string;
+};
+
 export async function loginRequest(body: LoginBody): Promise<void> {
   await httpFetch(endpoints.auth.login(), { method: "POST", json: body });
 }
@@ -35,6 +52,24 @@ export async function verifyEmailRequest(
   return httpJson<VerifyEmailResponse>(endpoints.auth.verifyEmail(), {
     method: "GET",
     searchParams: { token, format: "json" },
+  });
+}
+
+export async function validateInviteRequest(
+  token: string,
+): Promise<InviteValidationResponse> {
+  return httpJson<InviteValidationResponse>(endpoints.auth.inviteValidate(), {
+    method: "GET",
+    searchParams: { token },
+  });
+}
+
+export async function acceptInviteRequest(
+  body: AcceptInviteBody,
+): Promise<unknown> {
+  return httpJson(endpoints.auth.inviteAccept(), {
+    method: "POST",
+    json: body,
   });
 }
 

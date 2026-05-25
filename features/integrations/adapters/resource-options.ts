@@ -9,7 +9,15 @@ function record(data: unknown): Record<string, unknown> | null {
 
 function idLabelPair(row: Record<string, unknown>): IntegrationResourceOption | null {
   const id = String(
-    row.id ?? row.id_page ?? row.page_id ?? row.property_id ?? row.channel_id ?? row.organization_id ?? "",
+    row.id ??
+      row.id_page ??
+      row.page_id ??
+      row.id_property ??
+      row.property_id ??
+      row.id_channel ??
+      row.channel_id ??
+      row.organization_id ??
+      "",
   );
   if (!id) return null;
   const label = String(

@@ -75,11 +75,11 @@ export const googleAnalyticsAdapter: IntegrationPlatformAdapter = {
   description: "Propriedades GA4 disponíveis após autorização Google.",
   listResources: getGoogleAnalyticsProperties,
   connect: postGoogleAnalyticsConnect,
-  buildConnectPayload: (customerId: string, resourceId?: string) =>
+  buildConnectPayload: (customerId: string, resourceId?: string, resource?) =>
     resourceId
-      ? { id_customer: customerId, property_id: resourceId }
+      ? { id_customer: customerId, resource_id: resourceId, resource_name: resource?.label }
       : { id_customer: customerId },
-  connectPayloadHints: ["id_customer", "property / recurso GA"],
+  connectPayloadHints: ["id_customer", "resource_id"],
   supportsDisconnect: false,
   supportsSwapResource: false,
   supportsResync: false,
@@ -92,11 +92,11 @@ export const youtubeAdapter: IntegrationPlatformAdapter = {
   description: "Canais disponíveis após autorização Google/YouTube.",
   listResources: getYoutubeChannels,
   connect: postYoutubeConnect,
-  buildConnectPayload: (customerId: string, resourceId?: string) =>
+  buildConnectPayload: (customerId: string, resourceId?: string, resource?) =>
     resourceId
-      ? { id_customer: customerId, channel_id: resourceId }
+      ? { id_customer: customerId, resource_id: resourceId, resource_name: resource?.label }
       : { id_customer: customerId },
-  connectPayloadHints: ["id_customer", "channel / recurso"],
+  connectPayloadHints: ["id_customer", "resource_id"],
   supportsDisconnect: false,
   supportsSwapResource: false,
   supportsResync: false,
@@ -109,11 +109,11 @@ export const linkedinAdapter: IntegrationPlatformAdapter = {
   description: "Organizações LinkedIn disponíveis após autorização.",
   listResources: getLinkedinOrganizations,
   connect: postLinkedinConnect,
-  buildConnectPayload: (customerId: string, resourceId?: string) =>
+  buildConnectPayload: (customerId: string, resourceId?: string, resource?) =>
     resourceId
-      ? { id_customer: customerId, organization_id: resourceId }
+      ? { id_customer: customerId, resource_id: resourceId, resource_name: resource?.label }
       : { id_customer: customerId },
-  connectPayloadHints: ["id_customer", "organization_id"],
+  connectPayloadHints: ["id_customer", "resource_id"],
   supportsDisconnect: false,
   supportsSwapResource: false,
   supportsResync: false,

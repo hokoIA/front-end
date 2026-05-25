@@ -52,7 +52,6 @@ export function AnalysisGenerationProgress({ active }: Props) {
         />
       </div>
       <p className="mt-3 text-xs text-hk-muted">
-        A ho.ko está montando uma leitura interpretativa — não um bate-papo.
         Isso pode levar alguns instantes.
       </p>
     </div>

@@ -300,10 +300,13 @@ export function parseLinkedinOperational(
   data: unknown,
   isSuccess: boolean,
 ): IntegrationOperationalState {
+  const generic = parseGenericOperational(data);
+  if (generic !== "unknown") return generic;
+
   const n = linkedinListLen(data);
   if (n > 0) return "connected";
   if (isSuccess && n === 0) return "disconnected";
-  return parseGenericOperational(data);
+  return generic;
 }
 
 export function parseGenericOperational(
@@ -311,21 +314,33 @@ export function parseGenericOperational(
 ): IntegrationOperationalState {
   const r = record(data);
   if (!r) return "unknown";
+  const status = String(r.status ?? "")
+    .trim()
+    .toLowerCase();
   const connected =
     r.connected === true ||
-    r.status === "connected" ||
+    status === "connected" ||
     r.active === true ||
     r.linked === true;
+  const authorized =
+    status === "authorized" ||
+    status === "authorized_only" ||
+    status === "oauth_authorized";
   const disc =
     r.connected === false ||
-    r.status === "disconnected" ||
+    status === "disconnected" ||
     r.active === false;
   const renewal =
     r.requires_reauth === true ||
     r.needs_renewal === true ||
-    r.token_expired === true;
+    r.token_expired === true ||
+    status === "needs_renewal" ||
+    status === "expired" ||
+    status === "needs_reauth" ||
+    status === "pending_reauth";
   if (renewal) return "needs_renewal";
   if (connected) return "connected";
+  if (authorized) return "authorized";
   if (disc) return "disconnected";
   return "unknown";
 }

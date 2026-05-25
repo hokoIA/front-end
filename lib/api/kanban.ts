@@ -62,6 +62,39 @@ export async function getKanbanClientPortalLink(
   });
 }
 
+export type ExternalKanbanCard = {
+  id: string | number;
+  title?: string | null;
+  week?: string | null;
+  due_date?: string | null;
+  copy_text?: string | null;
+  column_name?: string | null;
+};
+
+export type ExternalKanbanCardsResponse = {
+  profile?: { client_name?: string | null };
+  cards: ExternalKanbanCard[];
+};
+
+export async function listExternalKanbanCards(
+  token: string,
+): Promise<ExternalKanbanCardsResponse> {
+  const data = await httpJson<unknown>(endpoints.kanban.externalCards(), {
+    method: "GET",
+    searchParams: { token },
+  });
+
+  return {
+    profile:
+      data && typeof data === "object"
+        ? ((data as Record<string, unknown>).profile as
+            | { client_name?: string | null }
+            | undefined)
+        : undefined,
+    cards: unwrapList<ExternalKanbanCard>(data, "cards"),
+  };
+}
+
 export async function listKanbanLabels(): Promise<KanbanLabel[]> {
   const data = await httpJson<unknown>(endpoints.kanban.labels(), {
     method: "GET",

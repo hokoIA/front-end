@@ -68,6 +68,8 @@ export const queryKeys = {
       ["integrations", "ga", "status", idCustomer] as const,
     linkedinOrgs: (idCustomer: string) =>
       ["integrations", "linkedin", "orgs", idCustomer] as const,
+    linkedinStatus: (idCustomer: string) =>
+      ["integrations", "linkedin", "status", idCustomer] as const,
     youtubeChannels: (idCustomer: string) =>
       ["integrations", "youtube", "channels", idCustomer] as const,
     youtubeStatus: (idCustomer: string) =>
