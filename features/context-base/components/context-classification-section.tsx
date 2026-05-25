@@ -27,20 +27,10 @@ export function ContextClassificationSection({
 }: Props) {
   return (
     <section className="space-y-5">
-      <div>
-        <h3 className="text-sm font-semibold text-hk-deep">
-          Classificação principal
-        </h3>
-        <p className="mt-1 text-xs text-hk-muted">
-          Define onde e como este contexto será interpretado na base vetorial.
-        </p>
-      </div>
-
       <div className="space-y-2">
         <Label className="text-hk-ink">Escopo</Label>
         <div className="rounded-lg border border-hk-border-subtle bg-hk-canvas/40 p-3">
-          <p className="text-sm text-hk-ink">Cliente (fixo nesta fase)</p>
-          <p className="mt-1 text-xs text-hk-muted">
+          <p className="text-sm text-hk-ink">
             Cliente vinculado:{" "}
             <span className="font-medium text-hk-ink">{customerName}</span>
           </p>

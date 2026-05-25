@@ -39,15 +39,12 @@ export function ContextDocumentForm({
       className="overflow-hidden border-hk-border shadow-hk-sm"
     >
       <CardHeader className="border-b border-hk-border-subtle bg-hk-canvas/40 px-4 py-4 md:px-6">
-        <p className="text-xs font-semibold uppercase tracking-wider text-hk-action">
-          Área A — Intake de contexto
-        </p>
         <h2 className="text-lg font-semibold text-hk-deep">
-          Cadastro e envio de novo documento
+          Envio de novo documento
         </h2>
         <p className="text-sm text-hk-muted">
-          Preencha a classificação e os metadados com o mesmo rigor que você usaria
-          em um repositório interno: a IA herdará essa disciplina na recuperação.
+          Preencha com o mesmo rigor que você usaria
+          em um repositório interno: a plataforma herdará essa disciplina na recuperação.
         </p>
       </CardHeader>
       <CardContent className="space-y-0 p-0">

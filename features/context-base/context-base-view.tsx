@@ -77,16 +77,11 @@ export function ContextBaseView() {
     profileLoading,
   } = useCurrentCustomerContext();
   const queryClient = useQueryClient();
-
-  const [form, setForm] = useState<ContextDocumentFormState>(
-    createDefaultContextDocumentForm,
-  );
+  const [form, setForm] = useState<ContextDocumentFormState>(createDefaultContextDocumentForm,);
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [filters, setFilters] = useState<DocumentListFilters>(defaultFilters);
-  const [detailDoc, setDetailDoc] = useState<ContextDocumentListItem | null>(
-    null,
-  );
+  const [detailDoc, setDetailDoc] = useState<ContextDocumentListItem | null>(null,);
   const [submitError, setSubmitError] = useState<unknown>(null);
   const [submitBusy, setSubmitBusy] = useState(false);
 
@@ -283,9 +278,9 @@ export function ContextBaseView() {
           const fullText = String(
             (detailRaw as { documentText?: unknown; document_text?: unknown })
               .documentText ??
-              (detailRaw as { documentText?: unknown; document_text?: unknown })
-                .document_text ??
-              doc.contentPreview,
+            (detailRaw as { documentText?: unknown; document_text?: unknown })
+              .document_text ??
+            doc.contentPreview,
           );
           setDetailDoc({ ...doc, contentPreview: fullText.slice(0, 1200) });
           return;

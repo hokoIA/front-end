@@ -27,17 +27,6 @@ export function ContextDocumentsToolbar({ filters, onChange }: Props) {
 
   return (
     <div className="space-y-4 rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm">
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-semibold text-hk-deep">
-          Acervo e governança
-        </h3>
-        <p className="text-xs text-hk-muted">
-          Listagem do legado via{" "}
-          <span className="font-mono">POST /documents/list</span> no serviço de
-          contexto.
-        </p>
-      </div>
-
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-1.5 lg:col-span-2">
           <Label htmlFor="ctx-search" className="text-xs">

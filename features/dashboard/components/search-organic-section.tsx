@@ -95,9 +95,6 @@ export function SearchOrganicSection({
 
       <div className="grid min-w-0 gap-4 lg:grid-cols-3">
         <div className="min-w-0 space-y-2 lg:col-span-2">
-          <p className="text-[11px] font-semibold uppercase text-hk-muted">
-            Sessões orgânicas (série)
-          </p>
           <SingleSeriesLineChart
             labels={labels}
             values={organic}
@@ -117,7 +114,7 @@ export function SearchOrganicSection({
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-lg border border-hk-border-subtle bg-hk-surface px-2 py-2">
               <p className="text-[10px] font-medium text-hk-muted">
-                Orgânico (busca)
+                Orgânico
               </p>
               <p className="text-lg font-semibold tabular-nums text-hk-deep">
                 {formatCompactNumber(viz?.totalOrganicSearch ?? 0)}

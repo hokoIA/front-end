@@ -21,7 +21,7 @@ const ITEMS = [
   {
     icon: Sparkles,
     title: "Recuperação no momento certo",
-    text: "Classificação, temporalidade e tags ajudam a trazer o documento certo na hora certa.",
+    text: "Categorias, temporalidade e tags ajudam a trazer o documento certo na hora certa.",
   },
 ];
 

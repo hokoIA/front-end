@@ -121,9 +121,6 @@ export function TrafficSplitSection({
 
       <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0 space-y-2">
-          <p className="text-[11px] font-semibold uppercase text-hk-muted">
-            Sessões no site
-          </p>
           <SingleSeriesLineChart
             labels={labels}
             values={sessionValues}

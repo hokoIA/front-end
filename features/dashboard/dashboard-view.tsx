@@ -380,25 +380,6 @@ export function DashboardView() {
 
       {canRenderDashboardData && snapshot && !authError && !allQueriesFailed && (
         <>
-          <DataPanel className="space-y-3">
-            <SectionHeader
-              compact
-              title="Visão geral do período"
-              description=""
-            />
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-              {visibleOverviewMetrics.map((metric) => (
-                <MetricOverviewCard
-                  key={metric.label}
-                  label={metric.label}
-                  value={metric.value}
-                  hint={metric.hint}
-                  loading={overviewLoading}
-                />
-              ))}
-            </div>
-          </DataPanel>
-
           <DataPanel className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-base font-semibold text-hk-deep">
@@ -424,6 +405,25 @@ export function DashboardView() {
             text={periodInsight}
             loading={insightLoadingKey === "period"}
           />
+
+          <DataPanel className="space-y-3">
+            <SectionHeader
+              compact
+              title="Visão geral do período"
+              description=""
+            />
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+              {visibleOverviewMetrics.map((metric) => (
+                <MetricOverviewCard
+                  key={metric.label}
+                  label={metric.label}
+                  value={metric.value}
+                  hint={metric.hint}
+                  loading={overviewLoading}
+                />
+              ))}
+            </div>
+          </DataPanel>
 
           {(hasReachData || queryReach.isPending || queryReach.error) && (
             <ComparisonMetricSection

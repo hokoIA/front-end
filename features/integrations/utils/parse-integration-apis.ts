@@ -33,7 +33,15 @@ function pickIntegrationRow(
     const p = normPlatform(row.platform ?? row.source);
     for (const a of aliases) {
       const na = a.toLowerCase();
-      if (p === na || p.includes(na) || na.includes(p)) {
+      const shortAlias = na.length <= 2;
+      if (
+        p === na ||
+        (!shortAlias &&
+          (p.includes(na) ||
+            na.includes(p) ||
+            p.startsWith(`${na}_`) ||
+            p.endsWith(`_${na}`)))
+      ) {
         return row;
       }
     }
