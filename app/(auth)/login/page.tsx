@@ -92,7 +92,7 @@ function LoginForm() {
       <CardHeader className="space-y-1 pb-4">
         <CardTitle className="text-xl text-hk-deep">Entrar</CardTitle>
         <CardDescription>
-          Acesse o workspace com o e-mail corporativo cadastrado.
+          Acesse a plataforma com o e-mail corporativo cadastrado.
         </CardDescription>
       </CardHeader>
       <CardContent>
