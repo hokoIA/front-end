@@ -45,3 +45,9 @@ export async function postContentsPosts(
 ): Promise<unknown> {
   return httpJson(endpoints.contents.posts(), { method: "POST", json: body });
 }
+
+export async function postMetaAdsInsights(
+  body: MetricsPayload,
+): Promise<unknown> {
+  return httpJson(endpoints.meta.adsInsights(), { method: "POST", json: body });
+}

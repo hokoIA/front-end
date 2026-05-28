@@ -111,6 +111,26 @@ export async function getMetaStatus(idCustomer: string): Promise<unknown> {
   );
 }
 
+export async function getMetaAdAccounts(idCustomer: string): Promise<unknown> {
+  return httpJson(
+    withQuery(endpoints.meta.adAccounts(), { id_customer: idCustomer }),
+    { method: "GET" },
+  );
+}
+
+export async function postMetaAdsConnect(
+  body: Record<string, unknown>,
+): Promise<unknown> {
+  return httpJson(endpoints.meta.adsConnect(), { method: "POST", json: body });
+}
+
+export async function getMetaAdsStatus(idCustomer: string): Promise<unknown> {
+  return httpJson(
+    withQuery(endpoints.meta.adsStatus(), { id_customer: idCustomer }),
+    { method: "GET" },
+  );
+}
+
 export async function getGoogleAnalyticsProperties(
   idCustomer: string,
 ): Promise<unknown> {

@@ -22,6 +22,7 @@ import { InsightTriggerButton } from "@/features/dashboard/components/insight-tr
 import { IntegrationStatusCard } from "@/features/dashboard/components/integration-status-card";
 import { FollowersSnapshotSection } from "@/features/dashboard/components/followers-snapshot-section";
 import { MetricOverviewCard } from "@/features/dashboard/components/metric-overview-card";
+import { PaidMediaAdsSection } from "@/features/dashboard/components/paid-media-ads-section";
 import { PostsPerformanceTable } from "@/features/dashboard/components/posts-performance-table";
 import { SearchOrganicSection } from "@/features/dashboard/components/search-organic-section";
 import { TrafficSplitSection } from "@/features/dashboard/components/traffic-split-section";
@@ -32,6 +33,7 @@ import {
 } from "@/features/dashboard/config/line-chart-presets";
 import { useDashboardPeriodQueries } from "@/features/dashboard/hooks/use-dashboard-period-queries";
 import { useIntegrationDashboardCards } from "@/features/dashboard/hooks/use-integration-status";
+import { buildPeriodPayload } from "@/features/dashboard/utils/payloads";
 import type {
   DashboardPeriodRange,
   MetricBlockModel,
@@ -46,7 +48,10 @@ import { isUnauthorized } from "@/lib/api/errors";
 import { useDashboardPrint } from "@/hooks/use-dashboard-print";
 import { useAnalyzeMutation } from "@/hooks/api/use-analyze-mutations";
 import { useCurrentCustomerContext } from "@/hooks/use-current-customer-context";
+import { postMetaAdsInsights } from "@/lib/api/dashboard";
+import { queryKeys } from "@/lib/api/query-keys";
 import type { AnalyzeRequestBody } from "@/lib/types/analyze";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
@@ -128,6 +133,18 @@ export function DashboardView() {
   const showPendingIntegrationsState = !intLoading && !hasConnectedIntegrations;
   const canRenderDashboardData =
     appliedRange !== null && !intLoading && hasConnectedIntegrations;
+
+  const metaAdsQuery = useQuery({
+    queryKey: queryKeys.dashboard.metaAds(
+      customerId ?? "",
+      appliedRange?.start ?? "",
+      appliedRange?.end ?? "",
+    ),
+    queryFn: () => postMetaAdsInsights(buildPeriodPayload(customerId!, appliedRange!)),
+    enabled: canRenderDashboardData && !!customerId && !!appliedRange,
+    staleTime: Infinity,
+    retry: false,
+  });
 
   const printPeriod = useDashboardPrint({
     documentTitle: "Dashboard ho.ko",
@@ -424,6 +441,20 @@ export function DashboardView() {
               ))}
             </div>
           </DataPanel>
+
+          <PaidMediaAdsSection
+            period={appliedRange}
+            metaAdsData={metaAdsQuery.data}
+            metaAdsLoading={metaAdsQuery.isPending && metaAdsQuery.fetchStatus !== "idle"}
+            metaAdsError={metaAdsQuery.error}
+          />
+
+          <div className="flex items-center gap-3 pt-1">
+            <span className="rounded-md border border-hk-border-subtle bg-hk-surface px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.11em] text-hk-muted shadow-hk-xs">
+              {"Org\u00e2nico"}
+            </span>
+            <div className="h-px flex-1 bg-hk-divider" />
+          </div>
 
           {(hasReachData || queryReach.isPending || queryReach.error) && (
             <ComparisonMetricSection

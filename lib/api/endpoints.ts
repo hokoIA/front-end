@@ -37,6 +37,10 @@ export const endpoints = {
     pages: () => "/api/meta/pages" as const,
     connect: () => "/api/meta/connect" as const,
     status: () => "/api/meta/status" as const,
+    adAccounts: () => "/api/meta/ad-accounts" as const,
+    adsConnect: () => "/api/meta/ads/connect" as const,
+    adsStatus: () => "/api/meta/ads/status" as const,
+    adsInsights: () => "/api/meta/ads/insights" as const,
   },
   googleAnalytics: {
     properties: () => "/api/googleAnalytics/properties" as const,
