@@ -80,6 +80,7 @@ export type ContentSummaryTotals = {
 export type IntegrationSurface =
   | "facebook"
   | "instagram"
+  | "meta_ads"
   | "google_analytics"
   | "youtube"
   | "linkedin";

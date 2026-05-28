@@ -13,6 +13,7 @@ import { computeCustomerReadiness } from "@/features/customers/utils/compute-rea
 import {
   getGoogleAnalyticsStatus,
   getLinkedinStatus,
+  getMetaAdsStatus,
   getMetaStatus,
   getYoutubeStatus,
 } from "@/lib/api/customers";
@@ -20,6 +21,7 @@ import {
 const SURFACES: IntegrationSurface[] = [
   "facebook",
   "instagram",
+  "meta_ads",
   "google_analytics",
   "youtube",
   "linkedin",
@@ -63,6 +65,15 @@ function extractMetaResources(meta: unknown) {
   };
 }
 
+function extractMetaAdsResource(metaAds: unknown) {
+  const r = record(metaAds);
+
+  return {
+    id: stringOrNull(r?.resource_id ?? r?.resourceId),
+    name: stringOrNull(r?.resource_name ?? r?.resourceName),
+  };
+}
+
 /**
  * Cada plataforma precisa ser avaliada de forma independente.
  * Se LinkedIn/GA/YouTube falhar, isso não pode derrubar o status Meta já autorizado.
@@ -70,14 +81,16 @@ function extractMetaResources(meta: unknown) {
 export async function fetchCustomerIntegrationSummary(
   customerId: string,
 ): Promise<CustomerIntegrationSummary> {
-  const [metaResult, gaResult, ytResult, liResult] = await Promise.allSettled([
+  const [metaResult, metaAdsResult, gaResult, ytResult, liResult] = await Promise.allSettled([
     getMetaStatus(customerId),
+    getMetaAdsStatus(customerId),
     getGoogleAnalyticsStatus(customerId),
     getYoutubeStatus(customerId),
     getLinkedinStatus(customerId),
   ]);
 
   const meta = settledValue(metaResult);
+  const metaAds = settledValue(metaAdsResult);
   const ga = settledValue(gaResult);
   const yt = settledValue(ytResult);
   const li = settledValue(liResult);
@@ -86,11 +99,15 @@ export async function fetchCustomerIntegrationSummary(
   const surfaces: SurfaceOperationalMap = {
     facebook: parseMetaOperational(meta, "facebook"),
     instagram: parseMetaOperational(meta, "instagram"),
+    meta_ads: parseGenericOperational(metaAds),
     google_analytics: parseGenericOperational(ga),
     youtube: parseGenericOperational(yt),
     linkedin: parseLinkedinOperational(li, linkedinSuccess),
   };
-  const resources = extractMetaResources(meta);
+  const resources = {
+    ...extractMetaResources(meta),
+    meta_ads: extractMetaAdsResource(metaAds),
+  };
 
   const connectedCount = countBy(surfaces, (op) => op === "connected");
   const authorizedCount = countBy(surfaces, (op) => op === "authorized");

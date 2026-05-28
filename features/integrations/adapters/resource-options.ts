@@ -11,6 +11,8 @@ function idLabelPair(row: Record<string, unknown>): IntegrationResourceOption | 
   const id = String(
     row.id ??
       row.id_page ??
+      row.id_ad_account ??
+      row.account_id ??
       row.page_id ??
       row.id_property ??
       row.property_id ??
@@ -23,6 +25,7 @@ function idLabelPair(row: Record<string, unknown>): IntegrationResourceOption | 
   const label = String(
     row.name ??
     row.title ??
+    row.business_name ??
     row.label ??
     row.page_name ??
     row.property_name ??
@@ -65,6 +68,8 @@ export function integrationResourcesFromUnknown(
     r.properties,
     r.channels,
     r.organizations,
+    r.adAccounts,
+    r.ad_accounts,
     r.results,
     r.facebook,
     r.instagram,

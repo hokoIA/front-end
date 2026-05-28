@@ -237,7 +237,6 @@ export function CustomerDetailPanel({
                   );
                 })}
                 <ComingSoonCard title="Google Ads" />
-                <ComingSoonCard title="Meta Ads" />
               </div>
             </section>
               </>

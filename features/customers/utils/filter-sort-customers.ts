@@ -106,6 +106,7 @@ export function computeHubOverview(input: {
   const platformCounts: Record<IntegrationSurface, number> = {
     facebook: 0,
     instagram: 0,
+    meta_ads: 0,
     google_analytics: 0,
     youtube: 0,
     linkedin: 0,
@@ -122,7 +123,7 @@ export function computeHubOverview(input: {
     const s = summaries.get(c.id_customer);
     if (!summariesReady || !s) continue;
     if (s.connectedCount === 0 && s.authorizedCount === 0) withoutIntegration += 1;
-    if ((s.unknownCount + s.authorizedCount) > 0 && s.connectedCount < 5) {
+    if ((s.unknownCount + s.authorizedCount) > 0 && s.connectedCount < Object.keys(platformCounts).length) {
       pendingIntegration += 1;
     }
     if (s.hasAttention) attentionIntegration += 1;
@@ -138,6 +139,7 @@ export function computeHubOverview(input: {
   const labels: Record<IntegrationSurface, string> = {
     facebook: "Meta / Facebook",
     instagram: "Meta / Instagram",
+    meta_ads: "Meta Ads",
     google_analytics: "Google Analytics",
     youtube: "YouTube",
     linkedin: "LinkedIn",

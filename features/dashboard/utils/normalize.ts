@@ -531,6 +531,8 @@ function surfaceHasPositiveSignal(
         ) ||
         (hasSummaryContents && snapshot.posts.some((p) => p.platform === "instagram"))
       );
+    case "meta_ads":
+      return false;
     case "google_analytics":
       return (
         platformLabelMatch(snapshot.impressions.byPlatform, [
@@ -565,6 +567,7 @@ const RELEVANT_QUERIES: Record<
 > = {
   facebook: ["reach", "impressions", "followers", "posts"],
   instagram: ["reach", "impressions", "followers", "posts"],
+  meta_ads: [],
   google_analytics: ["impressions", "traffic", "search", "posts"],
   youtube: ["followers", "impressions", "posts"],
   linkedin: ["impressions", "followers", "posts"],
@@ -590,6 +593,7 @@ export function computePlatformPeriodCoverage(
   const surfaces: IntegrationSurface[] = [
     "facebook",
     "instagram",
+    "meta_ads",
     "google_analytics",
     "youtube",
     "linkedin",

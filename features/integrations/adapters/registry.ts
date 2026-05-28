@@ -1,10 +1,12 @@
 import {
   getGoogleAnalyticsProperties,
   getLinkedinOrganizations,
+  getMetaAdAccounts,
   getMetaPages,
   getYoutubeChannels,
   postGoogleAnalyticsConnect,
   postLinkedinConnect,
+  postMetaAdsConnect,
   postMetaConnect,
   postYoutubeConnect,
 } from "@/lib/api/customers";
@@ -68,6 +70,46 @@ export const metaInstagramAdapter: IntegrationPlatformAdapter = {
   },
 };
 
+export const metaAdsAdapter: IntegrationPlatformAdapter = {
+  apiKey: "meta",
+  key: "meta_ads",
+  label: "Meta Ads",
+  description:
+    "Contas de an\u00fancio dispon\u00edveis na conta Meta autorizada.",
+  listResources: getMetaAdAccounts,
+  connect: postMetaAdsConnect,
+  buildConnectPayload: (customerId, resourceId, resource) => {
+    const raw = resource?.raw as
+      | {
+          name?: string;
+          currency?: string;
+          account_status?: number | string;
+          timezone_name?: string;
+          business_name?: string;
+        }
+      | undefined;
+
+    return {
+      id_customer: customerId,
+      resource_id: resourceId,
+      resource_name: raw?.name ?? resource?.label ?? null,
+      currency: raw?.currency ?? null,
+      account_status: raw?.account_status ?? null,
+      timezone_name: raw?.timezone_name ?? null,
+      business_name: raw?.business_name ?? null,
+    };
+  },
+  connectPayloadHints: [
+    "id_customer",
+    "resource_id",
+    "resource_name",
+    "currency",
+  ],
+  supportsDisconnect: false,
+  supportsSwapResource: false,
+  supportsResync: false,
+};
+
 export const googleAnalyticsAdapter: IntegrationPlatformAdapter = {
   key: "google_analytics",
   apiKey: "google_analytics",
@@ -122,6 +164,7 @@ export const linkedinAdapter: IntegrationPlatformAdapter = {
 export const CUSTOMER_HUB_PLATFORM_ADAPTERS: IntegrationPlatformAdapter[] = [
   metaFacebookAdapter,
   metaInstagramAdapter,
+  metaAdsAdapter,
   googleAnalyticsAdapter,
   youtubeAdapter,
   linkedinAdapter,

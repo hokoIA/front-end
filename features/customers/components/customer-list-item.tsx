@@ -6,7 +6,6 @@ import { parseCustomerIntegrationRecord } from "@/features/integrations/utils/pa
 import { CustomerStatusBadge } from "@/features/customers/components/customer-badges";
 import { PlatformIcon } from "@/components/platforms/platform-icon";
 import {
-  getCustomerCompany,
   getCustomerEmail,
   getCustomerLifecycleStatus,
   getCustomerPhone,
@@ -27,6 +26,7 @@ import { ChevronRight, MoreVertical, Pencil, Trash2 } from "lucide-react";
 const PLATFORM_ORDER: IntegrationSurface[] = [
   "facebook",
   "instagram",
+  "meta_ads",
   "google_analytics",
   "youtube",
   "linkedin",
@@ -35,6 +35,7 @@ const PLATFORM_ORDER: IntegrationSurface[] = [
 const PLATFORM_LABELS: Record<IntegrationSurface, string> = {
   facebook: "Meta / Facebook",
   instagram: "Meta / Instagram",
+  meta_ads: "Meta Ads",
   google_analytics: "Google Analytics",
   youtube: "YouTube",
   linkedin: "LinkedIn",
@@ -54,6 +55,9 @@ function customerIntegrationFallback(
 
     if (surface === "google_analytics") {
       return ["google_analytics", "googleanalytics", "ga4", "google"].includes(platform);
+    }
+    if (surface === "meta_ads") {
+      return ["meta_ads", "metaads", "ads_meta"].includes(platform);
     }
 
     return platform === surface;
@@ -102,6 +106,9 @@ function hasSurfaceResource(
 
     if (surface === "google_analytics") {
       return ["google_analytics", "googleanalytics", "ga4", "google"].includes(platform);
+    }
+    if (surface === "meta_ads") {
+      return ["meta_ads", "metaads", "ads_meta"].includes(platform);
     }
 
     return platform === surface;
@@ -159,6 +166,12 @@ export function CustomerListItem({
   const email = getCustomerEmail(customer);
   const phone = getCustomerPhone(customer);
   const updated = getCustomerUpdatedAt(customer);
+  const restrictedLifecycle =
+    lifecycle === "inactive" || lifecycle === "archived";
+  const restrictedMessage =
+    lifecycle === "archived"
+      ? "Cliente arquivado. Reative o cadastro antes de alterar conexões."
+      : "Cliente ativo até o final do mês. A desativação será concluída no fechamento mensal.";
 
   return (
     <div
@@ -179,6 +192,12 @@ export function CustomerListItem({
         </p>
       </div>
 
+      {restrictedLifecycle ? (
+        <div className="min-w-0 rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2 md:col-span-3">
+          <p className="text-sm font-medium text-amber-950">{restrictedMessage}</p>
+        </div>
+      ) : (
+        <>
       <div className="min-w-0">
         <p className="text-[11px] font-medium uppercase tracking-wide text-hk-muted md:hidden">
           Integrações
@@ -262,11 +281,13 @@ export function CustomerListItem({
               onClick={onDeleteRequest}
             >
               <Trash2 className="mr-2 h-4 w-4" aria-hidden />
-              Excluir / desativar
+              Desativar cliente
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+        </>
+      )}
     </div>
   );
 }

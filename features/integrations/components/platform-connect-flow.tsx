@@ -53,7 +53,9 @@ export function PlatformConnectFlow({
 
   const resourcesQuery = useQuery({
     queryKey:
-      adapter.apiKey === "meta"
+      adapter.key === "meta_ads"
+        ? queryKeys.integrations.metaAdAccounts(customerId)
+        : adapter.apiKey === "meta"
         ? queryKeys.integrations.metaPages(customerId)
         : adapter.apiKey === "google_analytics"
           ? queryKeys.integrations.gaProperties(customerId)

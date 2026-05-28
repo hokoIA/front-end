@@ -42,6 +42,7 @@ import { useMemo } from "react";
 const SURFACES: IntegrationSurface[] = [
   "facebook",
   "instagram",
+  "meta_ads",
   "google_analytics",
   "linkedin",
   "youtube",
@@ -50,6 +51,7 @@ const SURFACES: IntegrationSurface[] = [
 const SURFACE_LABEL: Record<IntegrationSurface, string> = {
   facebook: "Facebook",
   instagram: "Instagram",
+  meta_ads: "Meta Ads",
   google_analytics: "Google Analytics",
   linkedin: "LinkedIn",
   youtube: "YouTube",

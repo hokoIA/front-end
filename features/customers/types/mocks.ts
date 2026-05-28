@@ -22,6 +22,7 @@ export function mockIntegrationSummary(
     surfaces: {
       facebook: "connected",
       instagram: "disconnected",
+      meta_ads: "disconnected",
       google_analytics: "unknown",
       youtube: "needs_renewal",
       linkedin: "disconnected",
