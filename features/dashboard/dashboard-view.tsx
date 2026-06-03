@@ -128,6 +128,9 @@ export function DashboardView() {
   const connectedCount = visibleIntegrationCards.filter(
     (c) => c.operational === "connected",
   ).length;
+  const hasConnectedMetaAds = integrationCards.some(
+    (c) => c.surface === "meta_ads" && c.operational === "connected",
+  );
 
   const hasConnectedIntegrations = connectedCount > 0;
   const showPendingIntegrationsState = !intLoading && !hasConnectedIntegrations;
@@ -141,7 +144,7 @@ export function DashboardView() {
       appliedRange?.end ?? "",
     ),
     queryFn: () => postMetaAdsInsights(buildPeriodPayload(customerId!, appliedRange!)),
-    enabled: canRenderDashboardData && !!customerId && !!appliedRange,
+    enabled: canRenderDashboardData && hasConnectedMetaAds && !!customerId && !!appliedRange,
     staleTime: Infinity,
     retry: false,
   });
@@ -444,6 +447,7 @@ export function DashboardView() {
 
           <PaidMediaAdsSection
             period={appliedRange}
+            metaAdsConnected={hasConnectedMetaAds}
             metaAdsData={metaAdsQuery.data}
             metaAdsLoading={metaAdsQuery.isPending && metaAdsQuery.fetchStatus !== "idle"}
             metaAdsError={metaAdsQuery.error}

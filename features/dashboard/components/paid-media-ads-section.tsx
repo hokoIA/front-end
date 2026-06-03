@@ -39,9 +39,16 @@ import { useMemo, useState } from "react";
 
 type PaidMediaAdsSectionProps = {
   period: DashboardPeriodRange | null;
+  metaAdsConnected?: boolean;
   metaAdsData?: unknown;
   metaAdsLoading?: boolean;
   metaAdsError?: unknown;
+};
+
+type PaidMediaPlatformView = PaidMediaPlatformMock & {
+  source: "real" | "mock";
+  statusText: string;
+  emptyState?: string;
 };
 
 type PaidMediaSummary = {
@@ -226,23 +233,27 @@ function getCampaignRows(platform: PaidMediaPlatformMock) {
 
 function buildMetaPlatformFromResponse(
   data: unknown,
-): PaidMediaPlatformMock | null {
+): PaidMediaPlatformView | null {
   const root = record(data);
   if (root.success !== true) return null;
 
   const campaignRows = rowsFromUnknown(root.campaign);
   const adSetRows = rowsFromUnknown(root.adSet);
   const adRows = rowsFromUnknown(root.ad);
-
-  if (campaignRows.length === 0 && adSetRows.length === 0 && adRows.length === 0) {
-    return null;
-  }
+  const resource = record(root.resource);
+  const resourceName = stringFromUnknown(resource.name);
 
   return {
     key: "meta",
     label: "Meta Ads",
     shortLabel: "Meta",
     primaryActionLabel: "Conversas",
+    source: "real",
+    statusText: resourceName
+      ? `Conta conectada: ${resourceName}`
+      : "Dados reais consumidos do Meta Ads.",
+    emptyState:
+      "A conta Meta Ads conectada não retornou linhas para este período.",
     levels: [
       {
         key: "campaign",
@@ -294,6 +305,48 @@ function buildMetaPlatformFromResponse(
         })),
       },
     ],
+  };
+}
+
+function buildMetaPlaceholder({
+  connected,
+  loading,
+  error,
+}: {
+  connected: boolean;
+  loading: boolean;
+  error?: unknown;
+}): PaidMediaPlatformView {
+  const hasError = Boolean(error);
+  const statusText = loading
+    ? "Carregando dados reais do Meta Ads."
+    : connected && hasError
+      ? "Não foi possível carregar as métricas reais do Meta Ads."
+      : connected
+        ? "Conta conectada, aguardando retorno das métricas reais."
+        : "Conecte uma conta de anúncios para consumir métricas reais do Meta Ads.";
+
+  return {
+    key: "meta",
+    label: "Meta Ads",
+    shortLabel: "Meta",
+    primaryActionLabel: "Conversas",
+    source: "real",
+    statusText,
+    emptyState: statusText,
+    levels: [
+      { key: "campaign", label: "Campanhas", rows: [] },
+      { key: "adSet", label: "Conjuntos", rows: [] },
+      { key: "ad", label: "Anúncios", rows: [] },
+    ],
+  };
+}
+
+function withMockSource(platform: PaidMediaPlatformMock): PaidMediaPlatformView {
+  return {
+    ...platform,
+    source: "mock",
+    statusText: "Dados demonstrativos até a conexão desta plataforma.",
   };
 }
 
@@ -396,7 +449,7 @@ function InvestmentShareList({
   totalInvestment,
 }: {
   platformSummaries: Array<{
-    platform: PaidMediaPlatformMock;
+    platform: PaidMediaPlatformView;
     summary: PaidMediaSummary;
   }>;
   totalInvestment: number;
@@ -428,7 +481,7 @@ function InvestmentShareList({
                     platformAccent[platform.key].background,
                   )}
                   style={{
-                    width: `${Math.max(share, 3)}%`,
+                    width: `${summary.investment > 0 ? Math.max(share, 3) : 0}%`,
                     backgroundColor: platformAccent[platform.key].bar,
                   }}
                 />
@@ -445,7 +498,7 @@ function PlatformEfficiencyChart({
   platformSummaries,
 }: {
   platformSummaries: Array<{
-    platform: PaidMediaPlatformMock;
+    platform: PaidMediaPlatformView;
     summary: PaidMediaSummary;
   }>;
 }) {
@@ -534,7 +587,7 @@ function PaidMediaTable({
   platform,
   level,
 }: {
-  platform: PaidMediaPlatformMock;
+  platform: PaidMediaPlatformView;
   level: PaidMediaLevelKey;
 }) {
   const rows = platform.levels.find((item) => item.key === level)?.rows ?? [];
@@ -548,53 +601,61 @@ function PaidMediaTable({
             {platform.label} - {levelLabels[level]}
           </p>
           <p className="text-xs text-hk-muted">
-            {"Dados mockados por n\u00edvel de entrega."}
+            {platform.statusText}
           </p>
         </div>
-        <Badge variant="secondary">Mock</Badge>
+        <Badge variant={platform.source === "real" ? "success" : "secondary"}>
+          {platform.source === "real" ? "Real" : "Mock"}
+        </Badge>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map((column) => (
-              <TableHead
-                key={column.key}
-                className={cn(column.align === "right" && "text-right")}
-              >
-                {column.label}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((row: PaidMediaRow) => (
-            <TableRow key={row.id}>
-              {columns.map((column) => {
-                const value =
-                  column.key === "name" ? row.name : row.values[column.key];
-                return (
-                  <TableCell
-                    key={column.key}
-                    className={cn(
-                      column.key === "name" && "min-w-[220px] font-semibold text-hk-deep",
-                      column.key === "objective" && "min-w-[140px] text-xs text-hk-muted",
-                      column.align === "right" && "text-right tabular-nums",
-                      column.key !== "name" &&
-                        column.key !== "objective" &&
-                        "whitespace-nowrap text-xs",
-                    )}
-                  >
-                    {column.key === "name"
-                      ? value
-                      : formatMetricValue(column.key, value)}
-                  </TableCell>
-                );
-              })}
+      {rows.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-hk-border bg-hk-surface px-4 py-6 text-sm text-hk-muted">
+          {platform.emptyState ?? "Sem linhas para este nível no período selecionado."}
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {columns.map((column) => (
+                <TableHead
+                  key={column.key}
+                  className={cn(column.align === "right" && "text-right")}
+                >
+                  {column.label}
+                </TableHead>
+              ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row: PaidMediaRow) => (
+              <TableRow key={row.id}>
+                {columns.map((column) => {
+                  const value =
+                    column.key === "name" ? row.name : row.values[column.key];
+                  return (
+                    <TableCell
+                      key={column.key}
+                      className={cn(
+                        column.key === "name" && "min-w-[220px] font-semibold text-hk-deep",
+                        column.key === "objective" && "min-w-[140px] text-xs text-hk-muted",
+                        column.align === "right" && "text-right tabular-nums",
+                        column.key !== "name" &&
+                          column.key !== "objective" &&
+                          "whitespace-nowrap text-xs",
+                      )}
+                    >
+                      {column.key === "name"
+                        ? value
+                        : formatMetricValue(column.key, value)}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }
@@ -604,7 +665,7 @@ function PlatformPaidMediaPanel({
   level,
   onLevelChange,
 }: {
-  platform: PaidMediaPlatformMock;
+  platform: PaidMediaPlatformView;
   level: PaidMediaLevelKey;
   onLevelChange: (level: PaidMediaLevelKey) => void;
 }) {
@@ -659,6 +720,7 @@ function PlatformPaidMediaPanel({
 
 export function PaidMediaAdsSection({
   period,
+  metaAdsConnected = false,
   metaAdsData,
   metaAdsLoading = false,
   metaAdsError,
@@ -673,12 +735,26 @@ export function PaidMediaAdsSection({
     linkedin: "campaign",
   });
 
-  const platforms = useMemo(() => {
-    const liveMeta = buildMetaPlatformFromResponse(metaAdsData);
-    return paidMediaMock.map((platform) =>
-      platform.key === "meta" && liveMeta ? liveMeta : platform,
-    );
-  }, [metaAdsData]);
+  const metaPlatform = useMemo(
+    () =>
+      buildMetaPlatformFromResponse(metaAdsData) ??
+      buildMetaPlaceholder({
+        connected: metaAdsConnected,
+        loading: metaAdsLoading,
+        error: metaAdsError,
+      }),
+    [metaAdsConnected, metaAdsData, metaAdsError, metaAdsLoading],
+  );
+
+  const platforms = useMemo(
+    () => [
+      metaPlatform,
+      ...paidMediaMock
+        .filter((platform) => platform.key !== "meta")
+        .map(withMockSource),
+    ],
+    [metaPlatform],
+  );
 
   const hasLiveMetaAds = Boolean(buildMetaPlatformFromResponse(metaAdsData));
 
@@ -713,13 +789,14 @@ export function PaidMediaAdsSection({
           {!metaAdsLoading && hasLiveMetaAds ? (
             <Badge variant="success">Meta real</Badge>
           ) : null}
-          {!metaAdsLoading && !hasLiveMetaAds && metaAdsError ? (
-            <Badge variant="secondary">Meta mock</Badge>
+          {!metaAdsLoading && !hasLiveMetaAds && metaAdsConnected && metaAdsError ? (
+            <Badge variant="secondary">Meta indisponível</Badge>
+          ) : null}
+          {!metaAdsLoading && !hasLiveMetaAds && !metaAdsConnected ? (
+            <Badge variant="outline">Meta não conectado</Badge>
           ) : null}
           <Badge variant="outline">{periodLabel}</Badge>
-          <Badge variant="secondary">
-            {hasLiveMetaAds ? "Google/LinkedIn mock" : "Dados mock"}
-          </Badge>
+          <Badge variant="secondary">Google/LinkedIn mock</Badge>
         </div>
       </div>
 

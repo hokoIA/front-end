@@ -7,6 +7,7 @@ import type {
   IntegrationSurface,
 } from "@/features/dashboard/types";
 import {
+  parseGenericOperational,
   resolveGoogleAnalyticsState,
   resolveLinkedinStateFromCustomer,
   resolveMetaSurfaceState,
@@ -14,6 +15,7 @@ import {
 } from "@/features/integrations/utils/parse-integration-apis";
 import {
   getGoogleAnalyticsStatus,
+  getMetaAdsStatus,
   getMetaStatus,
   getYoutubeStatus,
 } from "@/lib/api/customers";
@@ -43,6 +45,13 @@ export function useIntegrationDashboardCards(
     staleTime: 60_000,
   });
 
+  const metaAds = useQuery({
+    queryKey: queryKeys.integrations.metaAdsStatus(customerId ?? ""),
+    queryFn: () => getMetaAdsStatus(customerId!),
+    enabled,
+    staleTime: 60_000,
+  });
+
   const ga = useQuery({
     queryKey: queryKeys.integrations.gaStatus(customerId ?? ""),
     queryFn: () => getGoogleAnalyticsStatus(customerId!),
@@ -58,7 +67,7 @@ export function useIntegrationDashboardCards(
   });
 
   const isLoading =
-    enabled && (meta.isPending || ga.isPending || yt.isPending);
+    enabled && (meta.isPending || metaAds.isPending || ga.isPending || yt.isPending);
 
   const cards = useMemo((): IntegrationCardModel[] => {
     const periodCoverage = (
@@ -93,6 +102,11 @@ export function useIntegrationDashboardCards(
         ),
       },
       {
+        surface: "meta_ads",
+        label: "Meta Ads",
+        operational: parseGenericOperational(metaAds.data),
+      },
+      {
         surface: "google_analytics",
         label: "Google Analytics",
         operational: resolveGoogleAnalyticsState(selectedCustomer, ga.data),
@@ -116,6 +130,7 @@ export function useIntegrationDashboardCards(
   }, [
     selectedCustomer,
     meta.data,
+    metaAds.data,
     ga.data,
     yt.data,
     periodLoaded,
