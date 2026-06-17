@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 const ALL: AnalysisPlatformValue[] = [
   "facebook",
   "instagram",
+  "meta_ads",
   "google_analytics",
   "linkedin",
   "youtube",

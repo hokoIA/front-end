@@ -12,6 +12,7 @@ export function createDefaultAnalysisForm(): AnalysisFormState {
     platforms: [
       "facebook",
       "instagram",
+      "meta_ads",
       "google_analytics",
       "linkedin",
       "youtube",

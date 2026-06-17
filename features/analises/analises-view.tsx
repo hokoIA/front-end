@@ -19,18 +19,18 @@ import type {
   AnalysisFormState,
   AnalysisPlatformValue,
   AnalysisResultMeta,
+  MetaAdsPipelineDiagnostics,
 } from "@/features/analises/types";
 import { buildStrategicAnalyzePayload } from "@/features/analises/utils/build-analyze-payload";
 import { createDefaultAnalysisForm } from "@/features/analises/utils/default-form";
 import { PLATFORM_LABELS } from "@/features/analises/utils/labels";
+import { fetchMetaAdsAnalysisExternalData } from "@/features/analises/utils/meta-ads-api-analysis";
 import { parseAnalyzeResult } from "@/features/analises/utils/parse-analyze-result";
 import { useIntegrationDashboardCards } from "@/features/dashboard/hooks/use-integration-status";
 import { useCurrentCustomerContext } from "@/hooks/use-current-customer-context";
 import { getAnalyzeBaseUrl } from "@/lib/api/http-client";
 import { getErrorKind } from "@/lib/api/errors";
-import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Building2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -52,6 +52,11 @@ function datesValid(start: string, end: string): boolean {
   const a = new Date(start + "T12:00:00");
   const b = new Date(end + "T12:00:00");
   return !Number.isNaN(a.getTime()) && !Number.isNaN(b.getTime()) && a <= b;
+}
+
+function formatPipelineDuration(ms?: number): string {
+  if (typeof ms !== "number" || !Number.isFinite(ms)) return "-";
+  return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${Math.round(ms)}ms`;
 }
 
 export function AnalisesView() {
@@ -89,6 +94,7 @@ export function AnalisesView() {
         [
           "facebook",
           "instagram",
+          "meta_ads",
           "google_analytics",
           "linkedin",
           "youtube",
@@ -102,7 +108,7 @@ export function AnalisesView() {
   useEffect(() => {
     if (integrationsLoading) return;
 
-    setForm((current) => {
+    const timeout = window.setTimeout(() => setForm((current) => {
       const nextPlatforms = current.platforms.filter((platform) =>
         availablePlatforms.includes(platform),
       );
@@ -117,7 +123,9 @@ export function AnalisesView() {
         ...current,
         platforms: nextPlatforms,
       };
-    });
+    }), 0);
+
+    return () => window.clearTimeout(timeout);
   }, [availablePlatforms, integrationsLoading]);
 
   const disconnectedSelectedLabels = useMemo(() => {
@@ -171,14 +179,44 @@ export function AnalisesView() {
     }
 
     setGenError(null);
-    const payload = buildStrategicAnalyzePayload(
+    const needsMetaAdsApi = form.platforms.includes("meta_ads");
+    const totalStartedAt = Date.now();
+    let stage: "meta_ads_api" | "analyze" = "analyze";
+    let metaAdsPipeline: MetaAdsPipelineDiagnostics | undefined;
+    let payload = buildStrategicAnalyzePayload(
       form,
       agencyId,
       selected.id_customer,
     );
 
     try {
+      if (needsMetaAdsApi) {
+        stage = "meta_ads_api";
+        const metaAdsExternal = await fetchMetaAdsAnalysisExternalData({
+          idCustomer: selected.id_customer,
+          startDate: form.dateStart,
+          endDate: form.dateEnd,
+        });
+        metaAdsPipeline = metaAdsExternal.diagnostics;
+        payload = {
+          ...payload,
+          source_mode: "api_direct_experiment",
+          external_data: metaAdsExternal.externalData,
+        };
+      }
+
+      stage = "analyze";
+      const analyzeStartedAt = Date.now();
       const res = await analyzeMutation.mutateAsync(payload);
+      const analyzeMs = Date.now() - analyzeStartedAt;
+      const totalMs = Date.now() - totalStartedAt;
+      if (metaAdsPipeline) {
+        metaAdsPipeline = {
+          ...metaAdsPipeline,
+          analyzeMs,
+          totalMs,
+        };
+      }
       const text = parseAnalyzeResult(res);
       const meta: AnalysisResultMeta = {
         customerName: selected.name,
@@ -190,16 +228,24 @@ export function AnalisesView() {
         platforms: [...form.platforms],
         generatedAt: new Date().toISOString(),
         bias: form.bias.trim() || undefined,
+        metaAdsPipeline,
       };
       setResultMeta(meta);
       setResultMarkdown(text);
+      if (metaAdsPipeline) {
+        toast.success(
+          `Meta Ads API: ${formatPipelineDuration(metaAdsPipeline.metaAdsApiMs)}. Total: ${formatPipelineDuration(metaAdsPipeline.totalMs)}.`,
+        );
+      }
       if (!text.trim()) {
         toast.message("A API respondeu sem texto de análise.");
       }
     } catch (e) {
       setGenError(e);
       const kind = getErrorKind(e);
-      if (kind === "unauthorized") {
+      if (stage === "meta_ads_api") {
+        toast.error("Falha ao consumir Meta Ads via API para a analise.");
+      } else if (kind === "unauthorized") {
         toast.error("Sessão expirada. Faça login novamente.");
       } else if (kind === "forbidden") {
         toast.error("Sem permissão para gerar esta análise.");

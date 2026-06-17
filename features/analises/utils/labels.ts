@@ -20,6 +20,7 @@ export const ANALYSIS_TYPE_LABELS: Record<AnalysisTypeValue, string> = {
 export const PLATFORM_LABELS: Record<AnalysisPlatformValue, string> = {
   facebook: "Facebook",
   instagram: "Instagram",
+  meta_ads: "Meta Ads",
   google_analytics: "Google Analytics / GA4",
   linkedin: "LinkedIn",
   youtube: "YouTube",

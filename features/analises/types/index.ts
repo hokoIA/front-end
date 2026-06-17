@@ -13,6 +13,7 @@ export type AnalysisTypeValue =
 export type AnalysisPlatformValue =
   | "facebook"
   | "instagram"
+  | "meta_ads"
   | "google_analytics"
   | "linkedin"
   | "youtube";
@@ -26,6 +27,20 @@ export type AnalysisFormState = {
   bias: string;
 };
 
+export type MetaAdsPipelineDiagnostics = {
+  sourceMode: "api_gateway_direct";
+  metaAdsApiMs: number;
+  analyzeMs?: number;
+  totalMs?: number;
+  rowCounts: {
+    campaign: number;
+    adSet: number;
+    ad: number;
+  };
+  resourceName?: string;
+  fetchedAt?: string;
+};
+
 export type AnalysisResultMeta = {
   customerName: string;
   clientId: string;
@@ -37,4 +52,5 @@ export type AnalysisResultMeta = {
   generatedAt: string;
   /** Direcionamento opcional informado na configuração */
   bias?: string;
+  metaAdsPipeline?: MetaAdsPipelineDiagnostics;
 };
