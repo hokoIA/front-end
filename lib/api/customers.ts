@@ -142,6 +142,37 @@ export async function getGoogleAnalyticsProperties(
   );
 }
 
+export async function getGoogleAdsAccounts(
+  idCustomer: string,
+): Promise<unknown> {
+  return httpJson(
+    withQuery(endpoints.googleAds.accounts(), {
+      id_customer: idCustomer,
+    }),
+    { method: "GET" },
+  );
+}
+
+export async function postGoogleAdsConnect(
+  body: Record<string, unknown>,
+): Promise<unknown> {
+  return httpJson(endpoints.googleAds.connect(), {
+    method: "POST",
+    json: body,
+  });
+}
+
+export async function getGoogleAdsStatus(
+  idCustomer: string,
+): Promise<unknown> {
+  return httpJson(
+    withQuery(endpoints.googleAds.status(), {
+      id_customer: idCustomer,
+    }),
+    { method: "GET" },
+  );
+}
+
 export async function postGoogleAnalyticsConnect(
   body: Record<string, unknown>,
 ): Promise<unknown> {

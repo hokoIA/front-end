@@ -51,3 +51,12 @@ export async function postMetaAdsInsights(
 ): Promise<unknown> {
   return httpJson(endpoints.meta.adsInsights(), { method: "POST", json: body });
 }
+
+export async function postGoogleAdsInsights(
+  body: MetricsPayload,
+): Promise<unknown> {
+  return httpJson(endpoints.googleAds.insights(), {
+    method: "POST",
+    json: body,
+  });
+}

@@ -48,7 +48,10 @@ import { isUnauthorized } from "@/lib/api/errors";
 import { useDashboardPrint } from "@/hooks/use-dashboard-print";
 import { useAnalyzeMutation } from "@/hooks/api/use-analyze-mutations";
 import { useCurrentCustomerContext } from "@/hooks/use-current-customer-context";
-import { postMetaAdsInsights } from "@/lib/api/dashboard";
+import {
+  postGoogleAdsInsights,
+  postMetaAdsInsights,
+} from "@/lib/api/dashboard";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { AnalyzeRequestBody } from "@/lib/types/analyze";
 import { useQuery } from "@tanstack/react-query";
@@ -131,6 +134,9 @@ export function DashboardView() {
   const hasConnectedMetaAds = integrationCards.some(
     (c) => c.surface === "meta_ads" && c.operational === "connected",
   );
+  const hasConnectedGoogleAds = integrationCards.some(
+    (c) => c.surface === "google_ads" && c.operational === "connected",
+  );
 
   const hasConnectedIntegrations = connectedCount > 0;
   const showPendingIntegrationsState = !intLoading && !hasConnectedIntegrations;
@@ -145,6 +151,23 @@ export function DashboardView() {
     ),
     queryFn: () => postMetaAdsInsights(buildPeriodPayload(customerId!, appliedRange!)),
     enabled: canRenderDashboardData && hasConnectedMetaAds && !!customerId && !!appliedRange,
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  const googleAdsQuery = useQuery({
+    queryKey: queryKeys.dashboard.googleAds(
+      customerId ?? "",
+      appliedRange?.start ?? "",
+      appliedRange?.end ?? "",
+    ),
+    queryFn: () =>
+      postGoogleAdsInsights(buildPeriodPayload(customerId!, appliedRange!)),
+    enabled:
+      canRenderDashboardData &&
+      hasConnectedGoogleAds &&
+      !!customerId &&
+      !!appliedRange,
     staleTime: Infinity,
     retry: false,
   });
@@ -451,6 +474,12 @@ export function DashboardView() {
             metaAdsData={metaAdsQuery.data}
             metaAdsLoading={metaAdsQuery.isPending && metaAdsQuery.fetchStatus !== "idle"}
             metaAdsError={metaAdsQuery.error}
+            googleAdsConnected={hasConnectedGoogleAds}
+            googleAdsData={googleAdsQuery.data}
+            googleAdsLoading={
+              googleAdsQuery.isPending && googleAdsQuery.fetchStatus !== "idle"
+            }
+            googleAdsError={googleAdsQuery.error}
           />
 
           <div className="flex items-center gap-3 pt-1">

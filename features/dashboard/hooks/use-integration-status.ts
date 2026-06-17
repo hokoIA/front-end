@@ -15,6 +15,7 @@ import {
 } from "@/features/integrations/utils/parse-integration-apis";
 import {
   getGoogleAnalyticsStatus,
+  getGoogleAdsStatus,
   getMetaAdsStatus,
   getMetaStatus,
   getYoutubeStatus,
@@ -59,6 +60,13 @@ export function useIntegrationDashboardCards(
     staleTime: 60_000,
   });
 
+  const googleAds = useQuery({
+    queryKey: queryKeys.integrations.googleAdsStatus(customerId ?? ""),
+    queryFn: () => getGoogleAdsStatus(customerId!),
+    enabled,
+    staleTime: 60_000,
+  });
+
   const yt = useQuery({
     queryKey: queryKeys.integrations.youtubeStatus(customerId ?? ""),
     queryFn: () => getYoutubeStatus(customerId!),
@@ -67,7 +75,12 @@ export function useIntegrationDashboardCards(
   });
 
   const isLoading =
-    enabled && (meta.isPending || metaAds.isPending || ga.isPending || yt.isPending);
+    enabled &&
+    (meta.isPending ||
+      metaAds.isPending ||
+      googleAds.isPending ||
+      ga.isPending ||
+      yt.isPending);
 
   const cards = useMemo((): IntegrationCardModel[] => {
     const periodCoverage = (
@@ -107,6 +120,11 @@ export function useIntegrationDashboardCards(
         operational: parseGenericOperational(metaAds.data),
       },
       {
+        surface: "google_ads",
+        label: "Google Ads",
+        operational: parseGenericOperational(googleAds.data),
+      },
+      {
         surface: "google_analytics",
         label: "Google Analytics",
         operational: resolveGoogleAnalyticsState(selectedCustomer, ga.data),
@@ -131,6 +149,7 @@ export function useIntegrationDashboardCards(
     selectedCustomer,
     meta.data,
     metaAds.data,
+    googleAds.data,
     ga.data,
     yt.data,
     periodLoaded,

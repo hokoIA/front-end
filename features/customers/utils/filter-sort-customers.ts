@@ -51,7 +51,10 @@ export function filterAndSortCustomers(
         case "with_alert":
           return s.hasAttention;
         case "with_pending":
-          return (s.unknownCount + s.authorizedCount) > 0 && s.connectedCount < 5;
+          return (
+            (s.unknownCount + s.authorizedCount) > 0 &&
+            s.connectedCount < 7
+          );
         default:
           return true;
       }
@@ -107,6 +110,7 @@ export function computeHubOverview(input: {
     facebook: 0,
     instagram: 0,
     meta_ads: 0,
+    google_ads: 0,
     google_analytics: 0,
     youtube: 0,
     linkedin: 0,
@@ -140,6 +144,7 @@ export function computeHubOverview(input: {
     facebook: "Meta / Facebook",
     instagram: "Meta / Instagram",
     meta_ads: "Meta Ads",
+    google_ads: "Google Ads",
     google_analytics: "Google Analytics",
     youtube: "YouTube",
     linkedin: "LinkedIn",

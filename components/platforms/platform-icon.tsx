@@ -45,6 +45,7 @@ function renderGlyph(
     case "instagram":
       return <GlyphInstagram className={c} />;
     case "google_analytics":
+    case "google_ads":
     case "google":
       return <GlyphGoogleAnalytics className={c} />;
     case "youtube":

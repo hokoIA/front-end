@@ -19,6 +19,8 @@ const SURFACE_OPTIONS: {
   { value: "all", label: "Todas as plataformas" },
   { value: "facebook", label: "Meta / Facebook" },
   { value: "instagram", label: "Meta / Instagram" },
+  { value: "meta_ads", label: "Meta Ads" },
+  { value: "google_ads", label: "Google Ads" },
   { value: "google_analytics", label: "Google Analytics" },
   { value: "youtube", label: "YouTube" },
   { value: "linkedin", label: "LinkedIn" },

@@ -1,9 +1,11 @@
 import {
+  getGoogleAdsAccounts,
   getGoogleAnalyticsProperties,
   getLinkedinOrganizations,
   getMetaAdAccounts,
   getMetaPages,
   getYoutubeChannels,
+  postGoogleAdsConnect,
   postGoogleAnalyticsConnect,
   postLinkedinConnect,
   postMetaAdsConnect,
@@ -127,6 +129,46 @@ export const googleAnalyticsAdapter: IntegrationPlatformAdapter = {
   supportsResync: false,
 };
 
+export const googleAdsAdapter: IntegrationPlatformAdapter = {
+  key: "google_ads",
+  apiKey: "google_ads",
+  label: "Google Ads",
+  description:
+    "Contas de an\u00fancios acess\u00edveis pelo usu\u00e1rio Google autorizado.",
+  listResources: getGoogleAdsAccounts,
+  connect: postGoogleAdsConnect,
+  buildConnectPayload: (customerId, resourceId, resource) => {
+    const raw = resource?.raw as
+      | {
+          name?: string;
+          currency_code?: string;
+          time_zone?: string;
+          login_customer_id?: string;
+          test_account?: boolean;
+        }
+      | undefined;
+
+    return {
+      id_customer: customerId,
+      resource_id: resourceId,
+      resource_name: raw?.name ?? resource?.label ?? null,
+      currency_code: raw?.currency_code ?? null,
+      time_zone: raw?.time_zone ?? null,
+      login_customer_id: raw?.login_customer_id ?? null,
+      test_account: raw?.test_account ?? false,
+    };
+  },
+  connectPayloadHints: [
+    "id_customer",
+    "resource_id",
+    "resource_name",
+    "login_customer_id",
+  ],
+  supportsDisconnect: false,
+  supportsSwapResource: false,
+  supportsResync: false,
+};
+
 export const youtubeAdapter: IntegrationPlatformAdapter = {
   key: "youtube",
   apiKey: "youtube",
@@ -165,6 +207,7 @@ export const CUSTOMER_HUB_PLATFORM_ADAPTERS: IntegrationPlatformAdapter[] = [
   metaFacebookAdapter,
   metaInstagramAdapter,
   metaAdsAdapter,
+  googleAdsAdapter,
   googleAnalyticsAdapter,
   youtubeAdapter,
   linkedinAdapter,

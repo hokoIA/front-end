@@ -81,17 +81,6 @@ function getSummaryResourceLabel(
   return typeof name === "string" && name.trim() ? name : undefined;
 }
 
-function ComingSoonCard({ title }: { title: string }) {
-  return (
-    <div className="rounded-xl border border-dashed border-hk-border bg-hk-canvas/40 p-4 text-center">
-      <p className="text-sm font-medium text-hk-deep">{title}</p>
-      <p className="mt-1 text-xs text-hk-muted">
-        Adapter reservado para expansão futura da API.
-      </p>
-    </div>
-  );
-}
-
 export type CustomerDetailPanelMode = "connections" | "details";
 
 export function CustomerDetailPanel({
@@ -236,7 +225,6 @@ export function CustomerDetailPanel({
                     />
                   );
                 })}
-                <ComingSoonCard title="Google Ads" />
               </div>
             </section>
               </>

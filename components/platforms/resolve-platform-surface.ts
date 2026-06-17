@@ -18,6 +18,7 @@ export function toPlatformVisualKey(
     p === "facebook" ||
     p === "instagram" ||
     p === "meta_ads" ||
+    p === "google_ads" ||
     p === "youtube" ||
     p === "linkedin" ||
     p === "google_analytics"
@@ -36,6 +37,7 @@ export function resolvePlatformVisualKey(key: string): PlatformVisualKey {
   const k = key.toLowerCase().replace(/[\s-]+/g, "_");
   if (k.includes("instagram") || k === "ig") return "instagram";
   if (k.includes("meta_ads") || k.includes("ads_meta")) return "meta";
+  if (k.includes("google_ads") || k.includes("ads_google")) return "google_ads";
   if (k.includes("facebook") || k === "fb") return "facebook";
   if (
     k.includes("google") ||

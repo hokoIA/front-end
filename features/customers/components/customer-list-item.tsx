@@ -27,6 +27,7 @@ const PLATFORM_ORDER: IntegrationSurface[] = [
   "facebook",
   "instagram",
   "meta_ads",
+  "google_ads",
   "google_analytics",
   "youtube",
   "linkedin",
@@ -36,6 +37,7 @@ const PLATFORM_LABELS: Record<IntegrationSurface, string> = {
   facebook: "Meta / Facebook",
   instagram: "Meta / Instagram",
   meta_ads: "Meta Ads",
+  google_ads: "Google Ads",
   google_analytics: "Google Analytics",
   youtube: "YouTube",
   linkedin: "LinkedIn",
@@ -59,9 +61,19 @@ function customerIntegrationFallback(
     if (surface === "meta_ads") {
       return ["meta_ads", "metaads", "ads_meta"].includes(platform);
     }
+    if (surface === "google_ads") {
+      return ["google_ads", "googleads", "ads_google"].includes(platform);
+    }
 
     return platform === surface;
   });
+
+  if (
+    (surface === "meta_ads" || surface === "google_ads") &&
+    !Boolean(row?.resource_id || row?.resource_name)
+  ) {
+    return "disconnected";
+  }
 
   return parseCustomerIntegrationRecord(
     row as Record<string, unknown> | null | undefined,
@@ -109,6 +121,9 @@ function hasSurfaceResource(
     }
     if (surface === "meta_ads") {
       return ["meta_ads", "metaads", "ads_meta"].includes(platform);
+    }
+    if (surface === "google_ads") {
+      return ["google_ads", "googleads", "ads_google"].includes(platform);
     }
 
     return platform === surface;

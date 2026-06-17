@@ -43,6 +43,10 @@ type PaidMediaAdsSectionProps = {
   metaAdsData?: unknown;
   metaAdsLoading?: boolean;
   metaAdsError?: unknown;
+  googleAdsConnected?: boolean;
+  googleAdsData?: unknown;
+  googleAdsLoading?: boolean;
+  googleAdsError?: unknown;
 };
 
 type PaidMediaPlatformView = PaidMediaPlatformMock & {
@@ -161,6 +165,12 @@ function record(value: unknown): Record<string, unknown> {
 function numberFromUnknown(value: unknown): number {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
+}
+
+function optionalNumberFromUnknown(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === "") return undefined;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : undefined;
 }
 
 function stringFromUnknown(value: unknown, fallback = ""): string {
@@ -342,6 +352,116 @@ function buildMetaPlaceholder({
   };
 }
 
+function buildGooglePlatformFromResponse(
+  data: unknown,
+): PaidMediaPlatformView | null {
+  const root = record(data);
+  if (root.success !== true) return null;
+
+  const campaignRows = rowsFromUnknown(root.campaign);
+  const adSetRows = rowsFromUnknown(root.adSet);
+  const adRows = rowsFromUnknown(root.ad);
+  const resource = record(root.resource);
+  const resourceName = stringFromUnknown(resource.name);
+
+  return {
+    key: "google",
+    label: "Google Ads",
+    shortLabel: "Google",
+    primaryActionLabel: "Convers\u00f5es",
+    source: "real",
+    statusText: resourceName
+      ? `Conta conectada: ${resourceName}`
+      : "Dados reais consumidos do Google Ads.",
+    emptyState:
+      "A conta Google Ads conectada n\u00e3o retornou linhas para este per\u00edodo.",
+    levels: [
+      {
+        key: "campaign",
+        label: "Campanhas",
+        rows: campaignRows.map((row, index) => ({
+          id: stringFromUnknown(row.id, `google-campaign-${index}`),
+          name: stringFromUnknown(row.name, "Campanha Google"),
+          values: {
+            investment: numberFromUnknown(row.investment),
+            impressions: numberFromUnknown(row.impressions),
+            reach: optionalNumberFromUnknown(row.reach),
+            frequency: optionalNumberFromUnknown(row.frequency),
+            cpm: numberFromUnknown(row.cpm),
+            conversions: numberFromUnknown(row.conversions),
+            roas: numberFromUnknown(row.roas),
+            costPerConversion: numberFromUnknown(row.costPerConversion),
+          },
+        })),
+      },
+      {
+        key: "adSet",
+        label: "Grupos de an\u00fancios",
+        rows: adSetRows.map((row, index) => ({
+          id: stringFromUnknown(row.id, `google-adgroup-${index}`),
+          name: stringFromUnknown(row.name, "Grupo Google"),
+          values: {
+            investment: numberFromUnknown(row.investment),
+            reach: optionalNumberFromUnknown(row.reach),
+            frequency: optionalNumberFromUnknown(row.frequency),
+            cpm: numberFromUnknown(row.cpm),
+            ctr: numberFromUnknown(row.ctr),
+          },
+        })),
+      },
+      {
+        key: "ad",
+        label: "An\u00fancios",
+        rows: adRows.map((row, index) => ({
+          id: stringFromUnknown(row.id, `google-ad-${index}`),
+          name: stringFromUnknown(row.name, "An\u00fancio Google"),
+          values: {
+            impressions: numberFromUnknown(row.impressions),
+            ctr: numberFromUnknown(row.ctr),
+            cpc: numberFromUnknown(row.cpc),
+            cpm: numberFromUnknown(row.cpm),
+            costPerConversion: numberFromUnknown(row.costPerConversion),
+          },
+        })),
+      },
+    ],
+  };
+}
+
+function buildGooglePlaceholder({
+  connected,
+  loading,
+  error,
+}: {
+  connected: boolean;
+  loading: boolean;
+  error?: unknown;
+}): PaidMediaPlatformView {
+  const hasError = Boolean(error);
+  const statusText = loading
+    ? "Carregando dados reais do Google Ads."
+    : connected && hasError
+      ? "N\u00e3o foi poss\u00edvel carregar as m\u00e9tricas reais do Google Ads."
+      : connected
+        ? "Conta conectada, aguardando retorno das m\u00e9tricas reais."
+        : "Conecte uma conta de an\u00fancios para consumir m\u00e9tricas reais do Google Ads.";
+
+  return {
+    key: "google",
+    label: "Google Ads",
+    shortLabel: "Google",
+    primaryActionLabel: "Convers\u00f5es",
+    source: "real",
+    statusText,
+    emptyState: statusText,
+    levels: [
+      { key: "campaign", label: "Campanhas", rows: [] },
+      { key: "adSet", label: "Grupos de an\u00fancios", rows: [] },
+      { key: "ad", label: "An\u00fancios", rows: [] },
+    ],
+  };
+}
+
 function withMockSource(platform: PaidMediaPlatformMock): PaidMediaPlatformView {
   return {
     ...platform,
@@ -410,6 +530,20 @@ function getColumns(
 ): PaidMediaColumn[] {
   if (levelKey === "campaign") return campaignColumns[platformKey];
   if (levelKey === "adSet") return commonAdSetColumns;
+  if (platformKey === "google") {
+    return [
+      { key: "name", label: "An\u00fancio" },
+      { key: "impressions", label: "Impress\u00f5es", align: "right" },
+      { key: "ctr", label: "CTR", align: "right" },
+      { key: "cpc", label: "CPC", align: "right" },
+      { key: "cpm", label: "CPM", align: "right" },
+      {
+        key: "costPerConversion",
+        label: "Custo/convers\u00e3o",
+        align: "right",
+      },
+    ];
+  }
   return commonAdColumns;
 }
 
@@ -724,6 +858,10 @@ export function PaidMediaAdsSection({
   metaAdsData,
   metaAdsLoading = false,
   metaAdsError,
+  googleAdsConnected = false,
+  googleAdsData,
+  googleAdsLoading = false,
+  googleAdsError,
 }: PaidMediaAdsSectionProps) {
   const [activePlatform, setActivePlatform] =
     useState<PaidMediaPlatformKey>("meta");
@@ -746,17 +884,37 @@ export function PaidMediaAdsSection({
     [metaAdsConnected, metaAdsData, metaAdsError, metaAdsLoading],
   );
 
+  const googlePlatform = useMemo(
+    () =>
+      buildGooglePlatformFromResponse(googleAdsData) ??
+      buildGooglePlaceholder({
+        connected: googleAdsConnected,
+        loading: googleAdsLoading,
+        error: googleAdsError,
+      }),
+    [
+      googleAdsConnected,
+      googleAdsData,
+      googleAdsError,
+      googleAdsLoading,
+    ],
+  );
+
   const platforms = useMemo(
     () => [
       metaPlatform,
+      googlePlatform,
       ...paidMediaMock
-        .filter((platform) => platform.key !== "meta")
+        .filter((platform) => platform.key === "linkedin")
         .map(withMockSource),
     ],
-    [metaPlatform],
+    [googlePlatform, metaPlatform],
   );
 
   const hasLiveMetaAds = Boolean(buildMetaPlatformFromResponse(metaAdsData));
+  const hasLiveGoogleAds = Boolean(
+    buildGooglePlatformFromResponse(googleAdsData),
+  );
 
   const platformSummaries = useMemo(
     () =>
@@ -795,8 +953,23 @@ export function PaidMediaAdsSection({
           {!metaAdsLoading && !hasLiveMetaAds && !metaAdsConnected ? (
             <Badge variant="outline">Meta não conectado</Badge>
           ) : null}
+          {googleAdsLoading ? (
+            <Badge variant="secondary">Google carregando</Badge>
+          ) : null}
+          {!googleAdsLoading && hasLiveGoogleAds ? (
+            <Badge variant="success">Google real</Badge>
+          ) : null}
+          {!googleAdsLoading &&
+          !hasLiveGoogleAds &&
+          googleAdsConnected &&
+          googleAdsError ? (
+            <Badge variant="secondary">Google indispon\u00edvel</Badge>
+          ) : null}
+          {!googleAdsLoading && !hasLiveGoogleAds && !googleAdsConnected ? (
+            <Badge variant="outline">Google n\u00e3o conectado</Badge>
+          ) : null}
           <Badge variant="outline">{periodLabel}</Badge>
-          <Badge variant="secondary">Google/LinkedIn mock</Badge>
+          <Badge variant="secondary">LinkedIn mock</Badge>
         </div>
       </div>
 

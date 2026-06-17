@@ -81,6 +81,7 @@ export type IntegrationSurface =
   | "facebook"
   | "instagram"
   | "meta_ads"
+  | "google_ads"
   | "google_analytics"
   | "youtube"
   | "linkedin";

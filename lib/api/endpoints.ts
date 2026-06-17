@@ -47,6 +47,12 @@ export const endpoints = {
     connect: () => "/api/googleAnalytics/connect" as const,
     status: () => "/api/googleAnalytics/status" as const,
   },
+  googleAds: {
+    accounts: () => "/api/googleAds/accounts" as const,
+    connect: () => "/api/googleAds/connect" as const,
+    status: () => "/api/googleAds/status" as const,
+    insights: () => "/api/googleAds/insights" as const,
+  },
   linkedin: {
     organizations: () => "/api/linkedin/organizations" as const,
     connect: () => "/api/linkedin/connect" as const,

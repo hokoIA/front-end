@@ -12,6 +12,7 @@ function idLabelPair(row: Record<string, unknown>): IntegrationResourceOption | 
     row.id ??
       row.id_page ??
       row.id_ad_account ??
+      row.id_customer_ads ??
       row.account_id ??
       row.page_id ??
       row.id_property ??
@@ -70,6 +71,7 @@ export function integrationResourcesFromUnknown(
     r.organizations,
     r.adAccounts,
     r.ad_accounts,
+    r.accounts,
     r.results,
     r.facebook,
     r.instagram,

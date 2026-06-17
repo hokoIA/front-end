@@ -55,6 +55,8 @@ export const queryKeys = {
       ["dashboard", "posts", id, start, end] as const,
     metaAds: (id: string, start: string, end: string) =>
       ["dashboard", "meta-ads", id, start, end] as const,
+    googleAds: (id: string, start: string, end: string) =>
+      ["dashboard", "google-ads", id, start, end] as const,
   },
   integrations: {
     all: ["integrations"] as const,
@@ -68,6 +70,10 @@ export const queryKeys = {
       ["integrations", "meta", "ad-accounts", idCustomer] as const,
     metaAdsStatus: (idCustomer: string) =>
       ["integrations", "meta", "ads-status", idCustomer] as const,
+    googleAdsAccounts: (idCustomer: string) =>
+      ["integrations", "google-ads", "accounts", idCustomer] as const,
+    googleAdsStatus: (idCustomer: string) =>
+      ["integrations", "google-ads", "status", idCustomer] as const,
     gaProperties: (idCustomer: string) =>
       ["integrations", "ga", "properties", idCustomer] as const,
     gaStatus: (idCustomer: string) =>

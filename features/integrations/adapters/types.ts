@@ -10,7 +10,7 @@ export type IntegrationResourceOption = {
 export type IntegrationPlatformAdapter = {
   key: IntegrationSurface;
   /** Chave estável para telemetria / futuras rotas. */
-  apiKey: "meta" | "google_analytics" | "youtube" | "linkedin";
+  apiKey: "meta" | "google_ads" | "google_analytics" | "youtube" | "linkedin";
   label: string;
   description: string;
   listResources: (customerId: string) => Promise<unknown>;

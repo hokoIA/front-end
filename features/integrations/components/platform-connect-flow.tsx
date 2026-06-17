@@ -55,6 +55,8 @@ export function PlatformConnectFlow({
     queryKey:
       adapter.key === "meta_ads"
         ? queryKeys.integrations.metaAdAccounts(customerId)
+        : adapter.key === "google_ads"
+          ? queryKeys.integrations.googleAdsAccounts(customerId)
         : adapter.apiKey === "meta"
         ? queryKeys.integrations.metaPages(customerId)
         : adapter.apiKey === "google_analytics"
@@ -131,6 +133,7 @@ export function PlatformConnectFlow({
       string
     > = {
       meta: "/api/meta/auth",
+      google_ads: "/api/googleAds/auth",
       google_analytics: "/api/googleAnalytics/auth",
       youtube: "/api/youtube/auth",
       linkedin: "/api/linkedin/auth",

@@ -12,6 +12,7 @@ import {
 import { computeCustomerReadiness } from "@/features/customers/utils/compute-readiness";
 import {
   getGoogleAnalyticsStatus,
+  getGoogleAdsStatus,
   getLinkedinStatus,
   getMetaAdsStatus,
   getMetaStatus,
@@ -22,6 +23,7 @@ const SURFACES: IntegrationSurface[] = [
   "facebook",
   "instagram",
   "meta_ads",
+  "google_ads",
   "google_analytics",
   "youtube",
   "linkedin",
@@ -81,9 +83,10 @@ function extractMetaAdsResource(metaAds: unknown) {
 export async function fetchCustomerIntegrationSummary(
   customerId: string,
 ): Promise<CustomerIntegrationSummary> {
-  const [metaResult, metaAdsResult, gaResult, ytResult, liResult] = await Promise.allSettled([
+  const [metaResult, metaAdsResult, googleAdsResult, gaResult, ytResult, liResult] = await Promise.allSettled([
     getMetaStatus(customerId),
     getMetaAdsStatus(customerId),
+    getGoogleAdsStatus(customerId),
     getGoogleAnalyticsStatus(customerId),
     getYoutubeStatus(customerId),
     getLinkedinStatus(customerId),
@@ -91,6 +94,7 @@ export async function fetchCustomerIntegrationSummary(
 
   const meta = settledValue(metaResult);
   const metaAds = settledValue(metaAdsResult);
+  const googleAds = settledValue(googleAdsResult);
   const ga = settledValue(gaResult);
   const yt = settledValue(ytResult);
   const li = settledValue(liResult);
@@ -100,6 +104,7 @@ export async function fetchCustomerIntegrationSummary(
     facebook: parseMetaOperational(meta, "facebook"),
     instagram: parseMetaOperational(meta, "instagram"),
     meta_ads: parseGenericOperational(metaAds),
+    google_ads: parseGenericOperational(googleAds),
     google_analytics: parseGenericOperational(ga),
     youtube: parseGenericOperational(yt),
     linkedin: parseLinkedinOperational(li, linkedinSuccess),
@@ -107,6 +112,7 @@ export async function fetchCustomerIntegrationSummary(
   const resources = {
     ...extractMetaResources(meta),
     meta_ads: extractMetaAdsResource(metaAds),
+    google_ads: extractMetaAdsResource(googleAds),
   };
 
   const connectedCount = countBy(surfaces, (op) => op === "connected");
@@ -118,6 +124,7 @@ export async function fetchCustomerIntegrationSummary(
     connectedCount,
     renewalCount,
     unknownCount,
+    totalCount: SURFACES.length,
   });
   const hasAttention = renewalCount > 0;
 
