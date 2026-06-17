@@ -13,6 +13,7 @@ import type { IntegrationPlatformAdapter } from "@/features/integrations/adapter
 import { getCustomerLifecycleStatus } from "@/features/customers/utils/customer-fields";
 import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
 import { useEditCustomerMutation } from "@/hooks/api/use-customers-queries";
+import { removeCustomerPlatform } from "@/lib/api/customers";
 import { queryKeys } from "@/lib/api/query-keys";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Customer } from "@/lib/types/customer";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Archive, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -101,9 +102,19 @@ export function CustomerDetailPanel({
   );
   const [flowAdapter, setFlowAdapter] =
     useState<IntegrationPlatformAdapter | null>(null);
-  const [removeTarget, setRemoveTarget] = useState<string | null>(null);
+  const [removeTarget, setRemoveTarget] =
+    useState<IntegrationPlatformAdapter | null>(null);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const edit = useEditCustomerMutation();
+  const removeIntegration = useMutation({
+    mutationFn: ({
+      customerId,
+      platform,
+    }: {
+      customerId: string;
+      platform: IntegrationSurface;
+    }) => removeCustomerPlatform(customerId, platform),
+  });
 
   useEffect(() => {
     if (customer && open) selectCustomer(customer.id_customer);
@@ -117,11 +128,27 @@ export function CustomerDetailPanel({
   const showConnections = mode === "connections";
   const showDetails = mode === "details";
 
-  const confirmRemoveIntegration = () => {
-    toast.message(
-      "Remoção de integração: endpoint dedicado ainda não exposto. Dashboards, análises e metas que dependem desta fonte podem deixar de atualizar até nova conexão.",
-    );
-    setRemoveTarget(null);
+  const confirmRemoveIntegration = async () => {
+    if (!customer || !removeTarget) return;
+
+    try {
+      await removeIntegration.mutateAsync({
+        customerId: customer.id_customer,
+        platform: removeTarget.key,
+      });
+
+      await Promise.all([
+        summaryQ.refetch(),
+        qc.invalidateQueries({ queryKey: queryKeys.customers.all }),
+        qc.invalidateQueries({ queryKey: queryKeys.integrations.all }),
+        qc.invalidateQueries({ queryKey: queryKeys.dashboard.all }),
+      ]);
+
+      toast.success(`${removeTarget.label} removido.`);
+      setRemoveTarget(null);
+    } catch {
+      toast.error("Não foi possível remover a conexão.");
+    }
   };
 
   const archiveCustomer = async () => {
@@ -220,7 +247,7 @@ export function CustomerDetailPanel({
                       onConnect={() => setFlowAdapter(adapter)}
                       onOpenSwap={() => setFlowAdapter(adapter)}
                       onRemoveRequest={() =>
-                        setRemoveTarget(adapter.label)
+                        setRemoveTarget(adapter)
                       }
                     />
                   );
@@ -276,7 +303,7 @@ export function CustomerDetailPanel({
               {removeTarget ? (
                 <>
                   Você está prestes a remover a conexão com{" "}
-                  <strong>{removeTarget}</strong>. Isso pode afetar dashboards,
+                  <strong>{removeTarget.label}</strong>. Isso pode afetar dashboards,
                   análises comparativas e metas vinculadas a esta fonte até que
                   uma nova autorização seja concluída.
                 </>
@@ -291,8 +318,13 @@ export function CustomerDetailPanel({
               type="button"
               className="bg-rose-600 text-white hover:bg-rose-700"
               onClick={confirmRemoveIntegration}
+              disabled={removeIntegration.isPending}
             >
-              Entendi, continuar
+              {removeIntegration.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              ) : (
+                "Remover conexão"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

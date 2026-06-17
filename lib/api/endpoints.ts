@@ -31,6 +31,8 @@ export const endpoints = {
     add: () => "/customer/add" as const,
     edit: (idCustomer: string) => `/customer/edit/${idCustomer}` as const,
     delete: (idCustomer: string) => `/customer/delete/${idCustomer}` as const,
+    removePlatform: (idCustomer: string, platform: string) =>
+      `/customer/remove/${idCustomer}/${platform}` as const,
     cache: () => "/customer/cache" as const,
   },
   meta: {

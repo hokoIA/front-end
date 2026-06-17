@@ -84,6 +84,8 @@ export function parseCustomerIntegrationRecord(
     st === "disconnected" ||
     st === "inactive" ||
     st === "revoked" ||
+    st === "not_authorized" ||
+    st === "not_authorised" ||
     st === "none" ||
     st === "off"
   ) {
@@ -337,6 +339,8 @@ export function parseGenericOperational(
   const disc =
     r.connected === false ||
     status === "disconnected" ||
+    status === "not_authorized" ||
+    status === "not_authorised" ||
     r.active === false;
   const renewal =
     r.requires_reauth === true ||

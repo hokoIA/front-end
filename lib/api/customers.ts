@@ -80,6 +80,15 @@ export async function deleteCustomer(idCustomer: string): Promise<void> {
   await httpJson(endpoints.customer.delete(idCustomer), { method: "DELETE" });
 }
 
+export async function removeCustomerPlatform(
+  idCustomer: string,
+  platform: string,
+): Promise<unknown> {
+  return httpJson(endpoints.customer.removePlatform(idCustomer, platform), {
+    method: "DELETE",
+  });
+}
+
 export async function postCustomerCache(
   body?: Record<string, unknown>,
 ): Promise<unknown> {
