@@ -139,9 +139,11 @@ export function PlatformConnectFlow({
       linkedin: "/api/linkedin/auth",
     };
     const authPath = authPathByApiKey[adapter.apiKey];
-    window.location.assign(
-      `${authPath}?id_customer=${encodeURIComponent(customerId)}`,
-    );
+    const authParams = new URLSearchParams({ id_customer: customerId });
+    if (adapter.key === "meta_ads") {
+      authParams.set("platform", "meta_ads");
+    }
+    window.location.assign(`${authPath}?${authParams.toString()}`);
   };
 
   return (
