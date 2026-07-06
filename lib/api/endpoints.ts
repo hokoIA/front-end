@@ -76,7 +76,7 @@ export const endpoints = {
     posts: () => "/api/contents/posts" as const,
   },
   analyze: {
-    analyze: () => "/analyze/" as const,
+    analyze: () => "/api/analyze" as const,
   },
   documents: {
     store: () => "/documents/store" as const,

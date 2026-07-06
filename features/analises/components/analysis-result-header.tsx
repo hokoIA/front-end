@@ -14,11 +14,6 @@ type Props = {
   meta: AnalysisResultMeta;
 };
 
-function formatDuration(ms?: number): string {
-  if (typeof ms !== "number" || !Number.isFinite(ms)) return "-";
-  return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${Math.round(ms)}ms`;
-}
-
 export function AnalysisResultHeader({ meta }: Props) {
   const generated = new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -54,24 +49,6 @@ export function AnalysisResultHeader({ meta }: Props) {
           <span className="font-medium text-hk-deep">Direcionamento: </span>
           {meta.bias.trim()}
         </p>
-      ) : null}
-      {meta.metaAdsPipeline ? (
-        <div className="mt-3 flex flex-wrap gap-2 text-xs text-hk-muted">
-          <span className="rounded-md border border-hk-border-subtle bg-hk-surface px-2.5 py-1">
-            Meta Ads API: {formatDuration(meta.metaAdsPipeline.metaAdsApiMs)}
-          </span>
-          <span className="rounded-md border border-hk-border-subtle bg-hk-surface px-2.5 py-1">
-            Analyze: {formatDuration(meta.metaAdsPipeline.analyzeMs)}
-          </span>
-          <span className="rounded-md border border-hk-border-subtle bg-hk-surface px-2.5 py-1">
-            Total: {formatDuration(meta.metaAdsPipeline.totalMs)}
-          </span>
-          <span className="rounded-md border border-hk-border-subtle bg-hk-surface px-2.5 py-1">
-            Linhas: {meta.metaAdsPipeline.rowCounts.campaign} campanhas /{" "}
-            {meta.metaAdsPipeline.rowCounts.adSet} conjuntos /{" "}
-            {meta.metaAdsPipeline.rowCounts.ad} anuncios
-          </span>
-        </div>
       ) : null}
       <Separator className="my-4 bg-hk-border-subtle" />
       <div className="flex flex-wrap gap-2">

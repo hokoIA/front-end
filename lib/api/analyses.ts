@@ -11,7 +11,6 @@ export async function postAnalyze(
 ): Promise<AnalyzeResponse> {
   return httpJson<AnalyzeResponse>(endpoints.analyze.analyze(), {
     method: "POST",
-    base: "analyze",
     json: body,
   });
 }
