@@ -22,7 +22,6 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import {
-  paidMediaMock,
   type PaidMediaLevelKey,
   type PaidMediaMetricKey,
   type PaidMediaPlatformKey,
@@ -462,13 +461,6 @@ function buildGooglePlaceholder({
   };
 }
 
-function withMockSource(platform: PaidMediaPlatformMock): PaidMediaPlatformView {
-  return {
-    ...platform,
-    source: "mock",
-    statusText: "Dados demonstrativos até a conexão desta plataforma.",
-  };
-}
 
 function summarizePlatform(platform: PaidMediaPlatformMock): PaidMediaSummary {
   const rows = getCampaignRows(platform);
@@ -900,21 +892,25 @@ export function PaidMediaAdsSection({
     ],
   );
 
-  const platforms = useMemo(
-    () => [
-      metaPlatform,
-      googlePlatform,
-      ...paidMediaMock
-        .filter((platform) => platform.key === "linkedin")
-        .map(withMockSource),
-    ],
-    [googlePlatform, metaPlatform],
-  );
-
   const hasLiveMetaAds = Boolean(buildMetaPlatformFromResponse(metaAdsData));
   const hasLiveGoogleAds = Boolean(
     buildGooglePlatformFromResponse(googleAdsData),
   );
+  const shouldShowGooglePlatform =
+    googleAdsConnected || googleAdsLoading || hasLiveGoogleAds || Boolean(googleAdsError);
+
+  const platforms = useMemo(
+    () =>
+      shouldShowGooglePlatform
+        ? [metaPlatform, googlePlatform]
+        : [metaPlatform],
+    [googlePlatform, metaPlatform, shouldShowGooglePlatform],
+  );
+  const activePlatformValue = platforms.some(
+    (platform) => platform.key === activePlatform,
+  )
+    ? activePlatform
+    : platforms[0]?.key ?? "meta";
 
   const platformSummaries = useMemo(
     () =>
@@ -938,7 +934,7 @@ export function PaidMediaAdsSection({
           compact
           title={"M\u00eddia paga"}
           description={
-            "Meta Ads, Google Ads e LinkedIn Ads em uma \u00e1rea separada dos indicadores org\u00e2nicos."
+            "Meta Ads e Google Ads em uma \u00e1rea separada dos indicadores org\u00e2nicos."
           }
         />
         <div className="flex flex-wrap items-center gap-2">
@@ -969,7 +965,6 @@ export function PaidMediaAdsSection({
             <Badge variant="outline">Google n\u00e3o conectado</Badge>
           ) : null}
           <Badge variant="outline">{periodLabel}</Badge>
-          <Badge variant="secondary">LinkedIn mock</Badge>
         </div>
       </div>
 
@@ -1009,7 +1004,7 @@ export function PaidMediaAdsSection({
       </div>
 
       <Tabs
-        value={activePlatform}
+        value={activePlatformValue}
         onValueChange={(value) =>
           setActivePlatform(value as PaidMediaPlatformKey)
         }
