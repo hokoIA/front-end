@@ -147,7 +147,7 @@ export function CustomerDetailPanel({
       toast.success(`${removeTarget.label} removido.`);
       setRemoveTarget(null);
     } catch {
-      toast.error("Não foi possível remover a conexão.");
+      // O QueryProvider exibe a mensagem amigável global para mutations.
     }
   };
 
