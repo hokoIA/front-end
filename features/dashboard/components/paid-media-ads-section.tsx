@@ -897,7 +897,7 @@ export function PaidMediaAdsSection({
     buildGooglePlatformFromResponse(googleAdsData),
   );
   const shouldShowGooglePlatform =
-    googleAdsConnected || googleAdsLoading || hasLiveGoogleAds || Boolean(googleAdsError);
+    googleAdsLoading || hasLiveGoogleAds;
 
   const platforms = useMemo(
     () =>

@@ -188,6 +188,11 @@ export function CustomerDetailPanel({
               <DialogTitle>
                 {showConnections ? "Conexões do cliente" : "Dados do cliente"}
               </DialogTitle>
+              <DialogDescription className="sr-only">
+                {showConnections
+                  ? "Gerencie as plataformas conectadas a este cliente."
+                  : "Visualize e edite os dados cadastrais deste cliente."}
+              </DialogDescription>
             </DialogHeader>
           </div>
 
