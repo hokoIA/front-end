@@ -69,6 +69,12 @@ type PaidMediaColumn = {
   align?: "left" | "right";
 };
 
+function isPaidMediaPlatformView(
+  platform: PaidMediaPlatformView | null,
+): platform is PaidMediaPlatformView {
+  return Boolean(platform);
+}
+
 const platformAccent: Record<
   PaidMediaPlatformKey,
   { border: string; background: string; bar: string }
@@ -865,46 +871,64 @@ export function PaidMediaAdsSection({
     linkedin: "campaign",
   });
 
+  const liveMetaPlatform = useMemo(
+    () => buildMetaPlatformFromResponse(metaAdsData),
+    [metaAdsData],
+  );
+
+  const liveGooglePlatform = useMemo(
+    () => buildGooglePlatformFromResponse(googleAdsData),
+    [googleAdsData],
+  );
+
+  const hasLiveMetaAds = Boolean(liveMetaPlatform);
+  const hasLiveGoogleAds = Boolean(liveGooglePlatform);
+  const shouldShowMetaPlatform =
+    metaAdsConnected || metaAdsLoading || hasLiveMetaAds;
+  const shouldShowGooglePlatform =
+    googleAdsConnected || googleAdsLoading || hasLiveGoogleAds;
+
   const metaPlatform = useMemo(
     () =>
-      buildMetaPlatformFromResponse(metaAdsData) ??
-      buildMetaPlaceholder({
-        connected: metaAdsConnected,
-        loading: metaAdsLoading,
-        error: metaAdsError,
-      }),
-    [metaAdsConnected, metaAdsData, metaAdsError, metaAdsLoading],
+      shouldShowMetaPlatform
+        ? liveMetaPlatform ??
+          buildMetaPlaceholder({
+            connected: metaAdsConnected,
+            loading: metaAdsLoading,
+            error: metaAdsError,
+          })
+        : null,
+    [
+      liveMetaPlatform,
+      metaAdsConnected,
+      metaAdsError,
+      metaAdsLoading,
+      shouldShowMetaPlatform,
+    ],
   );
 
   const googlePlatform = useMemo(
     () =>
-      buildGooglePlatformFromResponse(googleAdsData) ??
-      buildGooglePlaceholder({
-        connected: googleAdsConnected,
-        loading: googleAdsLoading,
-        error: googleAdsError,
-      }),
+      shouldShowGooglePlatform
+        ? liveGooglePlatform ??
+          buildGooglePlaceholder({
+            connected: googleAdsConnected,
+            loading: googleAdsLoading,
+            error: googleAdsError,
+          })
+        : null,
     [
       googleAdsConnected,
-      googleAdsData,
       googleAdsError,
       googleAdsLoading,
+      liveGooglePlatform,
+      shouldShowGooglePlatform,
     ],
   );
 
-  const hasLiveMetaAds = Boolean(buildMetaPlatformFromResponse(metaAdsData));
-  const hasLiveGoogleAds = Boolean(
-    buildGooglePlatformFromResponse(googleAdsData),
-  );
-  const shouldShowGooglePlatform =
-    googleAdsLoading || hasLiveGoogleAds;
-
   const platforms = useMemo(
-    () =>
-      shouldShowGooglePlatform
-        ? [metaPlatform, googlePlatform]
-        : [metaPlatform],
-    [googlePlatform, metaPlatform, shouldShowGooglePlatform],
+    () => [metaPlatform, googlePlatform].filter(isPaidMediaPlatformView),
+    [googlePlatform, metaPlatform],
   );
   const activePlatformValue = platforms.some(
     (platform) => platform.key === activePlatform,
@@ -924,6 +948,8 @@ export function PaidMediaAdsSection({
 
   const periodLabel = period ? `${period.start} a ${period.end}` : "Per\u00edodo atual";
 
+  if (platforms.length === 0) return null;
+
   return (
     <DataPanel
       id="paid-media"
@@ -939,30 +965,31 @@ export function PaidMediaAdsSection({
         />
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="info">Patrocinado</Badge>
-          {metaAdsLoading ? <Badge variant="secondary">Meta carregando</Badge> : null}
-          {!metaAdsLoading && hasLiveMetaAds ? (
+          {shouldShowMetaPlatform && metaAdsLoading ? (
+            <Badge variant="secondary">Meta carregando</Badge>
+          ) : null}
+          {shouldShowMetaPlatform && !metaAdsLoading && hasLiveMetaAds ? (
             <Badge variant="success">Meta real</Badge>
           ) : null}
-          {!metaAdsLoading && !hasLiveMetaAds && metaAdsConnected && metaAdsError ? (
+          {shouldShowMetaPlatform &&
+          !metaAdsLoading &&
+          !hasLiveMetaAds &&
+          metaAdsConnected &&
+          metaAdsError ? (
             <Badge variant="secondary">Meta indisponível</Badge>
           ) : null}
-          {!metaAdsLoading && !hasLiveMetaAds && !metaAdsConnected ? (
-            <Badge variant="outline">Meta não conectado</Badge>
-          ) : null}
-          {googleAdsLoading ? (
+          {shouldShowGooglePlatform && googleAdsLoading ? (
             <Badge variant="secondary">Google carregando</Badge>
           ) : null}
-          {!googleAdsLoading && hasLiveGoogleAds ? (
+          {shouldShowGooglePlatform && !googleAdsLoading && hasLiveGoogleAds ? (
             <Badge variant="success">Google real</Badge>
           ) : null}
-          {!googleAdsLoading &&
+          {shouldShowGooglePlatform &&
+          !googleAdsLoading &&
           !hasLiveGoogleAds &&
           googleAdsConnected &&
           googleAdsError ? (
             <Badge variant="secondary">Google indispon\u00edvel</Badge>
-          ) : null}
-          {!googleAdsLoading && !hasLiveGoogleAds && !googleAdsConnected ? (
-            <Badge variant="outline">Google n\u00e3o conectado</Badge>
           ) : null}
           <Badge variant="outline">{periodLabel}</Badge>
         </div>

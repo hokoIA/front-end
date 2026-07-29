@@ -36,6 +36,7 @@ import { useIntegrationDashboardCards } from "@/features/dashboard/hooks/use-int
 import { buildPeriodPayload } from "@/features/dashboard/utils/payloads";
 import type {
   DashboardPeriodRange,
+  IntegrationSurface,
   MetricBlockModel,
 } from "@/features/dashboard/types";
 import { extractInsightText } from "@/features/dashboard/utils/insight-text";
@@ -82,6 +83,11 @@ function snapshotHasData(s: ReturnType<typeof useDashboardPeriodQueries>["snapsh
     contentsSignal
   );
 }
+
+const PAID_MEDIA_SURFACES = new Set<IntegrationSurface>([
+  "meta_ads",
+  "google_ads",
+]);
 
 export function DashboardView() {
   const { selected, customerId, isReady: customerReady } =
@@ -131,12 +137,22 @@ export function DashboardView() {
   const connectedCount = visibleIntegrationCards.filter(
     (c) => c.operational === "connected",
   ).length;
-  const hasConnectedMetaAds = integrationCards.some(
-    (c) => c.surface === "meta_ads" && c.operational === "connected",
+  const connectedPaidMediaSurfaces = useMemo(
+    () =>
+      new Set(
+        integrationCards
+          .filter(
+            (c) =>
+              PAID_MEDIA_SURFACES.has(c.surface) &&
+              c.operational === "connected",
+          )
+          .map((c) => c.surface),
+      ),
+    [integrationCards],
   );
-  const hasConnectedGoogleAds = integrationCards.some(
-    (c) => c.surface === "google_ads" && c.operational === "connected",
-  );
+  const hasConnectedMetaAds = connectedPaidMediaSurfaces.has("meta_ads");
+  const hasConnectedGoogleAds = connectedPaidMediaSurfaces.has("google_ads");
+  const hasConnectedPaidMedia = connectedPaidMediaSurfaces.size > 0;
 
   const hasConnectedIntegrations = connectedCount > 0;
   const showPendingIntegrationsState = !intLoading && !hasConnectedIntegrations;
@@ -246,11 +262,20 @@ export function DashboardView() {
   const qTra = queries[3];
   const qSea = queries[4];
 
+  const reachLineDefs = useMemo(() => {
+    const rows = snapshot?.reach.comparison?.rows ?? [];
+    const hasGoogle = rows.some((r) => Number(r.google) > 0);
+    const hasLinkedin = rows.some((r) => Number(r.linkedin) > 0);
+    const hasYoutube = rows.some((r) => Number(r.youtube) > 0);
+    return reachComparisonLines(hasGoogle, hasLinkedin, hasYoutube);
+  }, [snapshot?.reach.comparison?.rows]);
+
   const impressionLineDefs = useMemo(() => {
     const rows = snapshot?.impressions.comparison?.rows ?? [];
     const hasGoogle = rows.some((r) => Number(r.google) > 0);
     const hasLinkedin = rows.some((r) => Number(r.linkedin) > 0);
-    return impressionsComparisonLines(hasGoogle, hasLinkedin);
+    const hasYoutube = rows.some((r) => Number(r.youtube) > 0);
+    return impressionsComparisonLines(hasGoogle, hasLinkedin, hasYoutube);
   }, [snapshot?.impressions.comparison?.rows]);
 
   const visibleOverviewMetrics = useMemo(() => {
@@ -468,19 +493,21 @@ export function DashboardView() {
             </div>
           </DataPanel>
 
-          <PaidMediaAdsSection
-            period={appliedRange}
-            metaAdsConnected={hasConnectedMetaAds}
-            metaAdsData={metaAdsQuery.data}
-            metaAdsLoading={metaAdsQuery.isPending && metaAdsQuery.fetchStatus !== "idle"}
-            metaAdsError={metaAdsQuery.error}
-            googleAdsConnected={hasConnectedGoogleAds}
-            googleAdsData={googleAdsQuery.data}
-            googleAdsLoading={
-              googleAdsQuery.isPending && googleAdsQuery.fetchStatus !== "idle"
-            }
-            googleAdsError={googleAdsQuery.error}
-          />
+          {hasConnectedPaidMedia ? (
+            <PaidMediaAdsSection
+              period={appliedRange}
+              metaAdsConnected={hasConnectedMetaAds}
+              metaAdsData={metaAdsQuery.data}
+              metaAdsLoading={metaAdsQuery.isPending && metaAdsQuery.fetchStatus !== "idle"}
+              metaAdsError={metaAdsQuery.error}
+              googleAdsConnected={hasConnectedGoogleAds}
+              googleAdsData={googleAdsQuery.data}
+              googleAdsLoading={
+                googleAdsQuery.isPending && googleAdsQuery.fetchStatus !== "idle"
+              }
+              googleAdsError={googleAdsQuery.error}
+            />
+          ) : null}
 
           <div className="flex items-center gap-3 pt-1">
             <span className="rounded-md border border-hk-border-subtle bg-hk-surface px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.11em] text-hk-muted shadow-hk-xs">
@@ -495,7 +522,7 @@ export function DashboardView() {
               title="Alcance"
               description=""
               comparison={snapshot.reach.comparison}
-              lines={reachComparisonLines()}
+              lines={reachLineDefs}
               byPlatform={snapshot.reach.byPlatform}
               total={snapshot.reach.total}
               queryLoading={queryReach.isPending}

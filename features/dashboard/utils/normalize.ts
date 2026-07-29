@@ -70,73 +70,97 @@ function buildComparisonRows(
   return rows;
 }
 
-/** Alcance: linhas por rede + totais. */
-export function normalizeReachResponse(data: unknown): MetricBlockModel {
+const COMPARISON_PLATFORMS = [
+  { key: "facebook", label: "Facebook", aliases: ["facebook", "Facebook", "fb"] },
+  { key: "instagram", label: "Instagram", aliases: ["instagram", "Instagram", "ig"] },
+  {
+    key: "google",
+    label: "Google Analytics",
+    aliases: ["google", "google_analytics", "googleAnalytics", "ga4"],
+  },
+  {
+    key: "linkedin",
+    label: "LinkedIn",
+    aliases: ["linkedin", "linkedIn", "linked_in"],
+  },
+  { key: "youtube", label: "YouTube", aliases: ["youtube", "Youtube", "youTube"] },
+] as const;
+
+function arrayFromAliases(
+  source: Record<string, unknown>,
+  aliases: readonly string[],
+): unknown[] {
+  for (const alias of aliases) {
+    const value = source[alias];
+    if (Array.isArray(value)) return value;
+  }
+  return [];
+}
+
+function totalFromAliases(
+  source: Record<string, unknown> | null,
+  aliases: readonly string[],
+): number | null {
+  if (!source) return null;
+  for (const alias of aliases) {
+    const value = source[alias];
+    if (value !== undefined && value !== null) return num(value);
+  }
+  return null;
+}
+
+function normalizeComparisonResponse(
+  data: unknown,
+  options: { useResponseTotals?: boolean } = {},
+): MetricBlockModel {
   const r = record(data);
   if (!r) return emptyBlock();
+
   const labels = Array.isArray(r.labels) ? r.labels.map((x) => str(x)) : [];
-  const fb = Array.isArray(r.facebook) ? r.facebook : [];
-  const ig = Array.isArray(r.instagram) ? r.instagram : [];
+  const totals = options.useResponseTotals && isRecord(r.totals) ? r.totals : null;
+  const keys = COMPARISON_PLATFORMS.map((platform) => platform.key);
+  const arrays = Object.fromEntries(
+    COMPARISON_PLATFORMS.map((platform) => [
+      platform.key,
+      arrayFromAliases(r, platform.aliases),
+    ]),
+  ) as Record<string, unknown[]>;
+
   const comparison: ComparisonChartData = {
     labels,
-    rows: buildComparisonRows(labels, ["facebook", "instagram"], {
-      facebook: fb,
-      instagram: ig,
-    }),
+    rows: buildComparisonRows(labels, keys, arrays),
   };
-  const n = Math.max(labels.length, fb.length, ig.length);
+  const n = Math.max(labels.length, ...keys.map((k) => arrays[k].length));
   const series: MetricSeriesPoint[] = [];
+
   for (let i = 0; i < n; i++) {
     const label = labels[i] ? labels[i] : `Ponto ${i + 1}`;
-    series.push({ name: label, value: num(fb[i]) + num(ig[i]) });
+    let value = 0;
+    for (const k of keys) value += num(arrays[k][i]);
+    series.push({ name: label, value });
   }
-  const fbTotal = sumArray(fb);
-  const igTotal = sumArray(ig);
-  const byPlatform: Record<string, number> = {
-    Facebook: fbTotal,
-    Instagram: igTotal,
-  };
-  return {
-    total: fbTotal + igTotal,
-    series,
-    byPlatform,
-    comparison,
-    raw: data,
-  };
+
+  const byPlatform: Record<string, number> = Object.fromEntries(
+    COMPARISON_PLATFORMS.map((platform) => [
+      platform.label,
+      options.useResponseTotals
+        ? totalFromAliases(totals, platform.aliases) ?? 0
+        : sumArray(arrays[platform.key]),
+    ]),
+  );
+  const total = Object.values(byPlatform).reduce((a, b) => a + b, 0);
+
+  return { total, series, byPlatform, comparison, raw: data };
+}
+
+/** Alcance: linhas por rede + totais. */
+export function normalizeReachResponse(data: unknown): MetricBlockModel {
+  return normalizeComparisonResponse(data, { useResponseTotals: true });
 }
 
 /** Impressões: linhas por rede (quando série existir). */
 export function normalizeImpressionsResponse(data: unknown): MetricBlockModel {
-  const r = record(data);
-  if (!r) return emptyBlock();
-  const labels = Array.isArray(r.labels) ? r.labels.map((x) => str(x)) : [];
-  const keys = ["facebook", "instagram", "google", "linkedin"] as const;
-  const arrays: Record<string, unknown[]> = {
-    facebook: Array.isArray(r.facebook) ? r.facebook : [],
-    instagram: Array.isArray(r.instagram) ? r.instagram : [],
-    google: Array.isArray(r.google) ? r.google : [],
-    linkedin: Array.isArray(r.linkedin) ? r.linkedin : [],
-  };
-  const comparison: ComparisonChartData = {
-    labels,
-    rows: buildComparisonRows(labels, [...keys], arrays),
-  };
-  const n = Math.max(labels.length, ...keys.map((k) => arrays[k].length));
-  const series: MetricSeriesPoint[] = [];
-  for (let i = 0; i < n; i++) {
-    const label = labels[i] ? labels[i] : `Ponto ${i + 1}`;
-    let v = 0;
-    for (const k of keys) v += num(arrays[k][i]);
-    series.push({ name: label, value: v });
-  }
-  const byPlatform: Record<string, number> = {
-    Facebook: sumArray(arrays.facebook),
-    Instagram: sumArray(arrays.instagram),
-    "Google Analytics": sumArray(arrays.google),
-    LinkedIn: sumArray(arrays.linkedin),
-  };
-  const total = Object.values(byPlatform).reduce((a, b) => a + b, 0);
-  return { total, series, byPlatform, comparison, raw: data };
+  return normalizeComparisonResponse(data);
 }
 
 /** Seguidores: snapshot por plataforma (sem série temporal). */
