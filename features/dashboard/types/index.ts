@@ -45,6 +45,7 @@ export type MetricBlockModel = {
   total?: number;
   series: MetricSeriesPoint[];
   byPlatform: Record<string, number>;
+  unavailablePlatforms?: string[];
   raw?: unknown;
   /** Alcance / impressões — linhas multi-série. */
   comparison?: ComparisonChartData;

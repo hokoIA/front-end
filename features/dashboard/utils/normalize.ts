@@ -140,17 +140,38 @@ function normalizeComparisonResponse(
     series.push({ name: label, value });
   }
 
-  const byPlatform: Record<string, number> = Object.fromEntries(
-    COMPARISON_PLATFORMS.map((platform) => [
-      platform.label,
-      options.useResponseTotals
-        ? totalFromAliases(totals, platform.aliases) ?? 0
-        : sumArray(arrays[platform.key]),
-    ]),
-  );
-  const total = Object.values(byPlatform).reduce((a, b) => a + b, 0);
+  const platformTotals = COMPARISON_PLATFORMS.map((platform) => {
+    const responseTotal = options.useResponseTotals
+      ? totalFromAliases(totals, platform.aliases)
+      : null;
+    const hasSeriesData = arrays[platform.key].some((value) => num(value) > 0);
 
-  return { total, series, byPlatform, comparison, raw: data };
+    return {
+      label: platform.label,
+      value: options.useResponseTotals
+        ? responseTotal ?? 0
+        : sumArray(arrays[platform.key]),
+      unavailable: options.useResponseTotals && responseTotal === null && hasSeriesData,
+    };
+  });
+  const byPlatform: Record<string, number> = Object.fromEntries(
+    platformTotals.map(({ label, value }) => [label, value]),
+  );
+  const unavailablePlatforms = platformTotals
+    .filter(({ unavailable }) => unavailable)
+    .map(({ label }) => label);
+  const total = options.useResponseTotals && unavailablePlatforms.length > 0
+    ? undefined
+    : Object.values(byPlatform).reduce((a, b) => a + b, 0);
+
+  return {
+    total,
+    series,
+    byPlatform,
+    unavailablePlatforms,
+    comparison,
+    raw: data,
+  };
 }
 
 /** Alcance: linhas por rede + totais. */

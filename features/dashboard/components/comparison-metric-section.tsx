@@ -10,7 +10,14 @@ import { InsightPanel } from "@/features/dashboard/components/insight-panel";
 import { InsightTriggerButton } from "@/features/dashboard/components/insight-trigger-button";
 import { PlatformIconFromLabel } from "@/components/platforms/platform-icon";
 import { SectionHeader } from "@/components/data-display/section-header";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/cn";
+import { Info } from "lucide-react";
 
 type ComparisonMetricSectionProps = {
   id: string;
@@ -19,7 +26,10 @@ type ComparisonMetricSectionProps = {
   comparison: ComparisonChartData | undefined;
   lines: ComparisonLineDef[];
   byPlatform: Record<string, number>;
+  unavailablePlatforms?: string[];
   total?: number;
+  totalsHelpText?: string;
+  showConsolidatedTotal?: boolean;
   queryLoading: boolean;
   queryError?: unknown;
   onRetry?: () => void;
@@ -36,7 +46,10 @@ export function ComparisonMetricSection({
   comparison,
   lines,
   byPlatform,
+  unavailablePlatforms = [],
   total,
+  totalsHelpText,
+  showConsolidatedTotal = true,
   queryLoading,
   queryError,
   onRetry,
@@ -47,8 +60,9 @@ export function ComparisonMetricSection({
 }: ComparisonMetricSectionProps) {
   const rows = comparison?.rows ?? [];
   const labels = comparison?.labels ?? [];
+  const unavailableSet = new Set(unavailablePlatforms);
   const visibleLines = lines.filter((line) => rows.some((row) => Number(row[line.dataKey] ?? 0) > 0),);
-  const visibleByPlatform: Record<string, number> = Object.fromEntries(Object.entries(byPlatform).filter(([, value]) => Number(value) > 0),);
+  const visibleByPlatform: Record<string, number> = Object.fromEntries(Object.entries(byPlatform).filter(([label, value]) => Number(value) > 0 || unavailableSet.has(label)),);
   const visibleTotal = total && total > 0 ? total : Object.values(visibleByPlatform).reduce((acc, value) => acc + value, 0);
 
   const hasData =
@@ -120,9 +134,29 @@ export function ComparisonMetricSection({
           />
         </div>
         <div className="flex min-w-0 flex-col gap-2 rounded-xl border border-hk-border-subtle bg-hk-surface-muted/55 p-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-hk-muted">
-            Totais por origem
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.11em] text-hk-muted">
+              Totais por origem
+            </p>
+            {totalsHelpText ? (
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label="Entenda os totais de alcance"
+                      className="inline-flex size-5 items-center justify-center text-hk-muted transition-colors hover:text-hk-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hk-primary/40"
+                    >
+                      <Info className="size-3.5" aria-hidden />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-72 text-xs leading-5">
+                    {totalsHelpText}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : null}
+          </div>
           <ul className="flex flex-col gap-1.5">
             {Object.keys(visibleByPlatform).length === 0 && !queryLoading ? (
               <li className="text-xs text-hk-muted">—</li>
@@ -139,13 +173,13 @@ export function ComparisonMetricSection({
                     </span>
                   </span>
                   <span className="shrink-0 tabular-nums text-hk-muted">
-                    {formatCompactNumber(v)}
+                    {unavailableSet.has(k) ? "—" : formatCompactNumber(v)}
                   </span>
                 </li>
               ))
             )}
           </ul>
-          {visibleTotal > 0 && (
+          {showConsolidatedTotal && visibleTotal > 0 && (
             <p className="text-xs text-hk-muted">
               Total consolidado:{" "}
               <span className="font-semibold text-hk-ink">

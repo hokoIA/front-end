@@ -524,7 +524,10 @@ export function DashboardView() {
               comparison={snapshot.reach.comparison}
               lines={reachLineDefs}
               byPlatform={snapshot.reach.byPlatform}
+              unavailablePlatforms={snapshot.reach.unavailablePlatforms}
               total={snapshot.reach.total}
+              showConsolidatedTotal={false}
+              totalsHelpText="O alcance representa contas únicas e não deve ser somado entre dias ou plataformas. O gráfico mantém a série diária. Os valores por origem aparecem somente quando a Meta fornece um total único para todo o período; acima do limite aceito pela API, o total fica indisponível."
               queryLoading={queryReach.isPending}
               queryError={queryReach.error}
               onRetry={() => queryReach.refetch()}
