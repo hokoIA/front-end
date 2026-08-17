@@ -4,10 +4,8 @@ import type { IntegrationOperationalState } from "@/features/dashboard/types";
 import type { IntegrationPlatformAdapter } from "@/features/integrations/adapters/types";
 import { integrationResourcesFromUnknown } from "@/features/integrations/adapters/resource-options";
 import { extractOAuthRedirectUrl } from "@/features/integrations/utils/oauth-response";
-import { useRbacMeQuery } from "@/hooks/api/use-rbac-queries";
 import { queryKeys } from "@/lib/api/query-keys";
 import { HttpError } from "@/lib/api/http-client";
-import { rbacAllows } from "@/lib/types/rbac";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -48,8 +46,6 @@ export function PlatformConnectFlow({
   onConnected?: () => void | Promise<void>;
 }) {
   const qc = useQueryClient();
-  const rbacQ = useRbacMeQuery();
-  const canConnectPlatforms = rbacAllows(rbacQ.data, "platforms:connect");
   const [step, setStep] = useState<Step>(() =>
     operational === "authorized" ? "resources" : "intro",
   );
@@ -114,10 +110,6 @@ export function PlatformConnectFlow({
       : "Não foi possível listar recursos. Tente autorizar novamente ou verifique se a sessão ainda é válida.";
 
   const submitConnect = () => {
-    if (!canConnectPlatforms) {
-      toast.error("Você não tem permissão para conectar plataformas.");
-      return;
-    }
     if (options.length > 0 && !selectedId) {
       toast.error("Selecione um recurso para continuar.");
       return;
@@ -136,10 +128,6 @@ export function PlatformConnectFlow({
   };
 
   const oauthOnly = () => {
-    if (!canConnectPlatforms) {
-      toast.error("Você não tem permissão para conectar plataformas.");
-      return;
-    }
     const authPathByApiKey: Record<
       IntegrationPlatformAdapter["apiKey"],
       string
@@ -176,12 +164,6 @@ export function PlatformConnectFlow({
               Autorize a conta na plataforma. Depois do retorno, a tela permitirá
               escolher o ativo específico do cliente.
             </p>
-            {!canConnectPlatforms && !rbacQ.isPending ? (
-              <p className="rounded-md border border-amber-200 bg-amber-50/90 px-3 py-2 text-amber-950">
-                Para iniciar OAuth, sua conta precisa da permissão
-                platforms:connect.
-              </p>
-            ) : null}
           </div>
         )}
 
@@ -201,7 +183,6 @@ export function PlatformConnectFlow({
                   type="button"
                   variant="secondary"
                   onClick={oauthOnly}
-                  disabled={rbacQ.isPending || !canConnectPlatforms}
                 >
                   Autorizar novamente
                 </Button>
@@ -251,7 +232,6 @@ export function PlatformConnectFlow({
               type="button"
               className="bg-hk-action text-white hover:bg-hk-strong"
               onClick={oauthOnly}
-              disabled={rbacQ.isPending || !canConnectPlatforms}
             >
               Autorizar conta
             </Button>
@@ -263,8 +243,6 @@ export function PlatformConnectFlow({
               onClick={submitConnect}
               disabled={
                 connectMut.isPending ||
-                rbacQ.isPending ||
-                !canConnectPlatforms ||
                 resourcesQuery.isPending ||
                 options.length === 0 ||
                 !selectedId

@@ -66,7 +66,6 @@ export const MAIN_NAV_SECTIONS: NavSection[] = [
         href: "/clientes",
         label: "Clientes & Integrações",
         icon: Users,
-        permission: "platforms:connect",
       },
       {
         href: "/equipe",
