@@ -7,7 +7,10 @@ import { usePathname } from "next/navigation";
 const LABELS: Record<string, string> = {
   inicio: "Início",
   dashboard: "Dashboard",
-  analises: "Análises",
+  analises: "Análises Estratégicas",
+  decisoes: "Central de Decisões",
+  ciclos: "Ciclos Operacionais",
+  aprendizagem: "Aprendizagem & Histórico",
   "alimentar-modelo": "Base de Contexto",
   metas: "Planejamento Estratégico",
   clientes: "Clientes & Integrações",

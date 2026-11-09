@@ -1,15 +1,17 @@
 // app/layout.tsx
 import { AppProviders } from "@/components/providers/app-providers";
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
+const montserrat = localFont({
+  src: "./fonts/montserrat-latin.woff2",
   variable: "--font-sans",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: "100 900",
+  style: "normal",
+  fallback: ["Arial", "sans-serif"],
 });
 
 export const metadata: Metadata = {

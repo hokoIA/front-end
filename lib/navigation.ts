@@ -3,9 +3,11 @@ import {
   BookOpen,
   BriefcaseBusiness,
   Columns3,
+  History,
   Home,
   LayoutDashboard,
   LineChart,
+  ListChecks,
   Settings,
   Target,
   Users,
@@ -24,49 +26,20 @@ export type NavSection = {
   items: NavItem[];
 };
 
-export const MAIN_NAV_SECTIONS: NavSection[] = [
+export const AGENCY_NAV_SECTIONS: NavSection[] = [
   {
-    title: "Visão",
+    title: "Visão da agência",
     items: [
       { href: "/inicio", label: "Início", icon: Home },
+      { href: "/decisoes", label: "Central de Decisões", icon: ListChecks },
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     ],
   },
   {
-    title: "Análise & contexto",
+    title: "Administração",
     items: [
-      { href: "/analises", label: "Análises", icon: LineChart },
+      { href: "/clientes", label: "Clientes & Integrações", icon: Users },
       { href: "/alimentar-modelo", label: "Base de Contexto", icon: BookOpen },
-    ],
-  },
-  {
-    title: "Estratégia",
-    items: [
-      {
-        href: "/metas",
-        label: "Planejamento Estratégico",
-        icon: Target,
-      },
-    ],
-  },
-  {
-    title: "Produção",
-    items: [
-      { 
-        href: "/kanban",
-        label: "Kanban",
-        icon: Columns3
-      },
-    ],
-  },
-  {
-    title: "Operações",
-    items: [
-      {
-        href: "/clientes",
-        label: "Clientes & Integrações",
-        icon: Users,
-      },
       {
         href: "/equipe",
         label: "Equipe",
@@ -74,12 +47,30 @@ export const MAIN_NAV_SECTIONS: NavSection[] = [
         permission: "page:team:view",
         managePermission: "team:manage",
       },
+      { href: "/configuracoes", label: "Configurações", icon: Settings },
+    ],
+  },
+];
+
+export const CUSTOMER_NAV_SECTIONS: NavSection[] = [
+  {
+    title: "Inteligência & Estratégia",
+    items: [
+      { href: "/analises", label: "Análises Estratégicas", icon: LineChart },
+      { href: "/metas", label: "Planejamento Estratégico", icon: Target },
     ],
   },
   {
-    title: "Conta",
+    title: "Operação",
     items: [
-      { href: "/configuracoes", label: "Configurações", icon: Settings },
+      { href: "/ciclos", label: "Ciclos Operacionais", icon: ListChecks },
+      { href: "/kanban", label: "Kanban", icon: Columns3 },
+    ],
+  },
+  {
+    title: "Resultados",
+    items: [
+      { href: "/aprendizagem", label: "Aprendizagem & Histórico", icon: History },
     ],
   },
 ];
