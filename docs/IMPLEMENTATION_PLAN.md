@@ -5,13 +5,13 @@
 | Ordem | Entrega de Front | Reaproveitar | Handoff necessário | Aceite |
 |---|---|---|---|---|
 | F00 | Baseline, screenshot local e inventário das telas atuais | layouts, components/ui, CSS, Montserrat, providers | Nenhum | `npm run lint` e `npm run build`, anotar baseline real |
-| F01 | Shell da agência: visão transversal e navegação V2 com estado vazio e simulado | `lib/navigation.ts`, `components/layout/`, `/inicio` | `GET attention` candidato, contrato mínimo | Não exigir seleção de cliente para perceber proposta |
+| F01 | Shell da agência: saúde transversal e navegação V2 com estado vazio e simulado | `lib/navigation.ts`, `components/layout/`, `/inicio` | `GET attention` candidato, contrato mínimo | Não exigir seleção de cliente para perceber situação relevante; abrir workspace contextual para deliberar |
 | F02 | UX de Ativação dentro de Clientes: contexto, objetivos iniciais, documentos, integrações, gate | `features/customers`, `features/context-base`, `features/integrations` | ativação/status/documentos | Não repetir dados; gate com estados completos |
 | F03 | Primeira execução estratégica: iniciar após ativação, acompanhar e voltar | `features/analises` + `hooks` | start/status/outputs do OIDEA | UI não assume resposta imediata nem porcentagem fictícia |
 | F04 | Análises estratégicas: saídas independentes e avaliação rica | `AnalysisMarkdownViewer`, export PDF, UI dados | GET saídas e relatório | Observação não tem diagnóstico; relatório legível |
 | F05 | Estratégia: objetivos da Ativação e propostas aceitas/editáveis, KRs | `features/goals`, meta UI | CRUD/propostas/aceite | IA proposta ≠ objetivo aprovado |
 | F06 | Criar ciclo explicitamente (período + objetivos) e ver ciclo vigente | novo feature de ciclos; selected customer existente | CRUD/status ciclos | Não exigir planejamento de peças ao criar |
-| F07 | Central de propostas transversal + detalhe do ciclo + deliberação textual | UI de estados/alertas, auth | list/deliberate + justificativa | Urgência visível, não interrompe Kanban |
+| F07 | Central de Decisões contextual + detalhe do ciclo + deliberação textual; percepção transversal no Início | UI de estados/alertas, auth, cliente selecionado | list/deliberate + justificativa | Urgência perceptível entre clientes; fundamento e deliberação no workspace do cliente; não interrompe Kanban |
 | F08 | Gate de qualidade no modal/drawer de card ao transitar | `features/kanban`/drawer/move | quality-check por card | Pontos críticos/opcionais; usuário mantém controle |
 | F09 | Aprendizagem/encerramento: avaliação e histórico, resultado da IA | análises/markdown e componentes de dados | GET report/cycle close | Decisões antigas não aparecem como pendentes no novo ciclo |
 | F10 | Substituir mocks por integrações verificadas; regressão, acessibilidade, estados | hooks/api/React Query | contratos finalizados | Feature sem mock em produção e com testes |

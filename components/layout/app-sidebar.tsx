@@ -20,8 +20,8 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
     <aside
       className={cn(
         "hk-print-hide fixed inset-y-0 left-0 z-40 hidden flex-col hk-sidebar-surface md:flex",
-        "border-r border-hk-divider",
-        "shadow-[inset_-1px_0_0_rgba(14,14,82,0.03)]",
+        "border-r border-white/10",
+        "shadow-[inset_-1px_0_0_rgba(255,255,255,0.025)]",
         "transition-[width] duration-200 ease-out",
       )}
       style={{ width }}
@@ -29,20 +29,22 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
     >
       <div
         className={cn(
-          "flex h-[3.35rem] shrink-0 items-center border-b border-hk-divider/80 px-3 lg:h-14 lg:px-4",
+          "flex h-[3.35rem] shrink-0 items-center border-b border-white/10 px-3 lg:h-14 lg:px-4",
           collapsed && "justify-center px-2",
         )}
       >
-        <Logo collapsed={collapsed} />
+        <Logo collapsed={collapsed} inverted />
       </div>
 
-      <nav className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden px-2.5 py-5 [scrollbar-width:thin]">
-        <NavLinks collapsed={collapsed} />
+      <nav className="flex flex-1 overflow-hidden">
+        <div className="hk-sidebar-scroll -mr-5 flex-1 overflow-y-scroll overflow-x-hidden py-4 pl-2.5 pr-[1.875rem]">
+          <NavLinks collapsed={collapsed} />
+        </div>
       </nav>
 
       <div
         className={cn(
-          "shrink-0 border-t border-hk-divider/80 p-2.5",
+          "shrink-0 border-t border-white/10 p-2.5",
           collapsed && "flex justify-center",
         )}
       >
@@ -51,7 +53,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
           variant="ghost"
           size={collapsed ? "icon" : "default"}
           className={cn(
-            "w-full text-hk-muted hover:bg-hk-deep/[0.045] hover:text-hk-deep",
+            "w-full text-white/60 hover:bg-white/[0.08] hover:text-white",
             !collapsed && "justify-start gap-2 px-2.5",
           )}
           onClick={onToggle}

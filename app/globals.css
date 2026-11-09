@@ -44,9 +44,11 @@
   --hk-shadow-lg: 0 20px 46px rgb(14 14 82 / 0.12);
   --hk-shadow-topbar: 0 1px 0 0 color-mix(in srgb, var(--hk-primary-deep) 8%, transparent);
 
-  --hk-sidebar-width: 16.5rem;
-  --hk-sidebar-collapsed: 4.25rem;
+  --hk-sidebar-width: 14.75rem;
+  --hk-sidebar-collapsed: 3.75rem;
   --hk-sidebar-current: var(--hk-sidebar-width);
+  --hk-sidebar-bg: #111a3a;
+  --hk-sidebar-active: #1c2b57;
 
   --hk-content-max: 96rem;
   --hk-content-mid: 82rem;
@@ -105,7 +107,25 @@
 }
 
 .hk-sidebar-surface {
-  background-color: color-mix(in srgb, var(--hk-surface) 96%, var(--hk-neutral-bg));
+  background-color: var(--hk-sidebar-bg);
+  color: white;
+}
+
+.hk-sidebar-surface .hk-overline {
+  color: rgb(255 255 255 / 0.58);
+}
+
+.hk-sidebar-surface .hk-skeleton {
+  background-color: rgb(255 255 255 / 0.1);
+}
+
+.hk-sidebar-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hk-sidebar-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .hk-main {

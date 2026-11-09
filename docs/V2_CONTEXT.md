@@ -1,6 +1,6 @@
 # ho.ko AI.nalytics V2 — Contexto compartilhado do produto
 
-**Edição:** 2026-11-04 · **Escopo:** BETA incremental · **Fonte:** decisões desta conversa, reuniões de 21/23/26/28-10 e leitura dos três repositórios recebidos. **Este documento é intenção de produto, não prova de código implementado.**
+**Edição:** 2026-11-09 · **Escopo:** BETA incremental · **Fonte:** decisões desta conversa, reuniões de 21/23/26/28-10 e 04-11, e leitura dos três repositórios recebidos. **Este documento é intenção de produto, não prova de código implementado.** Decisões aprovadas de produto e navegação estão em `docs/PRODUCT_SOURCE_OF_TRUTH.md`, que prevalece em caso de divergência.
 
 ## 1. Visão de produto
 
@@ -26,7 +26,7 @@ Execução OIDEA iniciada depois da Ativação ou quando necessária; pode durar
 
 A agência **inicia manualmente** cada ciclo: cliente, nome/período (referência de quatro semanas) e visualização dos **objetivos vigentes**. **Não obrigar quantidade de posts/pautas/campanhas na criação do ciclo.** O planejamento de entregas ocorre no Kanban. O ciclo considera os objetivos e regras do cliente, dados de plataformas, contexto estratégico pertinente e a avaliação do ciclo anterior quando disponível.
 
-Observação e interpretação rotineiras podem ser diárias sem gerar uma decisão todo dia. Apenas quando necessário a inteligência propõe ação **pontual/rápida dentro do próprio ciclo**, classificando relevância e urgência sem interromper ou bloquear o usuário. A agência vê propostas **entre clientes**, sem navegar cliente a cliente, abre detalhe do ciclo e decide. Aceite/recusa com justificativa textual; **não exigir vínculo técnico a card/campanha/publicação**. Decisões rotineiras não ficam ativas após o ciclo (ou após expiração de sua janela). O **histórico consolidado** permanece na avaliação para fundamentar aprendizado; não interpretar fim da vigência como destruição da evidência necessária ao relatório.
+Observação e interpretação rotineiras podem ser diárias sem gerar uma decisão todo dia. Apenas quando necessário a inteligência propõe ação **pontual/rápida dentro do próprio ciclo**, classificando relevância e urgência sem interromper ou bloquear o usuário. A agência percebe situações relevantes **entre clientes** no Início, abre o workspace do cliente e delibera na Central de Decisões contextual ou no detalhe do ciclo. Aceite/recusa com justificativa textual; **não exigir vínculo técnico a card/campanha/publicação**. Decisões rotineiras não ficam ativas após o ciclo (ou após expiração de sua janela). O **histórico consolidado** permanece na avaliação para fundamentar aprendizado; não interpretar fim da vigência como destruição da evidência necessária ao relatório.
 
 ### Verificação de qualidade da entrega (dentro do Kanban)
 
@@ -38,19 +38,22 @@ Pauta, arte, legenda e outras entregas passam por verificação **contextual ant
 2. Ativação concluída disponibiliza o **OIDEA estratégico inicial**, aproveitando tudo o que já foi informado (sem repetir onboarding). Objetivos iniciais continuam válidos; propostas estratégicas são um adicional sujeito a deliberação.
 3. Agência **cria e inicia** manualmente o ciclo operacional com período e objetivos vigentes (sem planejar produção nesta etapa).
 4. Agência executa o Kanban, com gate de qualidade nas transições; OIDEA rotineiro acompanha resultados e sinais no período.
-5. Propostas relevantes aparecem numa **visão transversal da agência**, e o profissional abre o ciclo para consulta de fundamentos e deliberação. Nenhuma notificação deve bloquear o trabalho normal.
+5. Situações relevantes aparecem no **Início transversal da agência**, e o profissional abre a Central de Decisões ou o ciclo do cliente para consultar fundamentos e deliberar. Nenhuma notificação deve bloquear o trabalho normal.
 6. Encerramento do ciclo produz **avaliação/aprendizagem** detalhada: observação, interpretação, entregas, métricas, decisões aceitas/rejeitadas/expiradas, justificativas, alcance dos objetivos, limites de evidência.
 7. A avaliação alimenta o próximo ciclo e pode ser insumo de futura análise estratégica, **sem obrigar rodar uma análise macro em todo encerramento**.
 
 ## 5. Distribuição de responsabilidades de interface
 
-- **Visão geral / agência:** atenção transversal, clientes e ciclos, propostas relevantes sem seleção prévia de cliente.
+- **Início / agência:** saúde operacional e percepção transversal, com encaminhamento para o cliente correspondente sem deliberar fora de contexto.
 - **Clientes / Ativação:** onboarding e prontidão dos dados; integrações e documentos.
+- **Visão geral / cliente:** evolução do Dashboard atual, com dados, sinais e andamento do cliente selecionado.
+- **Base de contexto / cliente:** documentos, regras, referências, validade e governança do cliente selecionado.
 - **Análises estratégicas:** executar/acompanhar OIDEA assíncrono e consultar saídas independentes e relatório integrado.
 - **Planejamento estratégico:** objetivos de Ativação e diretrizes aceitas da IA, metas/KRs editáveis e histórico de decisões.
-- **Ciclos operacionais:** iniciar, acompanhar OIDEA rotineiro, propostas do ciclo, encerramento/aprendizagem.
+- **Ciclos operacionais:** iniciar e acompanhar período, objetivos e OIDEA rotineiro.
+- **Central de decisões / cliente:** propostas pontuais do ciclo, fundamentos, vigência e deliberação contextual.
 - **Kanban:** produção, responsáveis, movimentação, revisão de qualidade no próprio card.
-- **Dashboard / métricas:** dados reais por período e fontes, suporte à inteligência; não é a atividade diária principal por definição.
+- **Aprendizagem / cliente:** avaliação consolidada e histórico de ciclos encerrados.
 
 ## 6. Estratégia de desenvolvimento acordada
 

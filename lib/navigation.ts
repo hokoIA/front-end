@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
   BriefcaseBusiness,
+  CalendarRange,
   Columns3,
   History,
   Home,
@@ -31,15 +32,12 @@ export const AGENCY_NAV_SECTIONS: NavSection[] = [
     title: "Visão da agência",
     items: [
       { href: "/inicio", label: "Início", icon: Home },
-      { href: "/decisoes", label: "Central de Decisões", icon: ListChecks },
-      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     ],
   },
   {
     title: "Administração",
     items: [
       { href: "/clientes", label: "Clientes & Integrações", icon: Users },
-      { href: "/alimentar-modelo", label: "Base de Contexto", icon: BookOpen },
       {
         href: "/equipe",
         label: "Equipe",
@@ -54,8 +52,15 @@ export const AGENCY_NAV_SECTIONS: NavSection[] = [
 
 export const CUSTOMER_NAV_SECTIONS: NavSection[] = [
   {
+    title: "Visão do cliente",
+    items: [
+      { href: "/dashboard", label: "Visão Geral", icon: LayoutDashboard },
+    ],
+  },
+  {
     title: "Inteligência & Estratégia",
     items: [
+      { href: "/alimentar-modelo", label: "Base de Contexto", icon: BookOpen },
       { href: "/analises", label: "Análises Estratégicas", icon: LineChart },
       { href: "/metas", label: "Planejamento Estratégico", icon: Target },
     ],
@@ -63,7 +68,8 @@ export const CUSTOMER_NAV_SECTIONS: NavSection[] = [
   {
     title: "Operação",
     items: [
-      { href: "/ciclos", label: "Ciclos Operacionais", icon: ListChecks },
+      { href: "/ciclos", label: "Ciclos Operacionais", icon: CalendarRange },
+      { href: "/decisoes", label: "Central de Decisões", icon: ListChecks },
       { href: "/kanban", label: "Kanban", icon: Columns3 },
     ],
   },

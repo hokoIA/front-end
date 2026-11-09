@@ -6,7 +6,7 @@
 
 - `app/layout.tsx` — Montserrat via `next/font/google`, `AppProviders` e Analytics.
 - `app/(app)/layout.tsx`, `components/layout/app-shell.tsx`, `app-chrome.tsx`, `app-sidebar.tsx`, `app-topbar.tsx`, `nav-links.tsx` — casca do aplicativo.
-- `lib/navigation.ts` — menu atual: `/inicio`, `/dashboard`, `/analises`, `/alimentar-modelo`, `/metas`, `/kanban`, `/clientes`, `/equipe`, `/configuracoes`.
+- `lib/navigation.ts` — menu V2 aprovado em dois contextos. Agência: `/inicio`, `/clientes`, `/equipe`, `/configuracoes`. Área do cliente: `/dashboard` (Visão Geral), `/alimentar-modelo`, `/analises`, `/metas`, `/ciclos`, `/decisoes`, `/kanban`, `/aprendizagem`. Ver `docs/PRODUCT_SOURCE_OF_TRUTH.md`.
 - `app/(auth)/...` e `components/auth/*` + `components/providers/auth-provider.tsx` — autenticação e guards; preservar.
 - `components/providers/selected-customer-provider.tsx` e `hooks/use-current-customer-context.ts` — cliente selecionado; **hub da agência precisa funcionar sem seleção**.
 
@@ -24,6 +24,15 @@
 | Home | `features/home/` e `/inicio` | Local indicado para hub transversal; inspecionar detalhes antes de substituir UI. |
 | Integração HTTP | `lib/api/http-client.ts`, `lib/api/endpoints.ts`, `hooks/api/*` | Cookies HttpOnly `jwt`, `credentials:'include'`, HTTP base `api`/`analyze`; não chamar n8n do browser. |
 | Estilo | `app/globals.css`, `components/ui/*` | Já há tokens `--hk-*`, Radix e Montserrat; reutilizar em vez de novo framework visual. |
+
+## Baseline factual da Ativação
+
+- Não existe feature ou rota dedicada de Ativação V2. A entrada atual é `features/customers/views/customers-hub-view.tsx` e o cadastro em `features/customers/components/create-customer-flow.tsx` cria somente o registro básico do cliente.
+- `features/customers/components/customer-detail-panel.tsx` reúne edição cadastral e conexões. Ao abrir o painel, o cliente é sincronizado com `SelectedCustomerProvider`; isso não representa status ou gate de Ativação.
+- `features/customers/utils/compute-readiness.ts` calcula uma prontidão operacional baseada apenas na quantidade de integrações e usa `totalCount = 5` como padrão. Esse cálculo legado **não é** prontidão da Ativação e não deve ser reaproveitado como gate qualitativo da V2.
+- `features/integrations/` possui componentes e queries reutilizáveis para conexão, renovação, remoção e resumo por cliente. A existência ou ausência de uma plataforma não determina, isoladamente, se a Ativação pode concluir.
+- `features/context-base/` já diferencia estados de carregamento, ausência de cliente, lista vazia, falha e envio. O fluxo atual aceita texto e arquivos e possui modo mock explícito, mas ainda não representa a cadeia completa `recebido → processado → contextualizado/revisado → adequado ao uso → requisito atendido`.
+- A Base de Contexto atual usa o client do serviço Analyze/FastAPI em partes do fluxo. Novas integrações da Ativação não devem ampliar esse acesso direto: autenticação, autorização, tenant, persistência do status e orquestração pertencem ao Gateway.
 
 ## Contratos e configuração detectados
 

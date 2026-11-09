@@ -40,7 +40,7 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
       return (
         <div key={section.title}>
           {!collapsed && (
-            <p className="hk-overline mb-2.5 px-3">
+            <p className="hk-overline mb-2 px-3">
               {section.title}
             </p>
           )}
@@ -63,26 +63,26 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
                       else onNavigate?.();
                     }}
                     className={cn(
-                      "group relative flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-[background-color,color,border-color] duration-150",
+                      "group relative flex items-center gap-2.5 rounded-lg py-[0.5625rem] text-[0.8125rem] font-medium transition-[background-color,color,border-color] duration-150",
                       disabled && "cursor-not-allowed opacity-45",
                       collapsed ? "justify-center px-0" : "border-l-[3px] pl-3 pr-2",
-                      collapsed && active && "bg-hk-deep/[0.09] text-hk-deep",
+                      collapsed && active && "bg-[var(--hk-sidebar-active)] text-white",
                       collapsed &&
                         !active &&
-                        "text-hk-muted hover:bg-hk-deep/[0.045] hover:text-hk-ink",
+                        "text-white/65 hover:bg-white/[0.07] hover:text-white",
                       !collapsed && active &&
-                        "border-hk-action bg-hk-deep/[0.08] text-hk-deep",
+                        "border-hk-cyan bg-[var(--hk-sidebar-active)] text-white",
                       !collapsed &&
                         !active &&
-                        "border-transparent text-hk-muted hover:border-hk-border-subtle hover:bg-hk-deep/[0.045] hover:text-hk-ink",
+                        "border-transparent text-white/65 hover:border-white/15 hover:bg-white/[0.07] hover:text-white",
                     )}
                   >
                     <Icon
                       className={cn(
-                        "size-[18px] shrink-0 transition-colors duration-150",
+                        "size-[17px] shrink-0 transition-colors duration-150",
                         active
-                          ? "text-hk-action"
-                          : "text-hk-muted group-hover:text-hk-action",
+                          ? "text-hk-cyan"
+                          : "text-white/55 group-hover:text-hk-cyan",
                       )}
                       strokeWidth={1.65}
                       aria-hidden
@@ -100,26 +100,29 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
     });
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-6" aria-label="Agência">
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5" aria-label="Agência">
         {collapsed && <p className="sr-only">Agência</p>}
         {renderSections(AGENCY_NAV_SECTIONS)}
       </div>
-      <div className="border-t border-hk-divider pt-5" aria-label="Área do cliente">
-        <p className={cn("hk-overline mb-3 px-3", collapsed && "sr-only")}>Área do cliente</p>
-        <div className={cn("mb-4 px-1", collapsed && "flex justify-center px-0")}>
+      <div className="border-t border-white/10 pt-4" aria-label="Área do cliente">
+        <p className={cn("hk-overline mb-2.5 px-3", collapsed && "sr-only")}>Área do cliente</p>
+        <div className={cn("mb-3.5 px-1", collapsed && "flex justify-center px-0")}>
           {!isReady || isLoadingCustomers ? (
             <div className={cn("hk-skeleton h-9 rounded-lg", collapsed ? "w-9" : "w-full")} />
           ) : customers.length === 0 ? (
-            <p className={cn("text-xs text-hk-muted", collapsed ? "sr-only" : "px-2")}>Nenhum cliente cadastrado</p>
+            <p className={cn("text-xs text-white/60", collapsed ? "sr-only" : "px-2")}>Nenhum cliente cadastrado</p>
           ) : (
             <Select value={selected?.id_customer} onValueChange={selectCustomer}>
               <SelectTrigger
                 aria-label={selected ? `Cliente selecionado: ${selected.name}` : "Selecionar cliente"}
                 title={collapsed ? selected?.name ?? "Selecionar cliente" : undefined}
-                className={collapsed ? "h-9 w-9 justify-center px-0 [&>svg]:hidden" : "w-full"}
+                className={cn(
+                  "border-white/15 bg-white/[0.07] text-white hover:border-white/30 focus:border-hk-cyan/60 focus:ring-hk-cyan/25 [&>svg]:text-white/60",
+                  collapsed ? "h-9 w-9 justify-center px-0 [&>svg]:hidden" : "w-full",
+                )}
               >
-                {collapsed ? <Users className="size-4 text-hk-action" /> : <SelectValue placeholder="Selecionar cliente" />}
+                {collapsed ? <Users className="size-4 text-hk-cyan" /> : <SelectValue placeholder="Selecionar cliente" />}
               </SelectTrigger>
               <SelectContent>
                 {customers.map((customer) => (
@@ -130,9 +133,9 @@ export function NavLinks({ collapsed, onNavigate }: NavLinksProps) {
           )}
         </div>
         {!selected && !collapsed && (
-          <p className="mb-4 px-3 text-xs leading-5 text-hk-muted">Selecione um cliente para acessar esta área.</p>
+          <p className="mb-3.5 px-3 text-xs leading-5 text-white/55">Selecione um cliente para acessar esta área.</p>
         )}
-        <div className="flex flex-col gap-6">{renderSections(CUSTOMER_NAV_SECTIONS, !selected)}</div>
+        <div className="flex flex-col gap-5">{renderSections(CUSTOMER_NAV_SECTIONS, !selected)}</div>
       </div>
     </div>
   );

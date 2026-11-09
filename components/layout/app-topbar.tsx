@@ -17,35 +17,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useSelectedCustomer } from "@/components/providers/selected-customer-provider";
 import { useLogoutMutation } from "@/hooks/api/use-auth-queries";
 import { cn } from "@/lib/utils/cn";
 import { Menu, User } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Breadcrumbs } from "./breadcrumbs";
 import { NavLinks } from "./nav-links";
 
 export function AppTopbar({ className }: { className?: string }) {
-  const pathname = usePathname();
   const router = useRouter();
   const logout = useLogoutMutation();
-  const { customers, selected, selectCustomer, isReady, isLoadingCustomers } =
-    useSelectedCustomer();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const hideCustomerSelector =
-    pathname === "/inicio" ||
-    pathname.startsWith("/inicio/") ||
-    pathname === "/metas" ||
-    pathname.startsWith("/metas/");
 
   return (
     <header
@@ -68,16 +52,18 @@ export function AppTopbar({ className }: { className?: string }) {
             <Menu className="size-5" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="left-0 top-0 flex h-full max-w-[min(100%,20rem)] translate-x-0 translate-y-0 flex-col rounded-none border-y-0 border-l-0 border-r-hk-divider p-0 shadow-hk-lg sm:max-w-[min(100%,20rem)]">
-          <DialogHeader className="border-b border-hk-divider px-4 py-3.5 text-left">
+        <DialogContent className="hk-sidebar-surface left-0 top-0 flex h-full max-w-[min(100%,20rem)] translate-x-0 translate-y-0 flex-col rounded-none border-y-0 border-l-0 border-r-white/10 p-0 shadow-hk-lg sm:max-w-[min(100%,20rem)] [&>button]:text-white/70 [&>button:hover]:border-white/15 [&>button:hover]:bg-white/10 [&>button:hover]:text-white">
+          <DialogHeader className="border-b border-white/10 px-4 py-3.5 text-left">
             <DialogTitle className="sr-only">Navegação principal</DialogTitle>
-            <Logo />
+            <Logo inverted />
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto px-2 py-4">
-            <NavLinks
-              collapsed={false}
-              onNavigate={() => setMobileNavOpen(false)}
-            />
+          <div className="flex flex-1 overflow-hidden">
+            <div className="hk-sidebar-scroll -mr-5 flex-1 overflow-y-scroll px-2 py-4 pr-7">
+              <NavLinks
+                collapsed={false}
+                onNavigate={() => setMobileNavOpen(false)}
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -90,40 +76,9 @@ export function AppTopbar({ className }: { className?: string }) {
         <Logo collapsed />
       </Link>
 
-      <div className="hidden min-w-0 flex-1 flex-col gap-0.5 md:flex">
-        <Breadcrumbs />
+      <div className="min-w-0 flex-1">
+        <Breadcrumbs className="hidden md:block" />
       </div>
-
-      {!hideCustomerSelector ? (
-        <div className="min-w-0 flex-1 md:max-w-[14rem] md:flex-none lg:max-w-[18rem]">
-          {!isReady || isLoadingCustomers ? (
-            <div className="hk-skeleton h-9 w-full rounded-lg" />
-          ) : customers.length === 0 ? (
-            <div className="flex h-9 w-full items-center rounded-lg border border-dashed border-hk-border-subtle bg-hk-surface-muted/80 px-3 text-xs font-medium text-hk-muted">
-              Nenhum cliente cadastrado
-            </div>
-          ) : (
-            <Select
-              value={selected?.id_customer}
-              onValueChange={(id) => selectCustomer(id)}
-            >
-              <SelectTrigger
-                className="h-9 border-hk-border-subtle bg-hk-surface text-left text-sm font-medium shadow-none hover:border-hk-border focus:ring-hk-action/20"
-                aria-label="Cliente selecionado"
-              >
-                <SelectValue placeholder="Selecionar cliente" />
-              </SelectTrigger>
-              <SelectContent>
-                {customers.map((c) => (
-                  <SelectItem key={c.id_customer} value={c.id_customer}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
-      ) : null}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
