@@ -1,4 +1,6 @@
-# Plano de execução — agente Frontend (ORDEM PRIORITÁRIA)
+# Plano visual do Frontend — histórico e sequência de áreas
+
+**Execução atual:** a Etapa 0 integrada é controlada por `ACTIVATION_CROSS_STACK_PLAN.md`. O mesmo agente implementa as fatias necessárias no Frontend, Gateway, Analyze e n8n; este plano continua como mapa visual, sem atribuir trabalho a outro agente. O pedido atual do responsável dispensa compilar/buildar neste momento; registrar os comandos não executados.
 
 **Estratégia:** visual-first e slices pequenos. O agente Front entrega UI funcional/estados com mocks tipados; pede dados reais ao Gateway por um handoff específico; só remove mocks depois do contrato/teste integrado. Não refazer login/RBAC/Kanban/CSS base por gosto pessoal.
 
@@ -25,6 +27,6 @@
 - Em cada tela cobrir: sem clientes, sem integração, sem contexto, carregando, processamento demorado, erro técnico, permissão insuficiente, não há propostas, resultados parciais, ciclo encerrado.
 - Não modificar contratos de análise antiga para fingir suporte a OIDEA. Criar novos tipos de execução e novos hooks quando necessário.
 
-## Primeira missão concreta
+## Primeira missão histórica (F01)
 
-Ler `docs/V2_CONTEXT.md`, `docs/CODEBASE_MAP.md`, `docs/CONTRACTS_HANDOFF.md`; executar baseline, mapear `/inicio` e shell; entregar **somente F01** com dados simulados tipados, screenshot antes/depois, estados vazios, nav enxuta, e um handoff mínimo ao agente Gateway. Não implementar backend nem n8n nesta missão.
+Esta instrução descreve o escopo inicial de F01 e não deve ser reiniciada. Para a missão vigente, seguir o checklist da Etapa 0 e executar cada contrato no repositório responsável antes de integrar a UI.

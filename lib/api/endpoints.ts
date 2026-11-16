@@ -28,6 +28,7 @@ export const endpoints = {
     /** Lista de clientes com `integrations` — contrato usado pelo dashboard. */
     list: () => "/customer/list" as const,
     get: (idCustomer: string) => `/customer/get/${idCustomer}` as const,
+    activation: (idCustomer: string) => `/customer/activation/${encodeURIComponent(idCustomer)}` as const,
     add: () => "/customer/add" as const,
     edit: (idCustomer: string) => `/customer/edit/${idCustomer}` as const,
     delete: (idCustomer: string) => `/customer/delete/${idCustomer}` as const,

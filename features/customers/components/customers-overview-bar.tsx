@@ -75,8 +75,8 @@ export function CustomersOverviewBar(props: {
         ) : null}
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
-        <Stat label="Total de clientes" value={props.total} />
-        <Stat label="Clientes ativos" value={props.active} />
+        <Stat label="Clientes cadastrados" value={props.total} />
+        <Stat label="Cadastrados ativos" value={props.active} />
         <Stat
           label="Sem integração"
           value={props.withoutIntegration ?? dash}

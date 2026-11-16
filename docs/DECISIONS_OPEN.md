@@ -10,24 +10,40 @@ Histórico: conversa de design/arquitetura e notas das reuniões 21, 23, 26 e 28
 - Ciclo operacional é iniciado manualmente com período e objetivos vigentes, sem exigência de cadastro de produção. Responsáveis existentes no cliente, não recadastrar todo ciclo.
 - Monitoramento rotineiro frequente/diário; gerar decisão apenas se relevante. Propostas transversais para agência, não tarefas no Kanban. Deliberação com texto; sem vínculo operacional obrigatório.
 - Gate de qualidade contextual ao card antes da troca de responsável.
-- Aprendizagem do ciclo gera avaliação e histórico de decisões; decisões rotineiras deixam de ser ativas depois do encerramento.
+- Aprendizagem do ciclo gera avaliação e histórico dos ciclos; decisões rotineiras deixam de ser ativas depois do encerramento. A retenção de propostas descartadas segue D02 abaixo.
 - Encerramento por prazo automático como padrão, opção de encerramento manual antecipado (reunião 28/10). A criação do próximo ciclo continua manual conforme conversa posterior, salvo decisão expressa contrária.
 
-## Questões em aberto / mudanças entre reuniões e conversa
+## D01–D12 — decisões do responsável do produto em 2026-11-16
 
-| ID | Tópico | Tensão identificada | Regra conservadora para agentes |
-|---|---|---|---|
-| D01 | Postergar decisão para ciclo seguinte | Conversa: decisões rotineiras não atravessam ciclos. Reunião 23/10: opção de postergação. | **Não transportar automaticamente**. Proposta futura de reavaliação deve ser uma nova decisão com nova origem e aceite. Confirmar produto. |
-| D02 | Reter descartes versus apagar | Conversa: decisões terminam e não precisam ficar ativas; reunião 23/10: descartadas necessárias à avaliação. | Registrar no relatório/histórico do ciclo, sem mantê-las como pendências vigentes. Política de retenção por privacidade pendente. |
-| D03 | Gate de aprovação pelo cliente | Conversa: cliente final fora do foco BETA e objetivos iniciais já valem; reunião 28/10: validação do cliente para reiniciar ciclo estratégico. | Não bloquear o **primeiro** ciclo operacional com aprovação de novas sugestões; discutir gate para *revisão estratégica posterior*. |
-| D04 | Compartilhamento externo | Reunião 23/10 sugeriu links autorizados para todas as etapas; foco atual é agência. | Deixar fora da primeira vertical de UI; quando entrar, links assinados/expiráveis/escopo estrito, nunca públicos por padrão. |
-| D05 | Integrações centralizadas | Reunião 28/10 deseja inventário global; arquitetura atual conecta recursos/tokens por cliente. | Centralizar **visão/gestão** sem centralizar credenciais quebrando OAuth por cliente. |
-| D06 | Criação de tarefas a partir dos OKRs | Reunião 26/10 sugere desdobrar ações no Kanban; conversa posterior estabelece ciclo criado só com período/objetivos e sem vínculo obrigatório. | Não criar cards automaticamente na BETA inicial. É proposta futura, sujeita a aprovação explícita. |
-| D07 | Critério de criticidade e lembretes | Reunião 23/10 prevê notificações e inércia; conversa: não interromper/atolar profissionais. | Diferenciar prioridade/urgência, oferecer visibilidade sem modal compulsório; ajustar cadência com teste de usabilidade. |
-| D08 | Qualidade de imagem/vídeo | Reunião 26/10 identificou formatos/limitações. | Começar pelo formato suportado e evidenciar limitação de confiança; não prometer leitura de .ai/Canva sem prova técnica. |
-| D09 | Formato da avaliação/aprendizagem | Reunião 28/10 quer dashboard de percentuais, conversa quer renderização de saída rica sem motor visual complexo. | Primeiro relatório estruturado com indicadores simples; não criar builder automático de dashboard. |
-| D10 | Calendário/frequência estratégica | Reunião 28/10 cita período de seis meses em exemplo; conversa define OIDEA estratégico sem duração fixa. | Não criar período fixo/trigger periódico obrigatório. |
-| D11 | Integrações Trello/Google Workspace | Reunião 28/10 marcou como 'precisa de mais conversa'. | Fora do núcleo BETA; não começar sem aprovação, desenho e segurança. |
-| D12 | Estados de aprovação | Aceitar/descartar/expirar claros; editabilidade estratégica prevista; regra para justificar descarte e aceitação precisa ficar consistente. | Mockar estados de forma explícita; validar contrato final no Gateway antes de persistir. |
+As regras abaixo estão aprovadas para a V2.0 e incorporadas em `PRODUCT_SOURCE_OF_TRUTH.md`. Onde houver adiamento, ele não autoriza implementação antecipada. Contratos e nomes técnicos ainda dependem de desenho com os serviços responsáveis.
 
-**Resolução:** registrar resultado e data no PR/issue, atualizar este arquivo nos três repositórios e somente então ajustar contratos. Não deixe o agente tomar decisão de negócio ambígua por conta própria.
+| ID | Decisão para a V2.0 | Trabalho posterior |
+|---|---|---|
+| D01 | Decisões rotineiras são correções pontuais e rápidas, limitadas ao ciclo de origem; apenas direcionamentos estratégicos aprovados, como OKR/KPI, podem atravessar ciclos. | Definir vigência técnica no contrato de ciclos. |
+| D02 | Descartar uma proposta a remove; não persistir o descarte ou seu histórico na V2.0. | Reavaliar retenção somente se houver nova decisão de produto. |
+| D03 | Manter regra conservadora: não bloquear o primeiro ciclo operacional por aprovação adicional do cliente final. | Discutir eventual gate de revisões estratégicas posteriores. |
+| D04 | Não oferecer links externos ou públicos na V2.0. | Novo desenho e autorização se o compartilhamento entrar depois. |
+| D05 | Manter a organização atual de Clientes & Integrações e Equipe. | Reavaliar a estrutura dessas telas em discussão UX/UI da V2.1. |
+| D06 | Não implementar produção autônoma de agentes ou geração automática de tarefas no Kanban a partir de OKRs. | Escopo posterior mediante decisão explícita. |
+| D07 | Sinais de relevância e urgência não devem interromper o trabalho com modal obrigatório; manter visibilidade conservadora. | Ajustar cadência em teste de usabilidade. |
+| D08 | Aplicar o limite de D06 ao escopo avançado de produção criativa por agentes. | Avaliar formatos e capacidades técnicas somente quando esse escopo entrar. |
+| D09 | Não fixar formato de avaliação ou dashboard agora. | Discutir após testes iniciais de produção interna da agência, com saídas reais. |
+| D10 | Não definir período ou frequência estratégica fixa. | Gatilhos futuros exigem decisão própria. |
+| D11 | Trello e Google Workspace ficam fora da V2.0. | Eventual integração requer desenho e contrato próprios. |
+| D12 | Adotar estados conceituais simples para propostas rotineiras: pendente, aceita e expirada. Descartar remove a proposta, conforme D02. | Fixar nomes técnicos e transições no contrato Gateway antes de persistir. |
+
+## Ativação — decisões para o plano entre projetos (2026-11-16)
+
+O fluxo visual atual foi considerado suficiente para avançar, sem transformar os mocks em dados de produção. A01, a direção de A02 e a política de A04 foram resolvidas para o teste interno da V2.0. A03 foi adotada como modelo inicial de trabalho para 0B; nomes técnicos finais ainda serão conferidos pelo Gateway. O pacote histórico recebido em 2026-11-16 foi preservado em `references/activation/2026-11-16-pacote/`. A05 foi resolvida para planejamento por modelo assumido, sem depender agora dos exports JSON.
+
+**A01 — resolvida em 2026-11-16:** clientes legados conservam status e informações atuais, sem backfill. A cobrança extra permanece baseada apenas em clientes com `customer.status = 'active'`; clientes novos em Ativação passam a contar somente após a transição para ativo. Essa regra ainda precisa ser verificada em contrato e testes integrados antes da implementação.
+
+**A02 — direção aprovada em 2026-11-16:** usar um conjunto pequeno e ajustável de informações básicas para estruturar e testar a Ativação com a própria agência ho.ko. Clientes ainda Em Ativação podem acompanhar mudanças nessa lista durante o teste interno. Os dois assuntos de conteúdo em `ACTIVATION_INITIAL_MODEL_DRAFT.md` são uma **proposta inicial**, não uma lista definitiva aprovada de documentos obrigatórios.
+
+**A03 — modelo inicial de trabalho adotado em 2026-11-16:** usar `activating` para novos clientes em coleta, preservar `active`/`inactive` legados e introduzir `activation:manage` para Admin no Gateway, sem conceder à Equipe. A avaliação terá estado próprio, separado de `customer.status`. O handoff `ACTIVATION_0B_GATEWAY_HANDOFF.md` fixa a primeira fatia; o Gateway deve validar compatibilidade técnica antes da migration, sem tratar os nomes como API já implantada.
+
+**A04 — resolvida como política de produto em 2026-11-16:** na V2.0 de teste interno, permitir exclusão definitiva, simples e controlada de **um cliente Em Ativação** e seus artefatos relacionados em PostgreSQL, OAuth, n8n e Pinecone, sem política adicional de retenção. O desenho técnico precisa impedir exclusão de outro cliente ou de cliente já ativo e tratar falha parcial antes da implementação.
+
+**A05 — resolvida para planejamento em 2026-11-16:** adotar a sequência e os envelopes internos de `ACTIVATION_N8N_ASSUMED_CONTRACT.md` como hipótese operacional. `documentos_obrigatorios: []` é saída válida de uma execução concluída; o relato de cinco documentos adicionais pode corresponder a outra execução e não é requisito mínimo universal. A inspeção dos nodes e o teste real ficam na fatia de integração.
+
+O inventário está em `SCHEMA_USAGE_AUDIT_2026-11-16.md`, o plano técnico em `ACTIVATION_CROSS_STACK_PLAN.md` e a proposta de governança em `PLATFORM_GOVERNANCE_DRAFT.md`. Nenhuma linha acima autoriza DDL ou remoção.

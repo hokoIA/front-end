@@ -1,6 +1,6 @@
 # Fonte de verdade do produto — ho.ko AI.nalytics V2
 
-**Status:** baseline aprovada em 2026-11-09  
+**Status:** baseline aprovada em 2026-11-09; decisões adicionais aprovadas em 2026-11-16
 **Escopo:** produto, arquitetura de informação, design e responsabilidades de interface do frontend  
 **Autoridade:** decisões validadas pelo responsável do produto prevalecem sobre atas automáticas, explorações de Figma, mocks e implementações legadas.
 
@@ -99,7 +99,13 @@ Administra a carteira e a prontidão dos clientes. É a entrada da Ativação, c
 
 A Ativação é o onboarding e a contextualização inicial de cada cliente. Seu usuário prioritário na BETA é a agência. Ela organiza o que foi contratado, contexto, documentos críticos, fontes relevantes, pessoas e papéis funcionais, regras, restrições, riscos e objetivos humanos iniciais para que a inteligência comece com limites e direção conhecidos. Não é apenas cadastro ou upload, não produz diagnóstico profundo e não substitui a inteligência estratégica posterior.
 
-A coleta é progressiva e retomável. Clientes e materiais já existentes devem ser reaproveitados quando forem válidos; a V2 não exige duplicar cliente, documento, conexão ou objetivo para iniciar a jornada. O que é obrigatório depende do escopo e da etapa: não existe exigência universal de todas as integrações ou de um checklist documental idêntico para todos os clientes.
+A coleta é progressiva e retomável. Clientes e materiais já existentes devem ser reaproveitados quando forem válidos; a V2 não exige duplicar cliente, documento, conexão ou objetivo para iniciar a jornada. **Clientes legados permanecem no banco com seus status e informações atuais, sem conversão ou backfill automático.** O que é obrigatório depende do escopo e da etapa: não existe exigência universal de todas as integrações ou de um checklist documental idêntico para todos os clientes.
+
+Na V2.0, a regra de cobrança extra continua baseada em clientes com `status = 'active'`. Um novo cliente em Ativação só passa a contar quando se tornar ativo. A nomenclatura técnica final e as transições desse novo estado ainda exigem contrato com o Gateway.
+
+Para o primeiro teste interno com a agência ho.ko, as informações mínimas podem começar simples e ser ajustadas enquanto clientes ainda estão Em Ativação. Isso não define uma lista definitiva de documentos; os requisitos concretos devem ser validados antes do gate real. Um material processado pode atender a mais de um requisito.
+
+Na V2.0 de teste interno, um cliente Em Ativação pode ser excluído definitivamente com seus dados e artefatos associados, sem política adicional de retenção. A exclusão deve ser específica para o cliente e a conta, cobrir armazenamento relacional e vetorial e não atingir clientes ativos ou legados. A implementação depende de contrato e recuperação de falhas entre os serviços.
 
 A IA pode organizar entradas, classificar conteúdo e sinalizar lacunas, mas a autorização para avançar é humana. Percentual de preenchimento não substitui o gate qualitativo. A interface deve distinguir arquivo recebido, conteúdo processado, conteúdo contextualizado ou revisado, material adequado ao uso e requisito efetivamente atendido.
 
@@ -141,7 +147,7 @@ Organiza o período operacional do cliente e seus objetivos vigentes. A agência
 
 Responde, dentro do cliente selecionado: **“O que precisa de atenção e deliberação neste cliente?”**
 
-Reúne propostas pontuais do ciclo, sua relevância, fundamentos, vigência e deliberação humana. Não é lista genérica de tarefas administrativas, não substitui o Kanban e não se confunde com a verificação de qualidade de um card. O Início mantém a percepção transversal e encaminha para esta central contextual.
+Reúne propostas pontuais do ciclo, sua relevância, fundamentos, vigência e deliberação humana. Propostas rotineiras pedem correções rápidas e **não atravessam ciclos**; direcionamentos estratégicos aprovados, como OKRs/KPIs, podem permanecer vigentes por mais de um ciclo. Não é lista genérica de tarefas administrativas, não substitui o Kanban e não se confunde com a verificação de qualidade de um card. O Início mantém a percepção transversal e encaminha para esta central contextual.
 
 ### Kanban
 
@@ -149,9 +155,20 @@ Reúne propostas pontuais do ciclo, sua relevância, fundamentos, vigência e de
 
 ### Aprendizagem & Histórico
 
-Consolida avaliações de ciclos encerrados, evidências, resultados, decisões, justificativas e limites de inferência. Não afirma causalidade apenas por correlação temporal e não mantém decisões rotineiras antigas como pendências vigentes.
+Consolida avaliações de ciclos encerrados, evidências, resultados, deliberações aceitas pertinentes e limites de inferência. Não afirma causalidade apenas por correlação temporal e não mantém decisões rotineiras antigas como pendências vigentes. Na V2.0, propostas descartadas são removidas sem histórico persistido de descarte; o formato final da avaliação será decidido após testes internos de produção da agência.
 
-## 6. Responsabilidade transversal sem Central global
+## 6. Limites de produto aprovados para a V2.0
+
+- O primeiro ciclo operacional não depende de nova aprovação do cliente final sobre propostas estratégicas; eventual gate em revisões estratégicas posteriores exige desenho próprio.
+- Não há links externos ou públicos de compartilhamento.
+- A organização atual de Clientes & Integrações e Equipe permanece nesta versão. Uma reorganização estrutural dessas áreas será discutida como UX/UI da V2.1.
+- Não há produção autônoma por agentes, criação automática de tarefas no Kanban a partir de OKRs ou escopo avançado de produção criativa por agentes.
+- Sinais de relevância e urgência devem ser perceptíveis sem modal obrigatório nem bloqueio do trabalho. A cadência será ajustada em testes de usabilidade.
+- A inteligência estratégica não recebe período ou frequência fixa obrigatória.
+- Integrações Trello e Google Workspace ficam fora da V2.0.
+- Para propostas rotineiras, os estados conceituais são **pendente**, **aceita** e **expirada**; descartar remove a proposta sem armazenar um estado/histórico de descarte. O contrato de persistência e os nomes técnicos serão definidos com o Gateway antes da integração.
+
+## 7. Responsabilidade transversal sem Central global
 
 A retirada da Central de Decisões do nível Agência não elimina a necessidade de perceber situações entre clientes. Essa responsabilidade pertence ao Início:
 
@@ -162,7 +179,7 @@ A retirada da Central de Decisões do nível Agência não elimina a necessidade
 
 O Início oferece percepção e encaminhamento. A Central contextual oferece fundamento e deliberação.
 
-## 7. Estado de implementação
+## 8. Estado de implementação
 
 - Rotas existentes preservadas: `/inicio`, `/dashboard`, `/alimentar-modelo`, `/analises`, `/metas`, `/kanban`, `/clientes`, `/equipe`, `/configuracoes`.
 - Rotas visuais V2: `/ciclos`, `/decisoes`, `/aprendizagem`.
@@ -171,7 +188,7 @@ O Início oferece percepção e encaminhamento. A Central contextual oferece fun
 - `/decisoes` é uma estrutura visual contextual e ainda não possui integração real.
 - Ciclos, decisões e aprendizagem permanecem mocks explícitos até contratos e integrações aprovados.
 
-## 8. Contratos futuros necessários
+## 9. Contratos futuros necessários
 
 O frontend não inventa endpoints. Cada integração exige autenticação, autorização, isolamento por `account`/`customer`, request, response, estados e erros acordados com o Gateway.
 

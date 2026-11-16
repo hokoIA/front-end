@@ -1,0 +1,138 @@
+flowchart LR
+
+%% =========================================================
+%% ARQUITETURA BETA — FASE DE ATIVAÇÃO
+%% Princípio: cada arquivo/fonte entra como 1 Artefato de Conhecimento.
+%% Não há decomposição manual de PDF, tabela, imagem etc.
+%% A complexidade de leitura do conteúdo fica encapsulada no processamento.
+%% =========================================================
+
+subgraph FONTES["1. FONTES DO CLIENTE"]
+    direction TB
+
+    F1["Upload de documentos<br/>PDF • DOCX • XLSX • PPTX • PNG • JPG • TXT"]
+    F2["Reuniões<br/>Google Meet • Gemini • resumos • transcrições"]
+    F3["Integrações<br/>CRM • GA4 • redes sociais • outras APIs"]
+end
+
+subgraph ENTRADA["2. ADAPTADORES DE ENTRADA"]
+    direction TB
+
+    E1["ATV-ENT-ARQUIVO<br/>Recebe arquivos individuais ou em lote"]
+    E2["ATV-ENT-REUNIAO<br/>Recebe conteúdo de reuniões"]
+    E3["ATV-ENT-INTEGRACAO<br/>Recebe dados de APIs e plataformas"]
+
+    CONTRATO["Artefato de Conhecimento v1<br/><br/>id_cliente<br/>id_ativacao<br/>origem<br/>tipo_fonte<br/>arquivo ou conteúdo<br/>checksum<br/>metadados básicos"]
+end
+
+F1 --> E1
+F2 --> E2
+F3 --> E3
+
+E1 --> CONTRATO
+E2 --> CONTRATO
+E3 --> CONTRATO
+
+
+subgraph CONTROLE["3. CONTROLE OPERACIONAL"]
+    direction TB
+
+    C1["ATV-CTL-ARTEFATO<br/>RDS / PostgreSQL"]
+    C2["Controle de estado<br/>recebido • processando • indexado<br/>erro • revisão"]
+    C3["Deduplicação e rastreabilidade<br/>checksum • versão • origem"]
+
+    C1 --> C2 --> C3
+end
+
+CONTRATO -. "quando RDS estiver configurado" .-> C1
+
+
+subgraph PROCESSAMENTO["4. COMPREENSÃO E ENRIQUECIMENTO"]
+    direction TB
+
+    P1["ATV-PRC-CONHECIMENTO"]
+    P2["Motor de leitura documental<br/><br/>Usa o melhor método disponível<br/>para obter conteúdo útil do artefato"]
+    P3["GPT / OpenAI<br/><br/>compreender • classificar • resumir<br/>gerar tags • domínio • tipo documental<br/>confidencialidade • relevância • inconsistências"]
+    P4["Validação estruturada<br/>Structured Output / JSON Schema"]
+
+    P1 --> P2 --> P3 --> P4
+end
+
+CONTRATO --> P1
+
+
+subgraph INDEXACAO["5. INDEXAÇÃO SEMÂNTICA"]
+    direction TB
+
+    I1["ATV-IDX-CONHECIMENTO"]
+    I2["Preparação interna para RAG<br/>chunking automático"]
+    I3["OpenAI Embeddings"]
+    I4["Pinecone<br/><br/>chunks + embeddings + metadados<br/>isolados por cliente"]
+
+    I1 --> I2 --> I3 --> I4
+end
+
+P4 --> I1
+
+
+subgraph BASE["6. BASE DE CONHECIMENTO DO CLIENTE"]
+    direction TB
+
+    B1["Pinecone"]
+    B2["Conhecimento recuperável via RAG"]
+    B3["Página Alimentar Modelo / gestão documental<br/>consulta metadados e documentos indexados"]
+
+    B1 --> B2
+    B1 --> B3
+end
+
+I4 --> B1
+
+
+subgraph PRONTIDAO["7. PRONTIDÃO DA ATIVAÇÃO"]
+    direction TB
+
+    R1["ATV-VAL-PRONTIDAO"]
+    R2["Verifica cobertura mínima de contexto<br/>documentos • reuniões • integrações • pendências"]
+    R3{"Contexto mínimo<br/>disponível?"}
+    R4["Gerar pendências<br/>e novas solicitações"]
+    R5["Validação humana"]
+    R6["Ativação concluída<br/>liberar próxima fase"]
+
+    R1 --> R2 --> R3
+    R3 -- "Não" --> R4
+    R3 -- "Sim" --> R5 --> R6
+end
+
+B2 --> R1
+R4 --> FONTES
+
+
+subgraph ORQ["n8n — ORQUESTRAÇÃO"]
+    direction TB
+
+    O1["ATV-ORQ-ATIVACAO<br/><br/>coordena entradas • processamento<br/>retries • erros • lotes • follow-ups"]
+end
+
+O1 -.-> ENTRADA
+O1 -.-> CONTROLE
+O1 -.-> PROCESSAMENTO
+O1 -.-> INDEXACAO
+O1 -.-> PRONTIDAO
+
+
+%% =========================================================
+%% REGRAS DE ARQUITETURA
+%% =========================================================
+
+subgraph REGRAS["REGRAS FIXAS DA BETA"]
+    direction TB
+
+    G1["1 arquivo / fonte = 1 Artefato de Conhecimento"]
+    G2["Sem decomposição manual por texto / tabela / imagem"]
+    G3["GPT entra para compreensão semântica e enriquecimento"]
+    G4["Pinecone = conhecimento semântico / RAG"]
+    G5["RDS = controle operacional e rastreabilidade"]
+    G6["n8n = orquestração; não é banco nem motor de conhecimento"]
+    G7["Entradas são desacopladas do processamento central"]
+end

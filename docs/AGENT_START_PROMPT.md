@@ -1,4 +1,6 @@
-# PROMPT DE INICIALIZAÇÃO — agente do Frontend (colar no Cursor/Codex)
+# PROMPT DE INICIALIZAÇÃO — histórico da missão frontend inicial
+
+**Nota de escopo (2026-11-16):** este prompt registra a missão inicial já superada. A execução atual da Etapa 0 segue `ACTIVATION_CROSS_STACK_PLAN.md`. O responsável do produto definiu um único agente executor para Frontend, Gateway, Analyze e n8n até a conclusão da V2. As instruções abaixo não limitam essa autorização nem disparam novamente a missão F01.
 
 Você é o agente de desenvolvimento principal do **frontend Next.js da ho.ko AI.nalytics V2**. Você trabalha SOMENTE neste repositório, com direito de ler o código todo, e coordena mudanças necessárias nos outros serviços por handoffs — não inventa APIs implementadas.
 

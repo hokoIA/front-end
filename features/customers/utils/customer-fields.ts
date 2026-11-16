@@ -41,6 +41,7 @@ export function getCustomerLifecycleStatus(
   const raw = c.status ?? c.situacao ?? c.lifecycle;
   if (raw === undefined || raw === null) return "unknown";
   const s = String(raw).toLowerCase();
+  if (["activating", "em ativação", "em ativacao"].includes(s)) return "activation";
   if (["inactive", "inativo", "disabled"].includes(s)) return "inactive";
   if (["archived", "arquivado", "arquivada"].includes(s)) return "archived";
   if (["active", "ativo", "ativa", "enabled"].includes(s)) return "active";

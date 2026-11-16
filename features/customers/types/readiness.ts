@@ -8,6 +8,7 @@ export type CustomerReadiness =
 /** Status comercial / cadastral exibido na UI (mapeado a partir do backend quando existir). */
 export type CustomerLifecycleStatus =
   | "active"
+  | "activation"
   | "inactive"
   | "archived"
   | "unknown";

@@ -1,4 +1,4 @@
-import type { Customer } from "@/lib/types/customer";
+import type { Customer, CustomerActivationDetail } from "@/lib/types/customer";
 import { endpoints, withQuery } from "./endpoints";
 import { HttpError, httpJson } from "./http-client";
 
@@ -58,6 +58,21 @@ export async function getCustomer(idCustomer: string): Promise<Customer> {
     { method: "GET" },
   );
   return normalizeCustomer(data);
+}
+
+export async function getCustomerActivation(idCustomer: string): Promise<CustomerActivationDetail> {
+  const data = await httpJson<{ success: boolean } & CustomerActivationDetail>(
+    endpoints.customer.activation(idCustomer),
+    { method: "GET" },
+  );
+  return {
+    customer: {
+      ...data.customer,
+      id_customer: String(data.customer.id_customer),
+      name: String(data.customer.name),
+    },
+    activation: data.activation,
+  };
 }
 
 export async function addCustomer(

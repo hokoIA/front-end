@@ -1,6 +1,7 @@
 "use client";
 
 import { useAddCustomerMutation } from "@/hooks/api/use-customers-queries";
+import { HttpError } from "@/lib/api/http-client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,7 +27,8 @@ function record(data: unknown): Record<string, unknown> | null {
 function parseNewCustomerId(res: unknown): string | undefined {
   const r = record(res);
   if (!r) return undefined;
-  const id = r.id_customer ?? r.id;
+  const customer = record(r.customer) ?? r;
+  const id = customer.id_customer ?? customer.id;
   return id !== undefined && id !== null ? String(id) : undefined;
 }
 
@@ -62,20 +64,27 @@ export function CreateCustomerFlow({
       toast.error("Informe o nome do cliente.");
       return;
     }
+    if (!email.trim()) {
+      toast.error("Informe o e-mail do cliente.");
+      return;
+    }
     try {
       const body: Record<string, unknown> = {
         name: name.trim(),
-        empresa: empresa.trim() || undefined,
-        email: email.trim() || undefined,
-        telefone: telefone.trim() || undefined,
+        company: empresa.trim() || undefined,
+        email: email.trim(),
+        phone: telefone.trim() || undefined,
       };
       const res = await add.mutateAsync(body);
       const id = parseNewCustomerId(res);
-      toast.success("Cliente criado. Conecte as plataformas na sequência.");
+      const status = record(record(res)?.customer)?.status;
+      toast.success(status === "activating" ? "Cliente em ativação criado." : "Cliente criado.");
       handleClose(false);
       onCreated?.(id);
-    } catch {
-      toast.error("Não foi possível criar o cliente. Tente novamente.");
+    } catch (error) {
+      toast.error(error instanceof HttpError && error.status === 503
+        ? "A Ativação ainda não está disponível. Tente novamente após a atualização."
+        : "Não foi possível criar o cliente. Tente novamente.");
     }
   };
 
@@ -88,8 +97,8 @@ export function CreateCustomerFlow({
               Novo cliente
             </DialogTitle>
             <DialogDescription className="text-white/80">
-              Crie o cliente agora e conecte as
-              plataformas em seguida para liberar dados no painel.
+              Inicie o cadastro com as informações básicas. A coleta e a
+              avaliação acontecem na área de Ativação.
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -157,7 +166,7 @@ export function CreateCustomerFlow({
             ) : (
               <UserPlus className="h-4 w-4" aria-hidden />
             )}
-            Criar cliente
+            Iniciar cadastro
           </Button>
         </DialogFooter>
       </DialogContent>

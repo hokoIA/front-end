@@ -1,0 +1,554 @@
+[
+  {
+    "status": "success",
+    "schema_version": "1.0",
+    "processor": {
+      "engine": "docling",
+      "parser": "docling_document_converter",
+      "chunker": "docling_hybrid_chunker",
+      "chunk_max_tokens": 768,
+      "tokenizer_model": "text-embedding-3-small"
+    },
+    "document": {
+      "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+      "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+      "file_name": "documento_teste_ativacao_cliente.pdf",
+      "mime_type": "application/pdf",
+      "size_bytes": 31805,
+      "page_count": 3,
+      "title": "hoko_doc_hmglz5d5",
+      "chunk_count": 11
+    },
+    "chunks": [
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0000",
+        "chunk_index": 0,
+        "chunk_count": 11,
+        "text": "CLIENTE FICTÍCIO PARA TESTE DA FASE DE ATIVAÇÃO - BASE DE CONHECIMENTO\nID de cliente para teste, Aurora Alimentos Urbanos Ltda. = 900001. ID de ativação para teste, Aurora Alimentos Urbanos Ltda. = ativacao-teste-20260918-001. Tipo de documento, Aurora Alimentos Urbanos Ltda. = Contexto empresarial / planejamento preliminar. Confidencialidade, Aurora Alimentos Urbanos Ltda. = Interno - documento fictício de teste",
+        "embedding_text": "Documento de Contexto Empresarial\nCLIENTE FICTÍCIO PARA TESTE DA FASE DE ATIVAÇÃO - BASE DE CONHECIMENTO\nID de cliente para teste, Aurora Alimentos Urbanos Ltda. = 900001. ID de ativação para teste, Aurora Alimentos Urbanos Ltda. = ativacao-teste-20260918-001. Tipo de documento, Aurora Alimentos Urbanos Ltda. = Contexto empresarial / planejamento preliminar. Confidencialidade, Aurora Alimentos Urbanos Ltda. = Interno - documento fictício de teste",
+        "section_title": "Documento de Contexto Empresarial",
+        "section_path": [
+          "Documento de Contexto Empresarial"
+        ],
+        "page_start": 1,
+        "page_end": 1,
+        "page_numbers": [
+          1
+        ],
+        "char_count": 416,
+        "token_count": 127,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0000",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 0,
+          "chunk_count": 11,
+          "titulo_secao": "Documento de Contexto Empresarial",
+          "caminho_secao": [
+            "Documento de Contexto Empresarial"
+          ],
+          "pagina_inicio": 1,
+          "pagina_fim": 1,
+          "paginas": [
+            1
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0001",
+        "chunk_index": 1,
+        "chunk_count": 11,
+        "text": "A Aurora Alimentos Urbanos Ltda. é uma empresa fictícia criada exclusivamente para testes de ingestão, classificação e recuperação semântica. Opera no segmento de alimentação saudável, com venda de refeições prontas, kits semanais e planos corporativos de alimentação.\nA empresa possui operação principal em Belo Horizonte e atende clientes finais por e-commerce próprio. Também mantém contratos recorrentes com empresas que oferecem benefício alimentação a seus colaboradores.",
+        "embedding_text": "1. Contexto empresarial\nA Aurora Alimentos Urbanos Ltda. é uma empresa fictícia criada exclusivamente para testes de ingestão, classificação e recuperação semântica. Opera no segmento de alimentação saudável, com venda de refeições prontas, kits semanais e planos corporativos de alimentação.\nA empresa possui operação principal em Belo Horizonte e atende clientes finais por e-commerce próprio. Também mantém contratos recorrentes com empresas que oferecem benefício alimentação a seus colaboradores.",
+        "section_title": "1. Contexto empresarial",
+        "section_path": [
+          "1. Contexto empresarial"
+        ],
+        "page_start": 1,
+        "page_end": 1,
+        "page_numbers": [
+          1
+        ],
+        "char_count": 477,
+        "token_count": 125,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0001",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 1,
+          "chunk_count": 11,
+          "titulo_secao": "1. Contexto empresarial",
+          "caminho_secao": [
+            "1. Contexto empresarial"
+          ],
+          "pagina_inicio": 1,
+          "pagina_fim": 1,
+          "paginas": [
+            1
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0002",
+        "chunk_index": 2,
+        "chunk_count": 11,
+        "text": "A liderança percebe crescimento de receita nos últimos seis meses, mas considera que a comunicação da marca não acompanha a evolução do negócio. Internamente, existe a percepção de que os consumidores conhecem os produtos, porém não compreendem claramente a proposta de valor da empresa.\nEssa percepção ainda não foi validada por pesquisa. Deve ser tratada como uma hipótese interna e não como fato comprovado.",
+        "embedding_text": "2. Situação atual\nA liderança percebe crescimento de receita nos últimos seis meses, mas considera que a comunicação da marca não acompanha a evolução do negócio. Internamente, existe a percepção de que os consumidores conhecem os produtos, porém não compreendem claramente a proposta de valor da empresa.\nEssa percepção ainda não foi validada por pesquisa. Deve ser tratada como uma hipótese interna e não como fato comprovado.",
+        "section_title": "2. Situação atual",
+        "section_path": [
+          "2. Situação atual"
+        ],
+        "page_start": 1,
+        "page_end": 1,
+        "page_numbers": [
+          1
+        ],
+        "char_count": 410,
+        "token_count": 113,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0002",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 2,
+          "chunk_count": 11,
+          "titulo_secao": "2. Situação atual",
+          "caminho_secao": [
+            "2. Situação atual"
+          ],
+          "pagina_inicio": 1,
+          "pagina_fim": 1,
+          "paginas": [
+            1
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0003",
+        "chunk_index": 3,
+        "chunk_count": 11,
+        "text": "- Aumentar a participação da receita recorrente proveniente de assinaturas.\n- Expandir a carteira de clientes corporativos.\n- Reduzir dependência de campanhas promocionais baseadas exclusivamente em desconto.\n- Melhorar a compreensão interna sobre quais públicos e ofertas apresentam maior potencial de crescimento.",
+        "embedding_text": "3. Objetivos empresariais declarados\n- Aumentar a participação da receita recorrente proveniente de assinaturas.\n- Expandir a carteira de clientes corporativos.\n- Reduzir dependência de campanhas promocionais baseadas exclusivamente em desconto.\n- Melhorar a compreensão interna sobre quais públicos e ofertas apresentam maior potencial de crescimento.",
+        "section_title": "3. Objetivos empresariais declarados",
+        "section_path": [
+          "3. Objetivos empresariais declarados"
+        ],
+        "page_start": 1,
+        "page_end": 1,
+        "page_numbers": [
+          1
+        ],
+        "char_count": 315,
+        "token_count": 92,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0003",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 3,
+          "chunk_count": 11,
+          "titulo_secao": "3. Objetivos empresariais declarados",
+          "caminho_secao": [
+            "3. Objetivos empresariais declarados"
+          ],
+          "pagina_inicio": 1,
+          "pagina_fim": 1,
+          "paginas": [
+            1
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0004",
+        "chunk_index": 4,
+        "chunk_count": 11,
+        "text": "A marca declara como proposta de valor facilitar uma alimentação equilibrada para pessoas com rotina intensa. Os atributos desejados são praticidade, confiança, qualidade e simplicidade.\nA direção afirma que a marca não deseja competir apenas por preço e pretende reforçar conveniência e previsibilidade como diferenciais. Não existe, até o momento, uma pesquisa recente que comprove quais atributos são efetivamente associados à marca pelo público.",
+        "embedding_text": "4. Marca e posicionamento\nA marca declara como proposta de valor facilitar uma alimentação equilibrada para pessoas com rotina intensa. Os atributos desejados são praticidade, confiança, qualidade e simplicidade.\nA direção afirma que a marca não deseja competir apenas por preço e pretende reforçar conveniência e previsibilidade como diferenciais. Não existe, até o momento, uma pesquisa recente que comprove quais atributos são efetivamente associados à marca pelo público.",
+        "section_title": "4. Marca e posicionamento",
+        "section_path": [
+          "4. Marca e posicionamento"
+        ],
+        "page_start": 2,
+        "page_end": 2,
+        "page_numbers": [
+          2
+        ],
+        "char_count": 449,
+        "token_count": 117,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0004",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 4,
+          "chunk_count": 11,
+          "titulo_secao": "4. Marca e posicionamento",
+          "caminho_secao": [
+            "4. Marca e posicionamento"
+          ],
+          "pagina_inicio": 2,
+          "pagina_fim": 2,
+          "paginas": [
+            2
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0005",
+        "chunk_index": 5,
+        "chunk_count": 11,
+        "text": "- Profissionais entre 25 e 45 anos com pouco tempo para preparar refeições durante a semana.\n- Empresas de pequeno e médio porte interessadas em benefícios de alimentação e bem-estar.\n- Clientes atuais de planos semanais com potencial para migração a assinaturas mensais.",
+        "embedding_text": "5. Públicos mencionados\n- Profissionais entre 25 e 45 anos com pouco tempo para preparar refeições durante a semana.\n- Empresas de pequeno e médio porte interessadas em benefícios de alimentação e bem-estar.\n- Clientes atuais de planos semanais com potencial para migração a assinaturas mensais.",
+        "section_title": "5. Públicos mencionados",
+        "section_path": [
+          "5. Públicos mencionados"
+        ],
+        "page_start": 2,
+        "page_end": 2,
+        "page_numbers": [
+          2
+        ],
+        "char_count": 271,
+        "token_count": 83,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0005",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 5,
+          "chunk_count": 11,
+          "titulo_secao": "5. Públicos mencionados",
+          "caminho_secao": [
+            "5. Públicos mencionados"
+          ],
+          "pagina_inicio": 2,
+          "pagina_fim": 2,
+          "paginas": [
+            2
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0006",
+        "chunk_index": 6,
+        "chunk_count": 11,
+        "text": "Instagram, Situação = Ativo. Instagram, Observação = Conteúdo orgânico e campanhas pagas.. Facebook, Situação = Ativo. Facebook, Observação = Uso secundário.. Google Analytics 4, Situação = Disponível. Google Analytics 4, Observação = Dados do e-commerce.. HubSpot CRM, Situação = Disponível. HubSpot CRM, Observação = Base comercial B2B.. Google Ads, Situação = Ativo. Google Ads, Observação = Campanhas de aquisição.. E-commerce próprio, Situação = Ativo. E-commerce próprio, Observação = Pedidos e assinaturas.",
+        "embedding_text": "6. Canais e fontes atualmente disponíveis\nInstagram, Situação = Ativo. Instagram, Observação = Conteúdo orgânico e campanhas pagas.. Facebook, Situação = Ativo. Facebook, Observação = Uso secundário.. Google Analytics 4, Situação = Disponível. Google Analytics 4, Observação = Dados do e-commerce.. HubSpot CRM, Situação = Disponível. HubSpot CRM, Observação = Base comercial B2B.. Google Ads, Situação = Ativo. Google Ads, Observação = Campanhas de aquisição.. E-commerce próprio, Situação = Ativo. E-commerce próprio, Observação = Pedidos e assinaturas.",
+        "section_title": "6. Canais e fontes atualmente disponíveis",
+        "section_path": [
+          "6. Canais e fontes atualmente disponíveis"
+        ],
+        "page_start": 2,
+        "page_end": 2,
+        "page_numbers": [
+          2
+        ],
+        "char_count": 513,
+        "token_count": 155,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0006",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 6,
+          "chunk_count": 11,
+          "titulo_secao": "6. Canais e fontes atualmente disponíveis",
+          "caminho_secao": [
+            "6. Canais e fontes atualmente disponíveis"
+          ],
+          "pagina_inicio": 2,
+          "pagina_fim": 2,
+          "paginas": [
+            2
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0007",
+        "chunk_index": 7,
+        "chunk_count": 11,
+        "text": "- A empresa não pretende alterar o nome da marca neste ciclo.\n- O e-commerce continuará sendo o principal canal de venda direta.\n- A expansão corporativa deverá ser considerada no planejamento de comunicação.",
+        "embedding_text": "7. Decisões já declaradas\n- A empresa não pretende alterar o nome da marca neste ciclo.\n- O e-commerce continuará sendo o principal canal de venda direta.\n- A expansão corporativa deverá ser considerada no planejamento de comunicação.",
+        "section_title": "7. Decisões já declaradas",
+        "section_path": [
+          "7. Decisões já declaradas"
+        ],
+        "page_start": 2,
+        "page_end": 2,
+        "page_numbers": [
+          2
+        ],
+        "char_count": 208,
+        "token_count": 58,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0007",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 7,
+          "chunk_count": 11,
+          "titulo_secao": "7. Decisões já declaradas",
+          "caminho_secao": [
+            "7. Decisões já declaradas"
+          ],
+          "pagina_inicio": 2,
+          "pagina_fim": 2,
+          "paginas": [
+            2
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0008",
+        "chunk_index": 8,
+        "chunk_count": 11,
+        "text": "· A liderança acredita que o público percebe a empresa como uma opção cara, mas não há pesquisa que valide essa percepção. · Existe a hipótese de que assinaturas mensais tenham maior valor de vida do cliente do que compras avulsas.\n- A equipe comercial acredita que empresas com 50 a 200 funcionários representam melhor oportunidade B2B, mas o CRM ainda precisa ser analisado.",
+        "embedding_text": "8. Hipóteses e incertezas\n· A liderança acredita que o público percebe a empresa como uma opção cara, mas não há pesquisa que valide essa percepção. · Existe a hipótese de que assinaturas mensais tenham maior valor de vida do cliente do que compras avulsas.\n- A equipe comercial acredita que empresas com 50 a 200 funcionários representam melhor oportunidade B2B, mas o CRM ainda precisa ser analisado.",
+        "section_title": "8. Hipóteses e incertezas",
+        "section_path": [
+          "8. Hipóteses e incertezas"
+        ],
+        "page_start": 3,
+        "page_end": 3,
+        "page_numbers": [
+          3
+        ],
+        "char_count": 376,
+        "token_count": 110,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0008",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 8,
+          "chunk_count": 11,
+          "titulo_secao": "8. Hipóteses e incertezas",
+          "caminho_secao": [
+            "8. Hipóteses e incertezas"
+          ],
+          "pagina_inicio": 3,
+          "pagina_fim": 3,
+          "paginas": [
+            3
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0009",
+        "chunk_index": 9,
+        "chunk_count": 11,
+        "text": "· Não utilizar alegações de saúde ou benefícios clínicos sem validação jurídica. · Dados pessoais de clientes não devem ser enviados a ferramentas externas sem autorização. · Campanhas promocionais com desconto superior a 20% exigem aprovação da direção.\n- Informações financeiras detalhadas são consideradas confidenciais.",
+        "embedding_text": "9. Riscos e restrições declarados\n· Não utilizar alegações de saúde ou benefícios clínicos sem validação jurídica. · Dados pessoais de clientes não devem ser enviados a ferramentas externas sem autorização. · Campanhas promocionais com desconto superior a 20% exigem aprovação da direção.\n- Informações financeiras detalhadas são consideradas confidenciais.",
+        "section_title": "9. Riscos e restrições declarados",
+        "section_path": [
+          "9. Riscos e restrições declarados"
+        ],
+        "page_start": 3,
+        "page_end": 3,
+        "page_numbers": [
+          3
+        ],
+        "char_count": 323,
+        "token_count": 98,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0009",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 9,
+          "chunk_count": 11,
+          "titulo_secao": "9. Riscos e restrições declarados",
+          "caminho_secao": [
+            "9. Riscos e restrições declarados"
+          ],
+          "pagina_inicio": 3,
+          "pagina_fim": 3,
+          "paginas": [
+            3
+          ]
+        }
+      },
+      {
+        "id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0010",
+        "chunk_index": 10,
+        "chunk_count": 11,
+        "text": "· Receber o manual de identidade visual atualizado. · Conectar Google Analytics 4. · Avaliar acesso ao HubSpot CRM. · Confirmar decisor executivo responsável pela aprovação estratégica.\n- Receber calendário comercial do próximo trimestre.\nObservação: todos os nomes, números, fatos, objetivos e situações deste documento são fictícios. O arquivo foi criado apenas para testar a ingestão da arquitetura beta da Fase de Ativação.",
+        "embedding_text": "10. Pendências para a Ativação\n· Receber o manual de identidade visual atualizado. · Conectar Google Analytics 4. · Avaliar acesso ao HubSpot CRM. · Confirmar decisor executivo responsável pela aprovação estratégica.\n- Receber calendário comercial do próximo trimestre.\nObservação: todos os nomes, números, fatos, objetivos e situações deste documento são fictícios. O arquivo foi criado apenas para testar a ingestão da arquitetura beta da Fase de Ativação.",
+        "section_title": "10. Pendências para a Ativação",
+        "section_path": [
+          "10. Pendências para a Ativação"
+        ],
+        "page_start": 3,
+        "page_end": 3,
+        "page_numbers": [
+          3
+        ],
+        "char_count": 427,
+        "token_count": 119,
+        "metadata": {
+          "id_cliente": "900001",
+          "id_ativacao": "ativacao-teste-20260918-001",
+          "id_documento": "doc_fdae05efbe438d2b241258c24b4cced4",
+          "vector_id": "doc_fdae05efbe438d2b241258c24b4cced4#v1#c0010",
+          "checksum_sha256": "fdae05efbe438d2b241258c24b4cced409f40db3f2921604cedb287e40e3372f",
+          "versao_documento": 1,
+          "fase_origem": "ativacao",
+          "origem": "envio_manual",
+          "provedor": "plataforma",
+          "nome_documento": "documento_teste_ativacao_cliente.pdf",
+          "mime_type": "application/pdf",
+          "dominio_documento": "contexto_empresarial",
+          "tipo_documento": "planejamento_preliminar",
+          "idioma": "pt-BR",
+          "confidencialidade": "interno",
+          "status_validacao": "validado",
+          "versao_schema": "2.0",
+          "chunk_index": 10,
+          "chunk_count": 11,
+          "titulo_secao": "10. Pendências para a Ativação",
+          "caminho_secao": [
+            "10. Pendências para a Ativação"
+          ],
+          "pagina_inicio": 3,
+          "pagina_fim": 3,
+          "paginas": [
+            3
+          ]
+        }
+      }
+    ],
+    "warnings": []
+  }
+]

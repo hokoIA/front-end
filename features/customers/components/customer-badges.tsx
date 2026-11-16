@@ -43,6 +43,7 @@ export function CustomerReadinessBadge({
 
 const lifecycleLabels: Record<CustomerLifecycleStatus, string> = {
   active: "Ativo",
+  activation: "Em ativação",
   inactive: "Inativo",
   archived: "Arquivado",
   unknown: "Status não informado",

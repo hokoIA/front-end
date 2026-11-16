@@ -11,8 +11,23 @@ export type CustomerIntegration = {
 export type Customer = {
   id_customer: string;
   name: string;
+  status?: string;
+  id_activation?: string | null;
   integrations?: CustomerIntegration[];
   /** Campos adicionais conforme contrato real do backend */
   [key: string]: unknown;
+};
+
+export type CustomerActivationDetail = {
+  customer: Customer & {
+    company?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    created_at?: string | null;
+  };
+  activation: {
+    id_activation: string;
+    created_at: string;
+  };
 };
 

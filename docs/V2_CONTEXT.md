@@ -20,13 +20,13 @@ O método não deve virar obrigatoriamente cinco telas no menu. **Separar artefa
 
 ### Estratégico (macro, independente do calendário operacional)
 
-Execução OIDEA iniciada depois da Ativação ou quando necessária; pode durar horas ou dias. Observação, Interpretação e Decisões geram **saídas independentes consultáveis**; a avaliação integrada apresenta documento extenso, legível, com seções/tabelas quando o modelo fornecer, sem inventar um dashboard personalizado para cada relatório. Decisões estratégicas sugeridas podem complementar ou revisar objetivos iniciais. A agência pode editar e aceitar/recusar propostas. Objetivos aprovados permanecem vigentes entre vários ciclos operacionais; podem usar SMART + OKRs, até três KRs, responsáveis, prazos e custos quando aplicáveis. Não exigir aceite das propostas novas para preservar objetivos já definidos na Ativação.
+Execução OIDEA iniciada depois da Ativação ou quando necessária, sem período estratégico fixo; pode durar horas ou dias. Observação, Interpretação e Decisões geram **saídas independentes consultáveis**. O formato da avaliação integrada será discutido após testes iniciais de produção interna da agência, com saídas reais. Decisões estratégicas sugeridas podem complementar ou revisar objetivos iniciais. A agência pode editar e aceitar/recusar propostas. Objetivos aprovados permanecem vigentes entre vários ciclos operacionais; podem usar SMART + OKRs, até três KRs, responsáveis, prazos e custos quando aplicáveis. Não exigir aceite das propostas novas para preservar objetivos já definidos na Ativação.
 
 ### Rotineiro / operacional (limitado ao ciclo)
 
 A agência **inicia manualmente** cada ciclo: cliente, nome/período (referência de quatro semanas) e visualização dos **objetivos vigentes**. **Não obrigar quantidade de posts/pautas/campanhas na criação do ciclo.** O planejamento de entregas ocorre no Kanban. O ciclo considera os objetivos e regras do cliente, dados de plataformas, contexto estratégico pertinente e a avaliação do ciclo anterior quando disponível.
 
-Observação e interpretação rotineiras podem ser diárias sem gerar uma decisão todo dia. Apenas quando necessário a inteligência propõe ação **pontual/rápida dentro do próprio ciclo**, classificando relevância e urgência sem interromper ou bloquear o usuário. A agência percebe situações relevantes **entre clientes** no Início, abre o workspace do cliente e delibera na Central de Decisões contextual ou no detalhe do ciclo. Aceite/recusa com justificativa textual; **não exigir vínculo técnico a card/campanha/publicação**. Decisões rotineiras não ficam ativas após o ciclo (ou após expiração de sua janela). O **histórico consolidado** permanece na avaliação para fundamentar aprendizado; não interpretar fim da vigência como destruição da evidência necessária ao relatório.
+Observação e interpretação rotineiras podem ser diárias sem gerar uma decisão todo dia. Apenas quando necessário a inteligência propõe ação **pontual/rápida dentro do próprio ciclo**, classificando relevância e urgência sem interromper ou bloquear o usuário. A agência percebe situações relevantes **entre clientes** no Início, abre o workspace do cliente e delibera na Central de Decisões contextual ou no detalhe do ciclo. **Não exigir vínculo técnico a card/campanha/publicação.** Decisões rotineiras não atravessam ciclos; direcionamentos estratégicos aprovados, como OKR/KPI, podem permanecer vigentes. Na V2.0, descartar uma proposta a remove sem persistir histórico de descarte. Evidências e deliberações aceitas pertinentes ao ciclo podem fundamentar a aprendizagem.
 
 ### Verificação de qualidade da entrega (dentro do Kanban)
 
@@ -39,7 +39,7 @@ Pauta, arte, legenda e outras entregas passam por verificação **contextual ant
 3. Agência **cria e inicia** manualmente o ciclo operacional com período e objetivos vigentes (sem planejar produção nesta etapa).
 4. Agência executa o Kanban, com gate de qualidade nas transições; OIDEA rotineiro acompanha resultados e sinais no período.
 5. Situações relevantes aparecem no **Início transversal da agência**, e o profissional abre a Central de Decisões ou o ciclo do cliente para consultar fundamentos e deliberar. Nenhuma notificação deve bloquear o trabalho normal.
-6. Encerramento do ciclo produz **avaliação/aprendizagem** detalhada: observação, interpretação, entregas, métricas, decisões aceitas/rejeitadas/expiradas, justificativas, alcance dos objetivos, limites de evidência.
+6. Encerramento do ciclo produz **avaliação/aprendizagem** com evidências, entregas, métricas, deliberações aceitas pertinentes, alcance dos objetivos e limites de evidência. O formato definitivo será decidido após testes internos; propostas descartadas não são retidas na V2.0.
 7. A avaliação alimenta o próximo ciclo e pode ser insumo de futura análise estratégica, **sem obrigar rodar uma análise macro em todo encerramento**.
 
 ## 5. Distribuição de responsabilidades de interface
@@ -61,11 +61,13 @@ Pauta, arte, legenda e outras entregas passam por verificação **contextual ant
 
 **Padrão visual:** minimalista corporativo, Montserrat, azul-marinho/cobalto/branco/cinza claro, sem estilo Bootstrap. O Figma anterior é referência de exploração, não contrato técnico definitivo; valide com o desenho mais recente da equipe.
 
-## 7. Estado do n8n (histórico informado; workflows não enviados nestes ZIPs)
+## 7. Estado do n8n (histórico informado; exports JSON ainda não recebidos)
 
 **Construídos/testados com simulações:** `ATV-ENT-ARQUIVO | Entrada de Arquivos`; `ATV-IA-DOCUMENTOS | Definir Documentos Obrigatórios`; `ATV-CTL-ATIVACAO | Controle da Ativação`; `OBS-IA-OBSERVAR | Observação de Fonte` e `TESTE-OBS | Observação`. O workflow OBS normaliza fonte/referências, chama modelo para extrair observações atômicas, organiza/valida referências e emite observações. Cenários testados: fatos de posts, períodos distintos sem comparação indevida, causalidade não inventada e separação de opinião/fato.
 
-**Não confirmado como implementado/testado:** integrações reais de fontes em todos esses workflows, orquestrador OIDEA completo, Interpretação, Decisão, acompanhamento diário, gate de qualidade, aprendizagem de ciclos, contratos de callbacks. **Antes de integrar, exportar workflows do n8n, inspecionar nodes e payloads reais e documentar versão.** O n8n é um projeto/serviço externo aos três ZIPs.
+**Não confirmado como implementado/testado:** integrações reais de fontes em todos esses workflows, orquestrador OIDEA completo, Interpretação, Decisão, acompanhamento diário, gate de qualidade, aprendizagem de ciclos, contratos de callbacks. Para planejar a integração da Ativação, usar o modelo assumido em `docs/ACTIVATION_N8N_ASSUMED_CONTRACT.md`; conferir nodes e payloads atuais durante a implementação. O n8n é um projeto/serviço externo aos três ZIPs.
+
+Em 2026-11-16 foi recebido um pacote de documentação, diagrama e testes parciais de Ativação, preservado em `docs/references/activation/2026-11-16-pacote/`. Ele não inclui os exports JSON nativos. A lista vazia do teste bruto de documentos adicionais é uma resposta válida daquela execução; o resumo relata outra saída com cinco itens, cuja execução não consta no arquivo. Não usar o pacote como comprovação de integração ponta a ponta.
 
 ## 8. Regras operacionais para todos os agentes
 

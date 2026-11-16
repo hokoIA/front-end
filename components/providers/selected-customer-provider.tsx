@@ -3,6 +3,7 @@
 import { useAuthStatusQuery } from "@/hooks/api/use-auth-queries";
 import { useCustomersQuery } from "@/hooks/api/use-customers-queries";
 import type { Customer } from "@/lib/types/customer";
+import { getCustomerLifecycleStatus } from "@/features/customers/utils/customer-fields";
 import {
   createContext,
   useCallback,
@@ -46,20 +47,26 @@ function SelectedCustomerInner({ children }: { children: React.ReactNode }) {
 
   /* Clientes: lista deve trazer `integrations` por item quando o gateway expõe GET /customer/list. */
   const {
-    data: customers = [],
+    data: allCustomers = [],
     isSuccess,
     isPending,
     isFetching,
     refetch,
   } = useCustomersQuery(authed);
 
+  const customers = useMemo(
+    () => allCustomers.filter((customer) => getCustomerLifecycleStatus(customer) !== "activation"),
+    [allCustomers],
+  );
+
   const [selectedId, setSelectedId] = useState<string | null>(readStoredSelectedCustomerId);
 
   useEffect(() => {
-    if (!authed || !isSuccess || !customers.length) return;
+    if (!authed || !isSuccess) return;
     if (!selectedId) return;
     const exists = customers.some((c) => c.id_customer === selectedId);
     if (!exists) {
+      setSelectedId(null);
       try {
         for (const key of LEGACY_COMPAT_STORAGE_KEYS) {
           localStorage.removeItem(key);

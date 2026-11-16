@@ -2,6 +2,8 @@
 
 **Este arquivo é um roteiro de alinhamento, NÃO um OpenAPI implantado.** Não chamar endpoints propostos como se existissem. Antes de codificar, verificar rotas/schemas atuais e validar o contrato entre agentes.
 
+Para a Ativação, A05 já tem uma hipótese operacional suficiente para planejamento em `ACTIVATION_N8N_ASSUMED_CONTRACT.md`. Seus envelopes internos são propostas de handoff, não payloads confirmados no n8n local.
+
 ## 1. Caminhos verificados nos ZIPs
 
 | Camada | Caminho | Situação |
@@ -44,7 +46,7 @@ Nomes/paths provisórios; podem mudar depois da revisão conjunta.
 - `POST /api/v2/strategic-executions` — iniciar OIDEA inicial ou sob demanda; `GET /api/v2/strategic-executions/:id` — status/etapas; `GET /api/v2/strategic-executions/:id/report` — avaliação integrada.
 - `GET /api/v2/customers/:id/objectives`; `PATCH /api/v2/objectives/:id` — objetivos vigentes; aprovação/edição requer fluxos com autorização explícita.
 - `POST /api/v2/cycles`; `GET /api/v2/cycles`; `GET /api/v2/cycles/:id`; `POST /api/v2/cycles/:id/close` — criação e ciclo de vida.
-- `GET /api/v2/cycles/:id/decisions`; `POST /api/v2/decisions/:id/deliberate` — proposta, aceite/recusa e texto livre.
+- `GET /api/v2/cycles/:id/decisions`; mutações de aceite e descarte a definir — propostas rotineiras limitadas ao ciclo. Na V2.0, o descarte remove a proposta sem histórico persistido; o contrato final não está definido.
 - `POST /api/v2/kanban/cards/:id/quality-check` — avaliação por entrega antes da mudança de estágio.
 - `GET /api/v2/cycles/:id/evaluation` — aprendizagem/diagnóstico final.
 
@@ -53,7 +55,7 @@ Nomes/paths provisórios; podem mudar depois da revisão conjunta.
 ## 4. Entidades conceituais (schema sujeito a revisão)
 
 - `agency/account`, `customer`, `activation`, `strategic_execution`, `analysis_stage_output`, `strategic_objective`, `key_result`, `operational_cycle`, `routine_observation_run`, `decision_proposal`, `decision_deliberation`, `content_quality_review`, `cycle_evaluation`.
-- Uma decisão contém `proposal_id`, `id_account`, `id_customer`, `scope` (`strategic`/`routine`), `cycle_id` se rotina, origem da evidência e status humano; **validade da decisão rotineira não extrapola ciclo**.
+- Uma proposta a persistir requer vínculo com `account` e `customer`, escopo estratégico ou rotineiro, ciclo de origem quando rotineira e evidência. **Vigência rotineira não extrapola ciclo**. Estados conceituais na V2.0: pendente, aceita e expirada; descartar remove a proposta, sem estado/histórico persistido de descarte. Campos e nomes técnicos ainda dependem de contrato.
 - Análise/etapas: `queued`, `running`, `completed`, `failed` (status finais definidos pelo contrato real); disponibilizar outputs intermediários concluídos.
 - Separar **proposta da IA**, **deliberação humana**, **ação pretendida**, **evidência de execução** e **resultado observado**.
 - IDs estáveis, UTC no banco e timezone explícito na UI; fontes citáveis; `schema_version` nos eventos e documentos; auditoria de ações humanas.

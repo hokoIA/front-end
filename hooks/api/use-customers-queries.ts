@@ -3,6 +3,7 @@ import {
   deleteCustomer,
   editCustomer,
   getCustomer,
+  getCustomerActivation,
   listCustomers,
   postCustomerCache,
 } from "@/lib/api/customers";
@@ -21,6 +22,14 @@ export function useCustomerQuery(idCustomer: string | null, enabled = true) {
   return useQuery({
     queryKey: queryKeys.customers.detail(idCustomer ?? ""),
     queryFn: () => getCustomer(idCustomer!),
+    enabled: Boolean(idCustomer) && enabled,
+  });
+}
+
+export function useCustomerActivationQuery(idCustomer: string | null, enabled = true) {
+  return useQuery({
+    queryKey: [...queryKeys.customers.detail(idCustomer ?? ""), "activation"],
+    queryFn: () => getCustomerActivation(idCustomer!),
     enabled: Boolean(idCustomer) && enabled,
   });
 }

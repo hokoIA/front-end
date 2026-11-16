@@ -42,7 +42,17 @@ export function filterAndSortCustomers(
   if (filters.integrationScope !== "all") {
     rows = rows.filter((c) => {
       const s = summaryFor(summaries, c.id_customer);
-      if (!s) return filters.integrationScope === "all";
+      if (!s && getCustomerLifecycleStatus(c) === "activation") {
+        const states = (c.integrations ?? []).map((item) => String(item.status ?? "").toLowerCase());
+        const connected = states.includes("connected");
+        const authorized = states.includes("authorized");
+        const alert = states.includes("needs_renewal");
+        if (filters.integrationScope === "with_active") return connected;
+        if (filters.integrationScope === "without") return !connected && !authorized;
+        if (filters.integrationScope === "with_alert") return alert;
+        return authorized;
+      }
+      if (!s) return false;
       switch (filters.integrationScope) {
         case "with_active":
           return s.connectedCount > 0;
@@ -65,6 +75,11 @@ export function filterAndSortCustomers(
     const plat = filters.platformConnected;
     rows = rows.filter((c) => {
       const s = summaryFor(summaries, c.id_customer);
+      if (!s && getCustomerLifecycleStatus(c) === "activation") {
+        return (c.integrations ?? []).some((item) =>
+          item.platform === plat && String(item.status ?? "").toLowerCase() === "connected",
+        );
+      }
       if (!s) return false;
       return s.surfaces[plat] === "connected";
     });
@@ -123,7 +138,7 @@ export function computeHubOverview(input: {
 
   for (const c of customers) {
     const st = getCustomerLifecycleStatus(c);
-    if (st !== "archived" && st !== "inactive") active += 1;
+    if (st === "active" || st === "unknown") active += 1;
     const s = summaries.get(c.id_customer);
     if (!summariesReady || !s) continue;
     if (s.connectedCount === 0 && s.authorizedCount === 0) withoutIntegration += 1;

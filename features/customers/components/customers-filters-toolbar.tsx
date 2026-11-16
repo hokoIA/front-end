@@ -29,9 +29,11 @@ const SURFACE_OPTIONS: {
 export function CustomersFiltersToolbar({
   value,
   onChange,
+  showActivation = false,
 }: {
   value: CustomerHubFilterState;
   onChange: (next: CustomerHubFilterState) => void;
+  showActivation?: boolean;
 }) {
   return (
     <div className="rounded-xl border border-hk-border bg-hk-surface p-4 shadow-hk-sm">
@@ -73,6 +75,7 @@ export function CustomersFiltersToolbar({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
+                {showActivation ? <SelectItem value="activation">Em ativação</SelectItem> : null}
                 <SelectItem value="active">Ativo</SelectItem>
                 <SelectItem value="inactive">Inativo</SelectItem>
                 <SelectItem value="archived">Arquivado</SelectItem>
